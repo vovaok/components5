@@ -4,19 +4,19 @@ QT += serialport
 
 android {
     CONFIG(debug, debug|release) {
-        QMAKE_LIBDIR += $$PWD/build-commlib-android-debug/debug
+        QMAKE_LIBDIR += $$PWD/commlib/android/bin
         LIBS += -lcommlibd
     } else {
-        QMAKE_LIBDIR += $$PWD/build-commlib-android-release/release
+        QMAKE_LIBDIR += $$PWD/commlib/android/bin
         LIBS += -lcommlib
     }
 }
 win32 {
     CONFIG(debug, debug|release) {
-        QMAKE_LIBDIR += $$PWD/build-commlib-mingw/debug
+        QMAKE_LIBDIR += $$PWD/bin
         LIBS += -lcommlibd
     } else {
-        QMAKE_LIBDIR += $$PWD/build-commlib-mingw/release
+        QMAKE_LIBDIR += $$PWD/bin
         LIBS += -lcommlib
     }
 }
