@@ -21,6 +21,7 @@ Thumbs.db
 *[Dd]ebug/
 *[Rr]elease/
 build-*/
+build*/
 *.lib
 *.sbr
 obj/
