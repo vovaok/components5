@@ -23,6 +23,9 @@ UsbHid::~UsbHid()
 
 qint64 UsbHid::readData(char *data, qint64 maxSize)
 {
+    if (!maxSize)
+        return 0; // FUCKING HACK!!!!
+
     int bytesRead;
     if (!mCurrentReportId)
     {
@@ -174,9 +177,15 @@ void UsbHid::enumerateBoards()
 //            qDebug() << "serial=" << serial;
             mBoardMap[serial] = cur_dev->path;
 //        }
+                qDebug()<<"interface_number" << cur_dev->interface_number <<"manufacturer_string" <<cur_dev->manufacturer_string <<"next" <<cur_dev->next<< "path" <<cur_dev->path
+                    <<"product id"  <<cur_dev->product_id <<"product string" <<cur_dev->product_string <<"release number" <<cur_dev->release_number <<"serial number" <<cur_dev->serial_number
+                       <<"usage" <<cur_dev->usage <<"usage page" <<cur_dev->usage_page <<"vendor id" <<cur_dev->vendor_id;
     }
     hid_free_enumeration(devs);
 //    foreach (QString key, mBoardMap.keys())
 //        qDebug() << "map_key=" << key;
+
+
+
 }
 //---------------------------------------------------------------------------
