@@ -149,21 +149,21 @@ void Object3D::drawObject()
         glDisable(GL_COLOR_MATERIAL);
     }
 
-//    glPushMatrix(); // чтобы центры совпадали без сетПозишн()
-
     glRotatef(xori, 1, 0, 0);
     glRotatef(yori, 0, 1, 0);
     glRotatef(zori, 0, 0, 1);
     glTranslatef(xcen, ycen, zcen);
     glScalef(xsc, ysc, zsc);
 
+    bool backfacing = (xsc * ysc * zsc < 0);
+    if (backfacing)
+        glCullFace(GL_FRONT);
+
     // draw bounding box
     if (boundsVisible && !scene()->mPicking)
     {
         QVector3D mn = getMinBounds();
         QVector3D mx = getMaxBounds();
-//        GLfloat par[4] = {1.0, 1.0, 1.0, 1.0};
-//        glMaterialfv(GL_FRONT, GL_EMISSION, par);
 
         GLboolean lighting;
         glGetBooleanv(GL_LIGHTING, &lighting);
@@ -225,8 +225,6 @@ void Object3D::drawObject()
             mTexture->disable();
     }
 
-//    glPopMatrix();
-
     if (!scene()->mPicking || mPickable)
     {
         QObjectList::const_iterator it;
@@ -238,6 +236,9 @@ void Object3D::drawObject()
             obj->drawObject();
         }
     }
+
+    if (backfacing)
+        glCullFace(GL_BACK);
 
     glPopMatrix();
 

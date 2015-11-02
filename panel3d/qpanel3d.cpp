@@ -47,7 +47,7 @@ void QPanel3D::initializeGL()
     glShadeModel(GL_SMOOTH);
 
     glEnable(GL_LIGHTING);
-    glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, true);
+    glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, true); //GL_LIGHT_MODEL_TWO_SIDE
     glEnable(GL_NORMALIZE);
 
     glEnable(GL_ALPHA_TEST);
@@ -104,6 +104,7 @@ void QPanel3D::paintGL()
 //    mFrame = !mFrame;
 //    glSettings();
 
+    qglClearColor(BackColor);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
 

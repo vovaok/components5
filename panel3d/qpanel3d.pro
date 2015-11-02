@@ -9,15 +9,11 @@ CONFIG += c++11
 CONFIG += debug_and_release
 CONFIG += build_all
 
+DESTDIR = $$PWD/bin
+
 CONFIG(debug, debug|release) {
-    MOC_DIR = debug
-    OBJECTS_DIR = debug
-    DESTDIR = bin
     TARGET = qpanel3dd
 } else {
-    MOC_DIR = release
-    OBJECTS_DIR = release
-    DESTDIR = bin
     TARGET = qpanel3d
 }
 
@@ -63,4 +59,4 @@ HEADERS += qpanel3d.h \
     terrain3d.h
 
 OTHER_FILES += \
-    ../qpanel3d.pri
+    qpanel3d.pri
