@@ -33,12 +33,18 @@ qint64 UsbHid::readData(char *data, qint64 maxSize)
     }
     else
     {
-        unsigned char *buf = new unsigned char[maxSize + 1];
-        bytesRead = hid_read_timeout(mDev, buf, maxSize+1, 100);
-        bytesRead--;
+        QByteArray temp(65, '\0');
+        bytesRead = hid_read_timeout(mDev, reinterpret_cast<unsigned char*>(temp.data()), 65, 100);
+        --bytesRead;
         for (int i=0; i<bytesRead; i++)
-            data[i] = buf[i+1];
-        delete [] buf;
+            data[i] = temp[i+1];
+
+//        unsigned char *buf = new unsigned char[maxSize + 1];
+//        bytesRead = hid_read_timeout(mDev, buf, maxSize+1, 100);
+//        bytesRead--;
+//        for (int i=0; i<bytesRead; i++)
+//            data[i] = buf[i+1];
+//        delete [] buf;
     }
 
     if (bytesRead == -1)
@@ -56,12 +62,19 @@ qint64 UsbHid::readLineData(char *data, qint64 maxSize)
 
 qint64 UsbHid::writeData(const char *data, qint64 maxSize)
 {
-    unsigned char *idData = new unsigned char[maxSize+1];
-    idData[0] = mCurrentReportId; // report ID;
+    QByteArray temp(maxSize+1, '\0');
+    temp[0] = mCurrentReportId; // report ID;
     for (int i=0; i<maxSize; i++)
-        idData[i+1] = data[i];
-    int bytesWritten = hid_write(mDev, reinterpret_cast<const unsigned char*>(idData), maxSize+1);
-    delete [] idData;
+        temp[i+1] = data[i];
+    int bytesWritten = hid_write(mDev, reinterpret_cast<const unsigned char*>(temp.constData()), maxSize+1);
+
+//    unsigned char *idData = new unsigned char[maxSize+1];
+//    idData[0] = mCurrentReportId; // report ID;
+//    for (int i=0; i<maxSize; i++)
+//        idData[i+1] = data[i];
+//    int bytesWritten = hid_write(mDev, reinterpret_cast<const unsigned char*>(idData), maxSize+1);
+//    delete [] idData;
+
     if (bytesWritten == -1)
     {
         close();

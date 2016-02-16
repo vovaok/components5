@@ -24,10 +24,12 @@ CONFIG(debug, debug|release) {
 LIBS        += -lsetupapi
 
 SOURCES += usbhid.cpp \
-    hid.c
+    hid.c \
+    usbhidthread.cpp
 
 HEADERS += usbhid.h \
-    hidapi.h
+    hidapi.h \
+    usbhidthread.h
 unix:!symbian {
     maemo5 {
         target.path = /opt/usr/lib
