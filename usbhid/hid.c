@@ -48,9 +48,17 @@ extern "C" {
 	#endif
 
 	// Copied from inc/ddk/hidclass.h, part of the Windows DDK.
-	#define HID_OUT_CTL_CODE(id)  \
-		CTL_CODE(FILE_DEVICE_KEYBOARD, (id), METHOD_OUT_DIRECT, FILE_ANY_ACCESS)
+    #define HID_CTL_CODE(id) \
+        CTL_CODE (FILE_DEVICE_KEYBOARD, (id), METHOD_NEITHER, FILE_ANY_ACCESS)
+    #define HID_BUFFER_CTL_CODE(id) \
+        CTL_CODE (FILE_DEVICE_KEYBOARD, (id), METHOD_BUFFERED, FILE_ANY_ACCESS)
+    #define HID_IN_CTL_CODE(id) \
+        CTL_CODE (FILE_DEVICE_KEYBOARD, (id), METHOD_IN_DIRECT, FILE_ANY_ACCESS)
+    #define HID_OUT_CTL_CODE(id) \
+        CTL_CODE (FILE_DEVICE_KEYBOARD, (id), METHOD_OUT_DIRECT, FILE_ANY_ACCESS)
+
 	#define IOCTL_HID_GET_FEATURE                   HID_OUT_CTL_CODE(100)
+    #define IOCTL_HID_SET_FEATURE                   HID_IN_CTL_CODE(100)
 
 #ifdef __cplusplus
 } // extern "C"
@@ -694,13 +702,61 @@ int HID_API_EXPORT HID_API_CALL hid_set_nonblocking(hid_device *dev, int nonbloc
 
 int HID_API_EXPORT HID_API_CALL hid_send_feature_report(hid_device *dev, const unsigned char *data, size_t length)
 {
-	BOOL res = HidD_SetFeature(dev->device_handle, (PVOID)data, length);
+    BOOL res;
+#if 1
+    res = HidD_SetFeature(dev->device_handle, (PVOID)data, length);
 	if (!res) {
 		register_error(dev, "HidD_SetFeature");
 		return -1;
 	}
 
 	return length;
+#else
+    DWORD bytes_written;
+
+    OVERLAPPED ol;
+    memset(&ol, 0, sizeof(ol));
+    ol.hEvent = CreateEvent(NULL, FALSE, FALSE /*inital state f=nonsignaled*/, NULL);
+    HANDLE ev = ol.hEvent;
+    ResetEvent(ev);
+
+    res = DeviceIoControl(dev->device_handle,
+        IOCTL_HID_SET_FEATURE,
+        data, length,
+        data, length,
+        &bytes_written, &ol);
+
+    if (!res) {
+        if (GetLastError() != ERROR_IO_PENDING) {
+            // DeviceIoControl() failed. Return error.
+            register_error(dev, "Set Feature Report DeviceIoControl");
+            return -1;
+        }
+    }
+
+
+    int milliseconds = 0;
+
+    if (milliseconds >= 0) {
+        // See if there is any data yet.
+        res = WaitForSingleObject(ev, milliseconds);
+        if (res != WAIT_OBJECT_0) {
+            // There was no data this time. Return zero bytes available,
+            // but leave the Overlapped I/O running.
+            return 0;
+        }
+    }
+
+    // Wait here until the write is done. This makes
+    // hid_get_feature_report() synchronous.
+    res = GetOverlappedResult(dev->device_handle, &ol, &bytes_written, TRUE/*wait*/);
+    if (!res) {
+        // The operation failed.
+        register_error(dev, "Set Feature Report GetOverLappedResult");
+        return -1;
+    }
+    return bytes_written;
+#endif
 }
 
 
@@ -729,7 +785,7 @@ int HID_API_EXPORT HID_API_CALL hid_get_feature_report(hid_device *dev, unsigned
 	if (!res) {
 		if (GetLastError() != ERROR_IO_PENDING) {
 			// DeviceIoControl() failed. Return error.
-			register_error(dev, "Send Feature Report DeviceIoControl");
+            register_error(dev, "Get Feature Report DeviceIoControl");
 			return -1;
 		}
 	}
@@ -739,7 +795,7 @@ int HID_API_EXPORT HID_API_CALL hid_get_feature_report(hid_device *dev, unsigned
 	res = GetOverlappedResult(dev->device_handle, &ol, &bytes_returned, TRUE/*wait*/);
 	if (!res) {
 		// The operation failed.
-		register_error(dev, "Send Feature Report GetOverLappedResult");
+        register_error(dev, "Get Feature Report GetOverLappedResult");
 		return -1;
 	}
 	return bytes_returned;

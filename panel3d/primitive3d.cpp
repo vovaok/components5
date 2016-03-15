@@ -57,50 +57,42 @@ void Primitive3D::draw()
         }
         return;
     }
+    else if (ptype == box)
+    {
+        QVector3D v1 = QVector3D(-data[0]/2, -data[1]/2, -data[2]/2);
+        QVector3D v2 = QVector3D(data[0]/2, data[1]/2, data[2]/2);
+        QVector3D dv = v2 - v1;
+        int N = pslices * pstacks;
+        float p = data[0] + data[1] + data[2];
+        int Nx = abs(lrintf(N * data[0] / p));
+        int Ny = abs(lrintf(N * data[1] / p));
+        int Nz = abs(lrintf(N * data[2] / p));
+        glNormal3f(0, 0, 1);
+        for (int i=0; i<Ny; i++)
+        {
+            glBegin(GL_QUAD_STRIP);
+            for (int j=0; j<=Nx; j++)
+            {
+                float px = v1.x() + dv.x() * j / Nx;
+                float py = v1.y() + dv.y() * i / Ny;
+                float py1 = v1.y() + dv.y() * (i+1) / Ny;
+                if (mTexture)
+                    glTexCoord2f((float)j / Nx, (float)(i+1) / Ny);
+                glVertex3f(px, py1, v2.z());
+                if (mTexture)
+                    glTexCoord2f((float)j / Nx, (float)(i) / Ny);
+                glVertex3f(px, py, v2.z());
+            }
+            glEnd();
+        }
+
+        return;
+    }
 
     glPushMatrix();
     GLUquadricObj *quad = gluNewQuadric();
     switch (ptype)
     {
-//      case polygon:
-//        glNormal3f(0, 0, 1);
-//        glBegin(GL_POLYGON);
-//        foreach (QPointF p, mPoints)
-//        {
-//            glVertex3f(p.x(), p.y(), 0);
-//        }
-//        glEnd();
-//        break;
-
-//      case plane:
-//        {
-//            QVector3D vx = QVector3D(data[0], data[1], data[2]);
-//            QVector3D vy = QVector3D(data[3], data[4], data[5]);
-//            QVector3D n = QVector3D::crossProduct(vx, vy);
-//            n.normalize();
-//            glNormal3f(n.x(), n.y(), n.z());
-//            QVector3D p0 = (-vx - vy) * 0.5;
-//            float dx = 1.0 / pslices;
-//            float dy = 1.0 / pstacks;
-//            for (int y=0; y<pstacks; y++)
-//            {
-//                glBegin(GL_QUAD_STRIP);
-//                for (int x=pslices; x>=0; x--)
-//                {
-//                    QVector3D p = p0 + vx*(x*dx) + vy*(y*dy);
-//                    if (mTexture)
-//                        glTexCoord2f(x*dx, y*dy);
-//                    glVertex3f(p.x(), p.y(), p.z());
-//                    if (mTexture)
-//                        glTexCoord2f(x*dx, (y+1)*dy);
-//                    p += vy*dy;
-//                    glVertex3f(p.x(), p.y(), p.z());
-//                }
-//                glEnd();
-//            }
-//        }
-//        break;
-
       case box:
         if (mTexture)
             gluQuadricTexture(quad, true);

@@ -47,7 +47,7 @@ qint64 UsbHid::readData(char *data, qint64 maxSize)
 //        delete [] buf;
     }
 
-    if (bytesRead == -1)
+    if (bytesRead < 0)
     {
         close();
         setErrorString("Read failed");
@@ -86,14 +86,18 @@ qint64 UsbHid::writeData(const char *data, qint64 maxSize)
 
 void UsbHid::setFeature(unsigned char reportId, const QByteArray &data)
 {
+    //qDebug() << "UsbHid: setFeature";
     if (!mDev)
         return;
     QByteArray ba;
     ba.append((char)reportId);
     ba.append(data);
     int bytesWritten = hid_send_feature_report(mDev, reinterpret_cast<const unsigned char*>(ba.data()), ba.size());
+    //qDebug() << "UsbHid: written =" << bytesWritten;
     if (bytesWritten == -1)
     {
+        if (mDev)
+            qDebug() << "SetFeature error:" << QString::fromWCharArray(hid_error(mDev));
         setErrorString("Set feature failed");
     }
 }

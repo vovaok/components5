@@ -17,6 +17,7 @@ private:
     int mReadSize;
     int mCounter;
     float mRealInterval;
+    QMutex mAccessMutex;
 
 protected:
     void run();// override;
