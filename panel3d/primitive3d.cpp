@@ -57,37 +57,37 @@ void Primitive3D::draw()
         }
         return;
     }
-    else if (ptype == box)
-    {
-        QVector3D v1 = QVector3D(-data[0]/2, -data[1]/2, -data[2]/2);
-        QVector3D v2 = QVector3D(data[0]/2, data[1]/2, data[2]/2);
-        QVector3D dv = v2 - v1;
-        int N = pslices * pstacks;
-        float p = data[0] + data[1] + data[2];
-        int Nx = abs(lrintf(N * data[0] / p));
-        int Ny = abs(lrintf(N * data[1] / p));
-        int Nz = abs(lrintf(N * data[2] / p));
-        glNormal3f(0, 0, 1);
-        for (int i=0; i<Ny; i++)
-        {
-            glBegin(GL_QUAD_STRIP);
-            for (int j=0; j<=Nx; j++)
-            {
-                float px = v1.x() + dv.x() * j / Nx;
-                float py = v1.y() + dv.y() * i / Ny;
-                float py1 = v1.y() + dv.y() * (i+1) / Ny;
-                if (mTexture)
-                    glTexCoord2f((float)j / Nx, (float)(i+1) / Ny);
-                glVertex3f(px, py1, v2.z());
-                if (mTexture)
-                    glTexCoord2f((float)j / Nx, (float)(i) / Ny);
-                glVertex3f(px, py, v2.z());
-            }
-            glEnd();
-        }
+//    else if (ptype == box)
+//    {
+//        QVector3D v1 = QVector3D(-data[0]/2, -data[1]/2, -data[2]/2);
+//        QVector3D v2 = QVector3D(data[0]/2, data[1]/2, data[2]/2);
+//        QVector3D dv = v2 - v1;
+//        int N = pslices * pstacks;
+//        float p = data[0] + data[1] + data[2];
+//        int Nx = abs(lrintf(N * data[0] / p));
+//        int Ny = abs(lrintf(N * data[1] / p));
+//        int Nz = abs(lrintf(N * data[2] / p));
+//        glNormal3f(0, 0, 1);
+//        for (int i=0; i<Ny; i++)
+//        {
+//            glBegin(GL_QUAD_STRIP);
+//            for (int j=0; j<=Nx; j++)
+//            {
+//                float px = v1.x() + dv.x() * j / Nx;
+//                float py = v1.y() + dv.y() * i / Ny;
+//                float py1 = v1.y() + dv.y() * (i+1) / Ny;
+//                if (mTexture)
+//                    glTexCoord2f((float)j / Nx, (float)(i+1) / Ny);
+//                glVertex3f(px, py1, v2.z());
+//                if (mTexture)
+//                    glTexCoord2f((float)j / Nx, (float)(i) / Ny);
+//                glVertex3f(px, py, v2.z());
+//            }
+//            glEnd();
+//        }
 
-        return;
-    }
+//        return;
+//    }
 
     glPushMatrix();
     GLUquadricObj *quad = gluNewQuadric();
