@@ -1,0 +1,156 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<title>CommLib: Класс SerialCan</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">CommLib
+   &#160;<span id="projectnumber">1.0</span>
+   </div>
+   <div id="projectbrief">CommunicationlibraryforQt</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Создано системой Doxygen 1.8.2 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Титульная&#160;страница</span></a></li>
+      <li class="current"><a href="annotated.html"><span>Классы</span></a></li>
+      <li><a href="files.html"><span>Файлы</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="annotated.html"><span>Классы</span></a></li>
+      <li><a href="classes.html"><span>Алфавитный&#160;указатель&#160;классов</span></a></li>
+      <li><a href="hierarchy.html"><span>Иерархия&#160;классов</span></a></li>
+    </ul>
+  </div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-types">Открытые типы</a> &#124;
+<a href="#signals">Сигналы</a> &#124;
+<a href="#pub-methods">Открытые члены</a> &#124;
+<a href="class_serial_can-members.html">Полный список членов класса</a>  </div>
+  <div class="headertitle">
+<div class="title">Класс SerialCan</div>  </div>
+</div><!--header-->
+<div class="contents">
+<div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-0-trigger" src="closed.png" alt="+"/> Граф наследования:SerialCan:</div>
+<div id="dynsection-0-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-0-content" class="dyncontent" style="display:none;">
+ <div class="center">
+  <img src="class_serial_can.png" usemap="#SerialCan_map" alt=""/>
+  <map id="SerialCan_map" name="SerialCan_map">
+<area href="class_serial_frame.html" alt="SerialFrame" shape="rect" coords="0,56,81,80"/>
+</map>
+ </div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Открытые типы</h2></td></tr>
+<tr class="memitem:a2562157cf0151ee8ac1af634db24b29c"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><b>ProtocolVersion</b> { <b>protoCommon</b>, 
+<b>protoExtended</b>
+ }</td></tr>
+<tr class="separator:a2562157cf0151ee8ac1af634db24b29c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="signals"></a>
+Сигналы</h2></td></tr>
+<tr class="memitem:a9443a7fee961a60cccafab77c20a8571"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9443a7fee961a60cccafab77c20a8571"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>onMessage</b> (unsigned long id, QByteArray &amp;data)</td></tr>
+<tr class="separator:a9443a7fee961a60cccafab77c20a8571"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5238bb495b9e071fc5b59e6ce1c7bb65"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5238bb495b9e071fc5b59e6ce1c7bb65"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>onMessageSent</b> (unsigned long id, QByteArray &amp;data)</td></tr>
+<tr class="separator:a5238bb495b9e071fc5b59e6ce1c7bb65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a352892f4e7eeb6ff09afceec507cb949"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a352892f4e7eeb6ff09afceec507cb949"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>onMessageAccepted</b> ()</td></tr>
+<tr class="separator:a352892f4e7eeb6ff09afceec507cb949"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header signals_class_serial_frame"><td colspan="2" onclick="javascript:toggleInherit('signals_class_serial_frame')"><img src="closed.png" alt="-"/>&#160;Сигналы inherited from <a class="el" href="class_serial_frame.html">SerialFrame</a></td></tr>
+<tr class="memitem:a35a7ab4a66f91fb54744f782b66ebd29 inherit signals_class_serial_frame"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a35a7ab4a66f91fb54744f782b66ebd29"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>connected</b> ()</td></tr>
+<tr class="separator:a35a7ab4a66f91fb54744f782b66ebd29 inherit signals_class_serial_frame"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85f6fbfa8c652686b2b05605acae4d3e inherit signals_class_serial_frame"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a85f6fbfa8c652686b2b05605acae4d3e"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>disconnected</b> ()</td></tr>
+<tr class="separator:a85f6fbfa8c652686b2b05605acae4d3e inherit signals_class_serial_frame"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc46607139d87aad1afe3dcbffd343e1 inherit signals_class_serial_frame"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adc46607139d87aad1afe3dcbffd343e1"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>dataReceived</b> (QByteArray &amp;data)</td></tr>
+<tr class="separator:adc46607139d87aad1afe3dcbffd343e1 inherit signals_class_serial_frame"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Открытые члены</h2></td></tr>
+<tr class="memitem:ac0fe192ec1dbc46add3053dd9dca5d8c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac0fe192ec1dbc46add3053dd9dca5d8c"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>SerialCan</b> (QIODevice *parent=0)</td></tr>
+<tr class="separator:ac0fe192ec1dbc46add3053dd9dca5d8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33437dca20f731ee532c7218123c2e4a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a33437dca20f731ee532c7218123c2e4a"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>SerialCan</b> (ProtocolVersion=protoCommon, QIODevice *parent=0)</td></tr>
+<tr class="separator:a33437dca20f731ee532c7218123c2e4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a533992a2a9a1a31d291bc2a25631a773"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a533992a2a9a1a31d291bc2a25631a773"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>sendMessage</b> (unsigned long id, QByteArray &amp;data)</td></tr>
+<tr class="separator:a533992a2a9a1a31d291bc2a25631a773"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3178aa7206a8690dd5473307aab27d33"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3178aa7206a8690dd5473307aab27d33"></a>
+ProtocolVersion&#160;</td><td class="memItemRight" valign="bottom"><b>protocolVersion</b> () const </td></tr>
+<tr class="separator:a3178aa7206a8690dd5473307aab27d33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2ca791c05cecc3d0010bfd0708714fa"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac2ca791c05cecc3d0010bfd0708714fa"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>changeProtocolVersion</b> (ProtocolVersion protocol)</td></tr>
+<tr class="separator:ac2ca791c05cecc3d0010bfd0708714fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac90af4ed1fcdbe8b6706f1595caae531"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac90af4ed1fcdbe8b6706f1595caae531"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>clearBoardBuffer</b> ()</td></tr>
+<tr class="separator:ac90af4ed1fcdbe8b6706f1595caae531"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_class_serial_frame"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_class_serial_frame')"><img src="closed.png" alt="-"/>&#160;Открытые члены inherited from <a class="el" href="class_serial_frame.html">SerialFrame</a></td></tr>
+<tr class="memitem:a9318b01f22a7d667b9ad2ac2e03486e3 inherit pub_methods_class_serial_frame"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9318b01f22a7d667b9ad2ac2e03486e3"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>SerialFrame</b> (QIODevice *device)</td></tr>
+<tr class="separator:a9318b01f22a7d667b9ad2ac2e03486e3 inherit pub_methods_class_serial_frame"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a922b739e6f4c5a0721731bd4297ae87b inherit pub_methods_class_serial_frame"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a922b739e6f4c5a0721731bd4297ae87b"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setActive</b> (bool active)</td></tr>
+<tr class="separator:a922b739e6f4c5a0721731bd4297ae87b inherit pub_methods_class_serial_frame"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8ca350b2aa97e5b594e8c99ae6bdbfc inherit pub_methods_class_serial_frame"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab8ca350b2aa97e5b594e8c99ae6bdbfc"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>isActive</b> () const </td></tr>
+<tr class="separator:ab8ca350b2aa97e5b594e8c99ae6bdbfc inherit pub_methods_class_serial_frame"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39abbe71afe55cbaa408dd15b21f6518 inherit pub_methods_class_serial_frame"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a39abbe71afe55cbaa408dd15b21f6518"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>framesSent</b> ()</td></tr>
+<tr class="separator:a39abbe71afe55cbaa408dd15b21f6518 inherit pub_methods_class_serial_frame"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afff66881f8303424af21f0a383f1edba inherit pub_methods_class_serial_frame"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afff66881f8303424af21f0a383f1edba"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>framesReceived</b> ()</td></tr>
+<tr class="separator:afff66881f8303424af21f0a383f1edba inherit pub_methods_class_serial_frame"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
+Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pub_slots_class_serial_frame"><td colspan="2" onclick="javascript:toggleInherit('pub_slots_class_serial_frame')"><img src="closed.png" alt="-"/>&#160;Открытые слоты inherited from <a class="el" href="class_serial_frame.html">SerialFrame</a></td></tr>
+<tr class="memitem:a16ef32893c5d7437e52e54ba4cb87fe8 inherit pub_slots_class_serial_frame"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a16ef32893c5d7437e52e54ba4cb87fe8"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>sendData</b> (QByteArray &amp;data)</td></tr>
+<tr class="separator:a16ef32893c5d7437e52e54ba4cb87fe8 inherit pub_slots_class_serial_frame"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_methods_class_serial_frame"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_class_serial_frame')"><img src="closed.png" alt="-"/>&#160;Защищенные члены inherited from <a class="el" href="class_serial_frame.html">SerialFrame</a></td></tr>
+<tr class="memitem:ae523b8a244d807e29c027a232a2b72a8 inherit pro_methods_class_serial_frame"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae523b8a244d807e29c027a232a2b72a8"></a>
+QIODevice *&#160;</td><td class="memItemRight" valign="bottom"><b>device</b> ()</td></tr>
+<tr class="separator:ae523b8a244d807e29c027a232a2b72a8 inherit pro_methods_class_serial_frame"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<hr/>Объявления и описания членов классов находятся в файлах:<ul>
+<li><a class="el" href="serialcan_8h_source.html">serialcan.h</a></li>
+<li>serialcan.cpp</li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Документация по CommLib. Последние изменения: Вт 24 Фев 2015 08:29:44. Создано системой &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.8.2
+</small></address>
+</body>
+</html>

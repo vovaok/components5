@@ -23,9 +23,12 @@ UsbHid::~UsbHid()
 
 qint64 UsbHid::readData(char *data, qint64 maxSize)
 {
+<<<<<<< HEAD
+=======
     if (!maxSize)
         return 0; // FUCKING HACK!!!!
 
+>>>>>>> 578e0f69e240bf2dd8a58a6d287aabf0d94638fe
     int bytesRead;
     if (!mCurrentReportId)
     {
@@ -33,6 +36,17 @@ qint64 UsbHid::readData(char *data, qint64 maxSize)
     }
     else
     {
+<<<<<<< HEAD
+        unsigned char *buf = new unsigned char[maxSize + 1];
+        bytesRead = hid_read_timeout(mDev, buf, maxSize+1, 100);
+        bytesRead--;
+        for (int i=0; i<bytesRead; i++)
+            data[i] = buf[i+1];
+        delete [] buf;
+    }
+
+    if (bytesRead == -1)
+=======
         QByteArray temp(65, '\0');
         bytesRead = hid_read_timeout(mDev, reinterpret_cast<unsigned char*>(temp.data()), 65, 100);
         --bytesRead;
@@ -48,6 +62,7 @@ qint64 UsbHid::readData(char *data, qint64 maxSize)
     }
 
     if (bytesRead < 0)
+>>>>>>> 578e0f69e240bf2dd8a58a6d287aabf0d94638fe
     {
         close();
         setErrorString("Read failed");
@@ -62,6 +77,14 @@ qint64 UsbHid::readLineData(char *data, qint64 maxSize)
 
 qint64 UsbHid::writeData(const char *data, qint64 maxSize)
 {
+<<<<<<< HEAD
+    unsigned char *idData = new unsigned char[maxSize+1];
+    idData[0] = mCurrentReportId; // report ID;
+    for (int i=0; i<maxSize; i++)
+        idData[i+1] = data[i];
+    int bytesWritten = hid_write(mDev, reinterpret_cast<const unsigned char*>(idData), maxSize+1);
+    delete [] idData;
+=======
     QByteArray temp(maxSize+1, '\0');
     temp[0] = mCurrentReportId; // report ID;
     for (int i=0; i<maxSize; i++)
@@ -75,6 +98,7 @@ qint64 UsbHid::writeData(const char *data, qint64 maxSize)
 //    int bytesWritten = hid_write(mDev, reinterpret_cast<const unsigned char*>(idData), maxSize+1);
 //    delete [] idData;
 
+>>>>>>> 578e0f69e240bf2dd8a58a6d287aabf0d94638fe
     if (bytesWritten == -1)
     {
         close();
@@ -86,18 +110,26 @@ qint64 UsbHid::writeData(const char *data, qint64 maxSize)
 
 void UsbHid::setFeature(unsigned char reportId, const QByteArray &data)
 {
+<<<<<<< HEAD
+=======
     //qDebug() << "UsbHid: setFeature";
+>>>>>>> 578e0f69e240bf2dd8a58a6d287aabf0d94638fe
     if (!mDev)
         return;
     QByteArray ba;
     ba.append((char)reportId);
     ba.append(data);
     int bytesWritten = hid_send_feature_report(mDev, reinterpret_cast<const unsigned char*>(ba.data()), ba.size());
+<<<<<<< HEAD
+    if (bytesWritten == -1)
+    {
+=======
     //qDebug() << "UsbHid: written =" << bytesWritten;
     if (bytesWritten == -1)
     {
         if (mDev)
             qDebug() << "SetFeature error:" << QString::fromWCharArray(hid_error(mDev));
+>>>>>>> 578e0f69e240bf2dd8a58a6d287aabf0d94638fe
         setErrorString("Set feature failed");
     }
 }
@@ -194,15 +226,21 @@ void UsbHid::enumerateBoards()
 //            qDebug() << "serial=" << serial;
             mBoardMap[serial] = cur_dev->path;
 //        }
+<<<<<<< HEAD
+=======
                 qDebug()<<"interface_number" << cur_dev->interface_number <<"manufacturer_string" <<cur_dev->manufacturer_string <<"next" <<cur_dev->next<< "path" <<cur_dev->path
                     <<"product id"  <<cur_dev->product_id <<"product string" <<cur_dev->product_string <<"release number" <<cur_dev->release_number <<"serial number" <<cur_dev->serial_number
                        <<"usage" <<cur_dev->usage <<"usage page" <<cur_dev->usage_page <<"vendor id" <<cur_dev->vendor_id;
+>>>>>>> 578e0f69e240bf2dd8a58a6d287aabf0d94638fe
     }
     hid_free_enumeration(devs);
 //    foreach (QString key, mBoardMap.keys())
 //        qDebug() << "map_key=" << key;
+<<<<<<< HEAD
+=======
 
 
 
+>>>>>>> 578e0f69e240bf2dd8a58a6d287aabf0d94638fe
 }
 //---------------------------------------------------------------------------

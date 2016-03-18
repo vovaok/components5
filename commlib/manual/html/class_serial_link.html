@@ -1,0 +1,268 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<title>CommLib: Класс SerialLink</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">CommLib
+   &#160;<span id="projectnumber">1.0</span>
+   </div>
+   <div id="projectbrief">CommunicationlibraryforQt</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Создано системой Doxygen 1.8.2 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Титульная&#160;страница</span></a></li>
+      <li class="current"><a href="annotated.html"><span>Классы</span></a></li>
+      <li><a href="files.html"><span>Файлы</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="annotated.html"><span>Классы</span></a></li>
+      <li><a href="classes.html"><span>Алфавитный&#160;указатель&#160;классов</span></a></li>
+      <li><a href="hierarchy.html"><span>Иерархия&#160;классов</span></a></li>
+    </ul>
+  </div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">Классы</a> &#124;
+<a href="#pub-types">Открытые типы</a> &#124;
+<a href="#pub-slots">Открытые слоты</a> &#124;
+<a href="#signals">Сигналы</a> &#124;
+<a href="#pub-methods">Открытые члены</a> &#124;
+<a href="#pro-methods">Защищенные члены</a> &#124;
+<a href="class_serial_link-members.html">Полный список членов класса</a>  </div>
+  <div class="headertitle">
+<div class="title">Класс SerialLink</div>  </div>
+</div><!--header-->
+<div class="contents">
+<div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-0-trigger" src="closed.png" alt="+"/> Граф наследования:SerialLink:</div>
+<div id="dynsection-0-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-0-content" class="dyncontent" style="display:none;">
+ <div class="center">
+  <img src="class_serial_link.png" usemap="#SerialLink_map" alt=""/>
+  <map id="SerialLink_map" name="SerialLink_map">
+<area href="class_serial_frame.html" alt="SerialFrame" shape="rect" coords="0,56,81,80"/>
+</map>
+ </div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Классы</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_serial_link_1_1_s_uart_func.html">SUartFunc</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_serial_link_1_1_s_uart_func_sizes.html">SUartFuncSizes</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_serial_link_1_1_s_uart_param.html">SUartParam</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Открытые типы</h2></td></tr>
+<tr class="memitem:a1fd8a0c76439c05670e4e23db9729f2e"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><b>UartLinkEvent</b> { <br/>
+&#160;&#160;<b>cleNotify</b>, 
+<b>cleEchoReceived</b>, 
+<b>cleProductInfoAvailable</b>, 
+<b>cleParamInfoAvailable</b>, 
+<br/>
+&#160;&#160;<b>cleFuncInfoAvailable</b>, 
+<b>cleSetParam</b>
+<br/>
+ }</td></tr>
+<tr class="separator:a1fd8a0c76439c05670e4e23db9729f2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6d5e244af6e2b4895978d54db935b9e"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><b>UartLinkError</b> { <br/>
+&#160;&#160;<b>clErrGetParam</b>, 
+<b>clErrSetParam</b>, 
+<b>clErrCallFunction</b>, 
+<b>clErrBadParameter</b>, 
+<br/>
+&#160;&#160;<b>clErrBadFunction</b>, 
+<b>clErrUnknownCmd</b>, 
+<b>clErrTimeout</b>, 
+<b>clErrQueueOverflow</b>, 
+<br/>
+&#160;&#160;<b>clErrBadVersion</b>
+<br/>
+ }</td></tr>
+<tr class="separator:aa6d5e244af6e2b4895978d54db935b9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-slots"></a>
+Открытые слоты</h2></td></tr>
+<tr class="memitem:a76361ad0b5faea5a07c9c76d9248a1b6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a76361ad0b5faea5a07c9c76d9248a1b6"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>echoTest</b> ()</td></tr>
+<tr class="separator:a76361ad0b5faea5a07c9c76d9248a1b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd94f719fd39e5b5c9f265154da81391"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abd94f719fd39e5b5c9f265154da81391"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>requestParameter</b> (QString name)</td></tr>
+<tr class="separator:abd94f719fd39e5b5c9f265154da81391"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6a5695c8ae78d7eac8821533eeb25ea"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af6a5695c8ae78d7eac8821533eeb25ea"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setParameter</b> (QString name, void *params)</td></tr>
+<tr class="separator:af6a5695c8ae78d7eac8821533eeb25ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70504a5fbce3455e6f20e4aa4eda8e15"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a70504a5fbce3455e6f20e4aa4eda8e15"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>callFunction</b> (QString name, void *params=0L)</td></tr>
+<tr class="separator:a70504a5fbce3455e6f20e4aa4eda8e15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42e55d9d42ba9a3310766d37ccb09f63"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a42e55d9d42ba9a3310766d37ccb09f63"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>callFunction</b> (QString name, QByteArray &amp;ba)</td></tr>
+<tr class="separator:a42e55d9d42ba9a3310766d37ccb09f63"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_slots_class_serial_frame"><td colspan="2" onclick="javascript:toggleInherit('pub_slots_class_serial_frame')"><img src="closed.png" alt="-"/>&#160;Открытые слоты inherited from <a class="el" href="class_serial_frame.html">SerialFrame</a></td></tr>
+<tr class="memitem:a16ef32893c5d7437e52e54ba4cb87fe8 inherit pub_slots_class_serial_frame"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a16ef32893c5d7437e52e54ba4cb87fe8"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>sendData</b> (QByteArray &amp;data)</td></tr>
+<tr class="separator:a16ef32893c5d7437e52e54ba4cb87fe8 inherit pub_slots_class_serial_frame"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="signals"></a>
+Сигналы</h2></td></tr>
+<tr class="memitem:abb4c11c0f244067af2ce5edfe2b01887"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abb4c11c0f244067af2ce5edfe2b01887"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>uartEvent</b> (SerialLink::UartLinkEvent)</td></tr>
+<tr class="separator:abb4c11c0f244067af2ce5edfe2b01887"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaecb5fc5b94352b41134aba459d0700b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aaecb5fc5b94352b41134aba459d0700b"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>paramAccepted</b> (QString param, void *data)</td></tr>
+<tr class="separator:aaecb5fc5b94352b41134aba459d0700b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaad090b8ee242cf4ef0b2b0bbdd72b37"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aaad090b8ee242cf4ef0b2b0bbdd72b37"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>funcReturn</b> (QString func, void *data)</td></tr>
+<tr class="separator:aaad090b8ee242cf4ef0b2b0bbdd72b37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f59066f983e56be7fa0b25cdbbc9f22"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2f59066f983e56be7fa0b25cdbbc9f22"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>error</b> (SerialLink::UartLinkError error, QString errorString)</td></tr>
+<tr class="separator:a2f59066f983e56be7fa0b25cdbbc9f22"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af539147355a346a64de6b2391f4fda80"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af539147355a346a64de6b2391f4fda80"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>ready</b> ()</td></tr>
+<tr class="separator:af539147355a346a64de6b2391f4fda80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ef801ab6f1f78988f568567fb7c10a3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5ef801ab6f1f78988f568567fb7c10a3"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>statusChanged</b> (QString status)</td></tr>
+<tr class="separator:a5ef801ab6f1f78988f568567fb7c10a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header signals_class_serial_frame"><td colspan="2" onclick="javascript:toggleInherit('signals_class_serial_frame')"><img src="closed.png" alt="-"/>&#160;Сигналы inherited from <a class="el" href="class_serial_frame.html">SerialFrame</a></td></tr>
+<tr class="memitem:a35a7ab4a66f91fb54744f782b66ebd29 inherit signals_class_serial_frame"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a35a7ab4a66f91fb54744f782b66ebd29"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>connected</b> ()</td></tr>
+<tr class="separator:a35a7ab4a66f91fb54744f782b66ebd29 inherit signals_class_serial_frame"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85f6fbfa8c652686b2b05605acae4d3e inherit signals_class_serial_frame"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a85f6fbfa8c652686b2b05605acae4d3e"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>disconnected</b> ()</td></tr>
+<tr class="separator:a85f6fbfa8c652686b2b05605acae4d3e inherit signals_class_serial_frame"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc46607139d87aad1afe3dcbffd343e1 inherit signals_class_serial_frame"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adc46607139d87aad1afe3dcbffd343e1"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>dataReceived</b> (QByteArray &amp;data)</td></tr>
+<tr class="separator:adc46607139d87aad1afe3dcbffd343e1 inherit signals_class_serial_frame"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Открытые члены</h2></td></tr>
+<tr class="memitem:ae0af7157ade1fc03df404cbfaecf67db"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae0af7157ade1fc03df404cbfaecf67db"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>SerialLink</b> (QIODevice *device)</td></tr>
+<tr class="separator:ae0af7157ade1fc03df404cbfaecf67db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16c38999b33b844ba6d2bff62d59b125"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a16c38999b33b844ba6d2bff62d59b125"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>isReady</b> ()</td></tr>
+<tr class="separator:a16c38999b33b844ba6d2bff62d59b125"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01e1253867ac84a20602ed2c4710cace"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a01e1253867ac84a20602ed2c4710cace"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>echoTestPassed</b> ()</td></tr>
+<tr class="separator:a01e1253867ac84a20602ed2c4710cace"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf1412e503c87a835f33c9fc521d945c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adf1412e503c87a835f33c9fc521d945c"></a>
+unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>productID</b> ()</td></tr>
+<tr class="separator:adf1412e503c87a835f33c9fc521d945c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d3786876fda9e310cbe3915574ef489"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8d3786876fda9e310cbe3915574ef489"></a>
+QString&#160;</td><td class="memItemRight" valign="bottom"><b>productName</b> ()</td></tr>
+<tr class="separator:a8d3786876fda9e310cbe3915574ef489"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdf5043cd477c0538e98dc0032b1597e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acdf5043cd477c0538e98dc0032b1597e"></a>
+unsigned short&#160;</td><td class="memItemRight" valign="bottom"><b>productVersion</b> ()</td></tr>
+<tr class="separator:acdf5043cd477c0538e98dc0032b1597e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a966dea09da796cb889717ae87ba2792f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a966dea09da796cb889717ae87ba2792f"></a>
+unsigned char&#160;</td><td class="memItemRight" valign="bottom"><b>productMajorVersion</b> ()</td></tr>
+<tr class="separator:a966dea09da796cb889717ae87ba2792f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b331189e46bd86fa5d0116ee17ec9f3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2b331189e46bd86fa5d0116ee17ec9f3"></a>
+unsigned char&#160;</td><td class="memItemRight" valign="bottom"><b>productMinorVersion</b> ()</td></tr>
+<tr class="separator:a2b331189e46bd86fa5d0116ee17ec9f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae45f38d8c062032ddeeee264683ae8a7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae45f38d8c062032ddeeee264683ae8a7"></a>
+QString&#160;</td><td class="memItemRight" valign="bottom"><b>productVersionString</b> ()</td></tr>
+<tr class="separator:ae45f38d8c062032ddeeee264683ae8a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00d588783782fbc04a31ef0dbd7a40d2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a00d588783782fbc04a31ef0dbd7a40d2"></a>
+QString&#160;</td><td class="memItemRight" valign="bottom"><b>compilationDate</b> ()</td></tr>
+<tr class="separator:a00d588783782fbc04a31ef0dbd7a40d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48f7649bda094b82b1273592a3abbfad"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a48f7649bda094b82b1273592a3abbfad"></a>
+QString&#160;</td><td class="memItemRight" valign="bottom"><b>compilationTime</b> ()</td></tr>
+<tr class="separator:a48f7649bda094b82b1273592a3abbfad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec6448e32e19c6e9e596906581838f76"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aec6448e32e19c6e9e596906581838f76"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>paramCount</b> ()</td></tr>
+<tr class="separator:aec6448e32e19c6e9e596906581838f76"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66a6905aa73fea6439f1f474718f76e3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a66a6905aa73fea6439f1f474718f76e3"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>funcCount</b> ()</td></tr>
+<tr class="separator:a66a6905aa73fea6439f1f474718f76e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d6fed8cf3648e9176c4c4e594ab031b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6d6fed8cf3648e9176c4c4e594ab031b"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>paramInfo</b> (unsigned char id, <a class="el" href="struct_serial_link_1_1_s_uart_param.html">SUartParam</a> &amp;info)</td></tr>
+<tr class="separator:a6d6fed8cf3648e9176c4c4e594ab031b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4c4cc7d6094126373a9f1818e82146d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab4c4cc7d6094126373a9f1818e82146d"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>paramInfo</b> (QString name, <a class="el" href="struct_serial_link_1_1_s_uart_param.html">SUartParam</a> &amp;info)</td></tr>
+<tr class="separator:ab4c4cc7d6094126373a9f1818e82146d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa91ea6421ba56c272e179d99fc80f406"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa91ea6421ba56c272e179d99fc80f406"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>funcInfo</b> (unsigned char id, <a class="el" href="struct_serial_link_1_1_s_uart_func.html">SUartFunc</a> &amp;info)</td></tr>
+<tr class="separator:aa91ea6421ba56c272e179d99fc80f406"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a850e76780a8173663536a527da9533d3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a850e76780a8173663536a527da9533d3"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>funcInfo</b> (QString name, <a class="el" href="struct_serial_link_1_1_s_uart_func.html">SUartFunc</a> &amp;info)</td></tr>
+<tr class="separator:a850e76780a8173663536a527da9533d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c864ee05ae74413e92cdf44274cab0a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3c864ee05ae74413e92cdf44274cab0a"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>responseTimeout</b> ()</td></tr>
+<tr class="separator:a3c864ee05ae74413e92cdf44274cab0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff52b5148beb55f9391753e00d975b9c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aff52b5148beb55f9391753e00d975b9c"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setResponseTimeout</b> (int ms)</td></tr>
+<tr class="separator:aff52b5148beb55f9391753e00d975b9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_class_serial_frame"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_class_serial_frame')"><img src="closed.png" alt="-"/>&#160;Открытые члены inherited from <a class="el" href="class_serial_frame.html">SerialFrame</a></td></tr>
+<tr class="memitem:a9318b01f22a7d667b9ad2ac2e03486e3 inherit pub_methods_class_serial_frame"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9318b01f22a7d667b9ad2ac2e03486e3"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>SerialFrame</b> (QIODevice *device)</td></tr>
+<tr class="separator:a9318b01f22a7d667b9ad2ac2e03486e3 inherit pub_methods_class_serial_frame"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a922b739e6f4c5a0721731bd4297ae87b inherit pub_methods_class_serial_frame"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a922b739e6f4c5a0721731bd4297ae87b"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setActive</b> (bool active)</td></tr>
+<tr class="separator:a922b739e6f4c5a0721731bd4297ae87b inherit pub_methods_class_serial_frame"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8ca350b2aa97e5b594e8c99ae6bdbfc inherit pub_methods_class_serial_frame"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab8ca350b2aa97e5b594e8c99ae6bdbfc"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>isActive</b> () const </td></tr>
+<tr class="separator:ab8ca350b2aa97e5b594e8c99ae6bdbfc inherit pub_methods_class_serial_frame"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39abbe71afe55cbaa408dd15b21f6518 inherit pub_methods_class_serial_frame"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a39abbe71afe55cbaa408dd15b21f6518"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>framesSent</b> ()</td></tr>
+<tr class="separator:a39abbe71afe55cbaa408dd15b21f6518 inherit pub_methods_class_serial_frame"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afff66881f8303424af21f0a383f1edba inherit pub_methods_class_serial_frame"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afff66881f8303424af21f0a383f1edba"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>framesReceived</b> ()</td></tr>
+<tr class="separator:afff66881f8303424af21f0a383f1edba inherit pub_methods_class_serial_frame"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
+Защищенные члены</h2></td></tr>
+<tr class="memitem:ac79f8297bfa537d24e016ea0d69f4032"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac79f8297bfa537d24e016ea0d69f4032"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>requestProductInfo</b> ()</td></tr>
+<tr class="separator:ac79f8297bfa537d24e016ea0d69f4032"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a450e64d67c4591b93d66b215cada5ab9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a450e64d67c4591b93d66b215cada5ab9"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>requestProductInfoOld</b> ()</td></tr>
+<tr class="separator:a450e64d67c4591b93d66b215cada5ab9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace5111c32969e737c6fbacca3b9fa3b6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ace5111c32969e737c6fbacca3b9fa3b6"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>requestParamData</b> ()</td></tr>
+<tr class="separator:ace5111c32969e737c6fbacca3b9fa3b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34ebeb268e793b7a61bfe41612de3a91"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a34ebeb268e793b7a61bfe41612de3a91"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>requestFuncData</b> ()</td></tr>
+<tr class="separator:a34ebeb268e793b7a61bfe41612de3a91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_methods_class_serial_frame"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_class_serial_frame')"><img src="closed.png" alt="-"/>&#160;Защищенные члены inherited from <a class="el" href="class_serial_frame.html">SerialFrame</a></td></tr>
+<tr class="memitem:ae523b8a244d807e29c027a232a2b72a8 inherit pro_methods_class_serial_frame"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae523b8a244d807e29c027a232a2b72a8"></a>
+QIODevice *&#160;</td><td class="memItemRight" valign="bottom"><b>device</b> ()</td></tr>
+<tr class="separator:ae523b8a244d807e29c027a232a2b72a8 inherit pro_methods_class_serial_frame"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<hr/>Объявления и описания членов классов находятся в файлах:<ul>
+<li><a class="el" href="seriallink_8h_source.html">seriallink.h</a></li>
+<li>seriallink.cpp</li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Документация по CommLib. Последние изменения: Вт 24 Фев 2015 08:29:44. Создано системой &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.8.2
+</small></address>
+</body>
+</html>

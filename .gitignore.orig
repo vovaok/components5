@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+*/bin
+*/*.user
+*/build
+=======
 Thumbs.db
 *.obj
 *.exe
@@ -33,6 +38,4 @@ deploy/
 *_old/
 moc_*
 hooks/
-*/bin
-*/*.user
-*/build
+>>>>>>> 578e0f69e240bf2dd8a58a6d287aabf0d94638fe
