@@ -170,6 +170,8 @@ void UsbHid::close()
     }
     QIODevice::close();
 
+    mBoardProperties.clear();
+
     emit stateChanged(false);
 }
 //---------------------------------------------------------------------------
@@ -182,27 +184,29 @@ void UsbHid::enumerateBoards()
     mBoardMap.clear();
     if (!curPath.isEmpty())
         mBoardMap[mName] = curPath;
-    //QString manufacturer_string("Neurobotics");
+
     struct hid_device_info *devs, *cur_dev;
     devs = hid_enumerate(mVid, mPid); // this is dynamic list
-//    qDebug() << devs;
+
     for (cur_dev=devs; cur_dev; cur_dev=cur_dev->next)
     {
-//        if (QString::fromWCharArray(cur_dev->manufacturer_string) == manufacturer_string)
-//        {
-            QString serial = QString::fromWCharArray(cur_dev->serial_number);
-//            qDebug() << "serial=" << serial;
-            mBoardMap[serial] = cur_dev->path;
-//        }
-                qDebug()<<"interface_number" << cur_dev->interface_number <<"manufacturer_string" <<cur_dev->manufacturer_string <<"next" <<cur_dev->next<< "path" <<cur_dev->path
-                    <<"product id"  <<cur_dev->product_id <<"product string" <<cur_dev->product_string <<"release number" <<cur_dev->release_number <<"serial number" <<cur_dev->serial_number
-                       <<"usage" <<cur_dev->usage <<"usage page" <<cur_dev->usage_page <<"vendor id" <<cur_dev->vendor_id;
+        QString serial = QString::fromWCharArray(cur_dev->serial_number);
+        mBoardMap[serial] = cur_dev->path;
+
+        mBoardProperties["interface number"] = cur_dev->interface_number;
+        mBoardProperties["manufacturer_string"] = QString::fromWCharArray(cur_dev->manufacturer_string);
+        mBoardProperties["path"] = cur_dev->path;
+        mBoardProperties["product id"] = cur_dev->product_id;
+        mBoardProperties["product string"] = QString::fromWCharArray(cur_dev->product_string);
+        mBoardProperties["release number"] = cur_dev->release_number;
+        mBoardProperties["serial number"] = QString::fromWCharArray(cur_dev->serial_number);
+        mBoardProperties["usage"] = cur_dev->usage;
+        mBoardProperties["usage page"] = cur_dev->usage_page;
+        mBoardProperties["vendor id"] = cur_dev->vendor_id;
+
+        qDebug() << mBoardProperties;
     }
+
     hid_free_enumeration(devs);
-//    foreach (QString key, mBoardMap.keys())
-//        qDebug() << "map_key=" << key;
-
-
-
 }
 //---------------------------------------------------------------------------

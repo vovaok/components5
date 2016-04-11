@@ -18,6 +18,7 @@ private:
 
     static quint16 mVid, mPid;
     static QMap<QString, QString> mBoardMap; // serial -> path_to_open
+    QMap<QString, QVariant> mBoardProperties;
 
     void enumerateBoards();
 
@@ -47,6 +48,8 @@ public:
     bool getFeature(unsigned char reportId, QByteArray &data);
 
     QString getString(unsigned char index);
+
+    unsigned short releaseNumber() const {return mBoardProperties["release number"].toInt();}
 
 signals:
 //    void connected(QString boardName);      // new device enumerated
