@@ -19,8 +19,15 @@ CONFIG(debug, debug|release) {
 
 INCLUDEPATH += mesh
 
+win32 {
 LIBS += -lopengl32
 LIBS += -lglu32
+}
+
+unix {
+LIBS += -lGL
+LIBS += -lGLU
+}
 
 SOURCES += qpanel3d.cpp \
     primitive3d.cpp \

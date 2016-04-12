@@ -1,7 +1,7 @@
 #ifndef LIGHT3D_H
 #define LIGHT3D_H
 
-#include "object3D.h"
+#include "object3d.h"
 #include <QVector3D>
 #include <QColor>
 
