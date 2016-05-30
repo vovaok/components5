@@ -375,6 +375,9 @@ extern "C" {
 		*/
 		HID_API_EXPORT const wchar_t* HID_API_CALL hid_error(hid_device *device);
 
+        int HID_API_EXPORT_CALL hid_get_num_input_buffers(hid_device *dev);
+        unsigned char HID_API_EXPORT_CALL hid_get_input_report(hid_device *dev, void *buffer, int length);
+
 #ifdef __cplusplus
 }
 #endif

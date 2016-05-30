@@ -29,12 +29,14 @@ qint64 UsbHid::readData(char *data, qint64 maxSize)
     int bytesRead;
     if (!mCurrentReportId)
     {
-        bytesRead = hid_read_timeout(mDev, reinterpret_cast<unsigned char*>(data), maxSize, 100);
+        bytesRead = hid_read_timeout(mDev, reinterpret_cast<unsigned char*>(data), maxSize, 0);
     }
     else
     {
         QByteArray temp(65, '\0');
-        bytesRead = hid_read_timeout(mDev, reinterpret_cast<unsigned char*>(temp.data()), 65, 100);
+        bytesRead = hid_read_timeout(mDev, reinterpret_cast<unsigned char*>(temp.data()), 65, 0);
+        if (!bytesRead)
+            return 0;
         --bytesRead;
         for (int i=0; i<bytesRead; i++)
             data[i] = temp[i+1];
@@ -140,6 +142,28 @@ QString UsbHid::getString(unsigned char index)
     }
     return s;
 }
+
+int UsbHid::getNumInputBuffers()
+{
+    return hid_get_num_input_buffers(mDev);
+}
+
+QByteArray UsbHid::getInputReport(int length)
+{
+    static QByteArray ba;
+    ba.resize(length+1);
+    ba[0] = mCurrentReportId;
+    unsigned char res = hid_get_input_report(mDev, ba.data(), length+1);
+    qDebug() << res;
+    if (res)
+    {
+        ba = ba.remove(0, 1);
+//        ba.resize(length);
+    }
+    else
+        ba.clear();
+    return ba;
+}
 //---------------------------------------------------------------------------
 
 bool UsbHid::open(QIODevice::OpenMode mode)
@@ -204,7 +228,7 @@ void UsbHid::enumerateBoards()
         mBoardProperties["usage page"] = cur_dev->usage_page;
         mBoardProperties["vendor id"] = cur_dev->vendor_id;
 
-        qDebug() << mBoardProperties;
+        //qDebug() << mBoardProperties;
     }
 
     hid_free_enumeration(devs);

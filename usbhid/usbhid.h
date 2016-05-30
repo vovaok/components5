@@ -51,6 +51,9 @@ public:
 
     unsigned short releaseNumber() const {return mBoardProperties["release number"].toInt();}
 
+    int getNumInputBuffers();
+    QByteArray getInputReport(int length);
+
 signals:
 //    void connected(QString boardName);      // new device enumerated
 //    void disconnected(QString boardName);   // device removed

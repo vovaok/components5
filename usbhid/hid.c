@@ -114,6 +114,10 @@ extern "C" {
 	typedef BOOLEAN (__stdcall *HidD_GetPreparsedData_)(HANDLE handle, HIDP_PREPARSED_DATA **preparsed_data);
 	typedef BOOLEAN (__stdcall *HidD_FreePreparsedData_)(HIDP_PREPARSED_DATA *preparsed_data);
 	typedef BOOLEAN (__stdcall *HidP_GetCaps_)(HIDP_PREPARSED_DATA *preparsed_data, HIDP_CAPS *caps);
+    typedef BOOLEAN (__stdcall *HidD_SetNumInputBuffers_)(HANDLE handle, ULONG NumberBuffers);
+    typedef BOOLEAN (__stdcall *HidD_GetNumInputBuffers_)(HANDLE HidDeviceObject, PULONG NumberBuffers);
+    typedef BOOLEAN (__stdcall *HidD_FlushQueue_)(HANDLE HidDeviceObject);
+    typedef BOOLEAN (__stdcall *HidD_GetInputReport_)(HANDLE HidDeviceObject, PVOID ReportBuffer, ULONG ReportBufferLength);
 
 	static HidD_GetAttributes_ HidD_GetAttributes;
 	static HidD_GetSerialNumberString_ HidD_GetSerialNumberString;
@@ -125,6 +129,10 @@ extern "C" {
 	static HidD_GetPreparsedData_ HidD_GetPreparsedData;
 	static HidD_FreePreparsedData_ HidD_FreePreparsedData;
 	static HidP_GetCaps_ HidP_GetCaps;
+    static HidD_SetNumInputBuffers_ HidD_SetNumInputBuffers;
+    static HidD_GetNumInputBuffers_ HidD_GetNumInputBuffers;
+    static HidD_FlushQueue_ HidD_FlushQueue;
+    static HidD_GetInputReport_ HidD_GetInputReport;
 
 	static HMODULE lib_handle = NULL;
 	static BOOLEAN initialized = FALSE;
@@ -204,6 +212,10 @@ static int lookup_functions()
 		RESOLVE(HidD_GetPreparsedData);
 		RESOLVE(HidD_FreePreparsedData);
 		RESOLVE(HidP_GetCaps);
+        RESOLVE(HidD_SetNumInputBuffers);
+        RESOLVE(HidD_GetNumInputBuffers);
+        RESOLVE(HidD_FlushQueue);
+        RESOLVE(HidD_GetInputReport);
 #undef RESOLVE
 	}
 	else
@@ -561,6 +573,10 @@ HID_API_EXPORT hid_device * HID_API_CALL hid_open_path(const char *path)
 		goto err;
 	}
 
+    res = HidD_FlushQueue(dev->device_handle);
+
+    res = HidD_SetNumInputBuffers(dev->device_handle, 128);
+
 	// Get the Input Report length for the device.
 	res = HidD_GetPreparsedData(dev->device_handle, &pp_data);
 	if (!res) {
@@ -617,6 +633,14 @@ int HID_API_EXPORT HID_API_CALL hid_write(hid_device *dev, const unsigned char *
 	return bytes_written;
 }
 
+
+int HID_API_EXPORT HID_API_CALL hid_get_num_input_buffers(hid_device *dev)
+{
+    BOOL res;
+    ULONG num;
+    res = HidD_GetNumInputBuffers(dev->device_handle, &num);
+    return num;
+}
 
 int HID_API_EXPORT HID_API_CALL hid_read_timeout(hid_device *dev, unsigned char *data, size_t length, int milliseconds)
 {
@@ -870,6 +894,11 @@ int HID_API_EXPORT_CALL HID_API_CALL hid_get_indexed_string(hid_device *dev, int
 HID_API_EXPORT const wchar_t * HID_API_CALL  hid_error(hid_device *dev)
 {
 	return (wchar_t*)dev->last_error_str;
+}
+
+unsigned char HID_API_EXPORT_CALL hid_get_input_report(hid_device *dev, void *buffer, int length)
+{
+    return HidD_GetInputReport(dev->device_handle, buffer, length);
 }
 
 
