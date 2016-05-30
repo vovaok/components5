@@ -1,4 +1,4 @@
-#include "SerialCan.h"
+#include "serialcan.h"
 
 SerialCan::SerialCan(QIODevice *parent, ProtocolVersion proto) :
     SerialFrame(parent)

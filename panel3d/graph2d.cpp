@@ -72,7 +72,11 @@ void Graph2D::setBounds(QRectF bounds)
 {
     if (bounds.isNull())
     {
+#ifdef __GNUC__
+        float xmin=INFINITY, xmax=-INFINITY, ymin=INFINITY, ymax=-INFINITY;
+#else
         float xmin=INFINITE, xmax=-INFINITE, ymin=INFINITE, ymax=-INFINITE;
+#endif
         bool recalc = false;
         // recalculate
         foreach (QString key, mGraphs.keys())

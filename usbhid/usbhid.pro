@@ -24,8 +24,15 @@ CONFIG(debug, debug|release) {
 LIBS        += -lsetupapi
 
 SOURCES += usbhid.cpp \
-    hid.c \
     usbhidthread.cpp
+
+win32 {
+    SOURCES += hid_windows.c
+}
+
+unix {
+    SOURCES += hid_linux.c
+}
 
 HEADERS += usbhid.h \
     hidapi.h \
