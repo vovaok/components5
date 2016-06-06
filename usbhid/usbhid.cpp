@@ -34,6 +34,7 @@ qint64 UsbHid::readData(char *data, qint64 maxSize)
     else
     {
         QByteArray temp(65, '\0');
+        temp[0] = mCurrentReportId;
         bytesRead = hid_read_timeout(mDev, reinterpret_cast<unsigned char*>(temp.data()), 65, 0);
         if (!bytesRead)
             return 0;
