@@ -16,6 +16,7 @@ CONFIG += c++11
 CONFIG += debug_and_release
 CONFIG += build_all
 
+win32 {
 CONFIG(debug, debug|release) {
     DESTDIR = $$PWD/bin
     TARGET = onbd
@@ -23,10 +24,22 @@ CONFIG(debug, debug|release) {
     DESTDIR = $$PWD/bin
     TARGET = onb
 }
+}
+android {
+CONFIG(debug, debug|release) {
+    DESTDIR = $$PWD/android-bin
+    TARGET = onbd
+} else {
+    DESTDIR = $$PWD/android-bin
+    TARGET = onb
+}
+}
 
-COMPONENTS = d:/projects/qt/components5
-include($$COMPONENTS/commlib/commlib.pri)
-include($$COMPONENTS/usbhid/usbhid.pri)
+win32 {
+    COMPONENTS = d:/projects/qt/components5
+    include($$COMPONENTS/commlib/commlib.pri)
+    include($$COMPONENTS/usbhid/usbhid.pri)
+}
 
 PROJ_DIR = d:/projects
 OBJNET_DIR = $$PROJ_DIR/iar/components/stm32++/src/objnet
@@ -37,8 +50,6 @@ INCLUDEPATH += $$OBJNET_DIR/../core
 SOURCES += \
     objnetvirtualinterface.cpp \
     objnetvirtualserver.cpp \
-    serialcaninterface.cpp \
-    usbhidonbinterface.cpp \
     $$OBJNET_DIR/objnetCommonNode.cpp \
     $$OBJNET_DIR/objnetmaster.cpp \
     $$OBJNET_DIR/objnetInterface.cpp \
@@ -50,8 +61,6 @@ SOURCES += \
 HEADERS += \
     objnetvirtualinterface.h \
     objnetvirtualserver.h \
-    serialcaninterface.h \
-    usbhidonbinterface.h \
     $$OBJNET_DIR/objnetCommonNode.h \
     $$OBJNET_DIR/objnetmaster.h \
     $$OBJNET_DIR/objnetInterface.h \
@@ -62,6 +71,15 @@ HEADERS += \
     $$OBJNET_DIR/objectinfo.h \
     $$OBJNET_DIR/../core/closure.h \
     $$OBJNET_DIR/../core/closure_impl.h
+
+win32 {
+SOURCES += \
+    serialcaninterface.cpp \
+    usbhidonbinterface.cpp
+HEADERS += \
+    serialcaninterface.h \
+    usbhidonbinterface.h
+}
 
 unix {
     target.path = /usr/lib

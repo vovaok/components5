@@ -552,4 +552,40 @@ void QPanel3D::renderToImage(QImage &img)
     }
     mRenderingToBuffer = false;
 }
+
+void QPanel3D::renderText(double x, double y, double z, const QString &str, const QFont &fnt)
+{
+    if (mRenderingToBuffer)
+    {
+        float mm[16];
+        float pm[16];
+        int vp[4];
+        float col[4];
+        glGetFloatv(GL_MODELVIEW_MATRIX, mm);
+        glGetFloatv(GL_PROJECTION_MATRIX, pm);
+        glGetIntegerv(GL_VIEWPORT, vp);
+        glGetFloatv(GL_CURRENT_COLOR, col);
+
+        QMatrix4x4 modelview = QMatrix4x4(mm).transposed();
+        QMatrix4x4 projection = QMatrix4x4(pm).transposed();
+
+        QMatrix4x4 m = projection * modelview;
+        QVector4D point(x, y, z, 1);
+        point = m.map(point);
+
+        int winX = lrintf(((point.x() + 1) / 2.0) * vp[2]);
+        int winY = lrintf(((1 - point.y()) / 2.0) * vp[3]);
+
+        QPainter p(mFbo);
+        p.setFont(fnt);
+        QColor qcol = QColor(col[0]*255, col[1]*255, col[2]*255);
+        p.setPen(qcol);//, col[3]*255));
+        p.drawText(winX, winY, str);
+        p.end();
+    }
+    else
+    {
+        QGLWidget::renderText(x, y, z, str, fnt);
+    }
+}
 //---------------------------------------------------------------------------

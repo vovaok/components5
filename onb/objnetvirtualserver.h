@@ -28,7 +28,7 @@ private:
     QMultiHash<QString, QTcpSocket*> mNets;
     OviCodec mCodec;
 
-//    QElapsedTimer mTimer;
+    QElapsedTimer mTimer;
 
 public:
     explicit ObjnetVirtualServer(QObject *parent = 0);

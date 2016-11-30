@@ -56,6 +56,7 @@ QByteArray OviCodec::decode(QByteArray &ba)
                     ba.remove(0, i+1);
                     return mBuffer;
                 }
+                qDebug() << ("[ONB server] message checksum fail");
                 cmd_acc = 0;
             }
             break;
@@ -90,8 +91,10 @@ void ObjnetVirtualServer::clientConnected()
         connect(socket, SIGNAL(disconnected()), SLOT(clientDisconnected()));
         socket->setSocketOption(QAbstractSocket::LowDelayOption, 1);
         emit message("[ONB server] client connected: " + socket->peerAddress().toString());
-        if (socket->peerAddress() != QHostAddress("127.0.0.1"))
+        if (!socket->peerAddress().isLoopback())
+        {
             mNets.insert("main", socket);
+        }
     }
 }
 
@@ -124,7 +127,9 @@ void ObjnetVirtualServer::clientRead()
     QByteArray in = socket->readAll();
     if (!isListening())
         return;
-//    qDebug() << "[" << mTimer.elapsed() << "] size =" << in.size();
+    if (!mTimer.isValid())
+        mTimer.start();
+    //qDebug() << "[" << mTimer.elapsed() << "] peer =" << socket->peerAddress().toString() << " size =" << in.size();
     QByteArray ba;
     while (!(ba=mCodec.decode(in)).isEmpty())
     {

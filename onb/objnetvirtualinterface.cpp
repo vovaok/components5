@@ -51,8 +51,8 @@ int ObjnetVirtualInterface::availableWriteCount()
 int ObjnetVirtualInterface::addFilter(unsigned long id, unsigned long mask)
 {
     Filter f;
-    f.id = id;
-    f.mask = mask;
+    f.id = id & 0x1FFFFFFF;
+    f.mask = mask & 0x1FFFFFFF;
     mFilters << f;
     return mFilters.size() - 1;
 }
@@ -82,8 +82,9 @@ void ObjnetVirtualInterface::onSocketConnected()
     unsigned long id = 0xFF000000;
     ba.append(reinterpret_cast<const char*>(&id), 4);
     ba.append(mNetname.toLatin1());
-    ba.prepend(ba.size());
-//    mSocket->write(ba);
+    ba = mCodec.encode(ba);
+//    qDebug() << ba;
+    mSocket->write(ba);
 }
 
 void ObjnetVirtualInterface::onSocketDisconnected()

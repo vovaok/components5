@@ -95,6 +95,10 @@ public:
     void setBufferSize(int width, int height) {mBufferSize = QSize(width, height);}
     void setBufferCamera(Camera3D *cam) {mBufferCamera = cam;}
 
+    void renderText(double x, double y, double z, const QString & str, const QFont & fnt = QFont());
+
+    bool isRenderingToBuffer() {return mRenderingToBuffer;}
+
 signals:
     void onUpdate();
     void onDraw();
