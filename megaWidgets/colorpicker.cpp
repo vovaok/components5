@@ -9,7 +9,10 @@ ColorPicker::ColorPicker(QWidget *parent) :
     mColorRadius(15),
     mx(0), my(0),
     mCaptured(false),
-    mCursorCapture(true)
+    mCursorCapture(true),
+    mHueStep(0),
+    mSatStep(0),
+    mCenterRadius(0)
 {
     setMinimumSize(32, 32);
     setAttribute(Qt::WA_AcceptTouchEvents);
@@ -21,8 +24,34 @@ ColorPicker::ColorPicker(QWidget *parent) :
 void ColorPicker::setBrightness(int value)
 {
     mBrightness = value;
-    prepareBack();
-    repaint();
+//    prepareBack();
+//    repaint();
+
+    int H, S, V;
+    mColor.getHsv(&H, &S, &V);
+    mColor.setHsv(H, S, mBrightness);
+}
+
+void ColorPicker::setColor(QColor col)
+{
+    int H, S, V;
+    col.getHsv(&H, &S, &V);
+    mBrightness = V;
+    int cr = mCenterRadius * (mColorRadius + 1);
+    float len = (S? cr: 0) + S * ((mColorRadius + 1) - cr) / 255;
+    float a = H * M_PI / 180;
+    mx = len * cosf(a);
+    my = len * sinf(a);
+
+    col = QColor::fromRgba(mBack.pixel(mx+width()/2, my+height()/2));
+    QColor pipkacol = col;
+    col.getHsv(&H, &S, &V);
+    col.setHsv(H, S, mBrightness);
+    mColor = col;
+    int w = pipka->width();
+    int h = pipka->height();
+    pipka->setColor(pipkacol);
+    pipka->move(mx-w/2+width()/2, my-h/2+height()/2);
 }
 
 void ColorPicker::prepareBack()
@@ -70,12 +99,16 @@ void ColorPicker::prepareBack()
                 len = mColorRadius + 1;
             }
             int h = lrintf(360 + atan2f(y, x) * 180 / M_PI) % 360;
-            int s = lrintf(len * 255 / (mColorRadius + 1));
-            h = h / 10 * 10;
-            s = 255 - ((255 - s) / 20 * 21);
+            int cr = mCenterRadius * (mColorRadius + 1);
+            int s = lrintf((len - cr) * 255 / ((mColorRadius + 1) - cr));
+            if (mHueStep)
+                h = ((h + mHueStep/2) / mHueStep * mHueStep) % 360;
+            if (mSatStep)
+                s = 255 - ((255 - s) / mSatStep * mSatStep);
             if (s < 0)
                 s = 0;
-            QColor col = QColor::fromHsv(h, s, mBrightness, a);
+            //QColor col = QColor::fromHsv(h, s, mBrightness, a);
+            QColor col = QColor::fromHsv(h, s, 255, a);
             p.setPen(col);
             p.drawPoint(x, y);
             if (x == mx && y == my)
@@ -116,7 +149,23 @@ void ColorPicker::resizeEvent(QResizeEvent *e)
     mSize = qMin(e->size().width(), e->size().height());
     mBulbSize = mSize / 6;
     mColorRadius = (mSize - mBulbSize) / 2;
+
+    int H, S, V;
+    mColor.getHsv(&H, &S, &V);
+    int cr = mCenterRadius * (mColorRadius + 1);
+    float len = (S? cr: 0) + S * ((mColorRadius + 1) - cr) / 255;
+    float a = H * M_PI / 180;
+    mx = len * cosf(a);
+    my = len * sinf(a);
+
+//    int oldSize = qMin(e->oldSize().width(), e->oldSize().height());
+//    mx = mx*mSize/oldSize;
+//    my = my*mSize/oldSize;
+
+//    setColor(mColor);
+
     prepareBack();
+
     pipka->resize(mBulbSize, mBulbSize);
     int w = pipka->width();
     int h = pipka->height();
@@ -185,11 +234,18 @@ void ColorPicker::moveEv(QEvent *e)
         if (mCursorCapture)
             QCursor::setPos(gx, gy);
     }
-    mColor = QColor::fromRgba(mBack.pixel(mx+width()/2, my+height()/2));
+
+    QColor col = QColor::fromRgba(mBack.pixel(mx+width()/2, my+height()/2));
+    QColor pipkacol = col;
+    int H, S, V;
+    col.getHsv(&H, &S, &V);
+    col.setHsv(H, S, mBrightness);
+    mColor = col;
+//    mColor = QColor::fromRgba(mBack.pixel(mx+width()/2, my+height()/2));
 
     int w = pipka->width();
     int h = pipka->height();
-    pipka->setColor(mColor);
+    pipka->setColor(pipkacol);
     pipka->move(mx-w/2+width()/2, my-h/2+height()/2);
 
     //repaint();

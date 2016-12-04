@@ -65,6 +65,9 @@ private:
     bool mCaptured;
     bool mCursorCapture;
     Pipka *pipka;
+    int mHueStep;
+    int mSatStep;
+    float mCenterRadius;
 
     void prepareBack();
 
@@ -84,10 +87,15 @@ public:
     explicit ColorPicker(QWidget *parent = 0);
 
     QColor color() const {return mColor;}
+    void setColor(QColor col);
     int red() const {return mColor.red();}
     int green() const {return mColor.green();}
     int blue() const {return mColor.blue();}
     bool isActive() const {return mCaptured;}
+
+    void setHueStep(int value) {mHueStep = value; prepareBack(); repaint();}
+    void setSatStep(int value) {mSatStep = value; prepareBack(); repaint();}
+    void setCenterRadius(float r) {mCenterRadius = r; prepareBack(); repaint();}
     
 signals:
     void activated();
