@@ -12,7 +12,12 @@ CONFIG += staticlib
 CONFIG += debug_and_release
 CONFIG += build_all
 
-DESTDIR = $$PWD/bin
+#android {
+#    DESTDIR = $$PWD/bin/android
+#}
+win32 {
+    DESTDIR = $$PWD/bin
+}
 
 CONFIG(debug, debug|release) {
     TARGET = megaWidgetsd
@@ -46,14 +51,17 @@ HEADERS += led.h \
     colorpicker.h \
     button.h
 
-unix:!symbian {
-    maemo5 {
-        target.path = /opt/usr/lib
-    } else {
-        target.path = /usr/lib
-    }
-    INSTALLS += target
-}
+#unix:!symbian {
+#    maemo5 {
+#        target.path = /opt/usr/lib
+#    } else {
+#        target.path = /usr/lib
+#    }
+#    INSTALLS += target
+#}
 
 OTHER_FILES += \
     ../megaWidgets.pri
+
+DISTFILES += \
+    megawidgets.pri

@@ -21,6 +21,7 @@ private:
         void paintEvent(QPaintEvent *)
         {
             QPainter p(this);
+            //p.eraseRect(rect());
             p.setRenderHint(QPainter::Antialiasing);
 
             QRadialGradient gradj(0.5, 0.5, 0.5, 0.25, 0.25);
@@ -41,6 +42,7 @@ private:
         Pipka(QWidget *parent=0L) :
             QWidget(parent)
         {
+            setAttribute(Qt::WA_TranslucentBackground);//Qt::WA_NoBackground);
             resize(32, 32);
         }
 

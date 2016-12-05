@@ -2,10 +2,10 @@ INCLUDEPATH += $$PWD
 
 android {
     CONFIG(debug, debug|release) {
-        QMAKE_LIBDIR += $$PWD/megaWidgets-android-debug/build/debug
+        QMAKE_LIBDIR += $$PWD/bin/android
         LIBS += -lmegaWidgetsd
     } else {
-        QMAKE_LIBDIR += $$PWD/megaWidgets-android-release/build/release
+        QMAKE_LIBDIR += $$PWD/bin/android
         LIBS += -lmegaWidgets
     }
 }
