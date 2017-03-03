@@ -332,6 +332,13 @@ void JoystickWidget::setSquareDomain()
     update();
 }
 
+void JoystickWidget::setPos(float x, float y)
+{
+    mPos.setX(x);
+    mPos.setY(y);
+    updatePipki();
+}
+
 //void JoystickWidget::setAutoRepaint(bool enabled)
 //{
 //    mAutoRepaint = enabled;

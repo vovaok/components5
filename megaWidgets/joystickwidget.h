@@ -107,6 +107,8 @@ signals:
     
 public slots:
 //    void setAutoRepaint(bool enabled);
+
+    void setPos(float x, float y);
 };
 
 #endif // JOYSTICKWIDGET_H
