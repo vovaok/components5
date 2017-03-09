@@ -23,6 +23,7 @@ UsbHid::~UsbHid()
 
 qint64 UsbHid::readData(char *data, qint64 maxSize)
 {
+    //qDebug() << "read" << maxSize;
     if (!maxSize)
         return 0; // FUCKING HACK!!!!
 
@@ -55,6 +56,7 @@ qint64 UsbHid::readData(char *data, qint64 maxSize)
         close();
         setErrorString("Read failed");
     }
+
     return bytesRead;
 }
 
@@ -177,8 +179,13 @@ bool UsbHid::open(QIODevice::OpenMode mode)
     {
         mode = NotOpen;
         setErrorString("Open device '"+mName+"' failed");
+        QIODevice::close();
     }
-    QIODevice::open(mode);
+    else
+    {
+        QIODevice::open(mode | QIODevice::Unbuffered);
+    }
+    //QIODevice::open(mode);
 
     if (isOpen())
         emit stateChanged(true);

@@ -591,6 +591,12 @@ HID_API_EXPORT hid_device * HID_API_CALL hid_open_path(const char *path)
 	dev->input_report_length = caps.InputReportByteLength;
 	HidD_FreePreparsedData(pp_data);
 
+    if (!dev->input_report_length || dev->input_report_length >= 64)
+    {
+        register_error(dev, "Input report length is shit");
+        goto err;
+    }
+
 	dev->read_buf = (char*) malloc(dev->input_report_length);
 
 	return dev;

@@ -29,10 +29,10 @@ SOURCES += usbhid.cpp \
 win32 {
     SOURCES += hid_windows.c
 }
-
-unix {
-    SOURCES += hid_linux.c
-}
+#unix {
+#    SOURCES += hid_linux.c
+#    message(xep)
+#}
 
 HEADERS += usbhid.h \
     hidapi.h \
