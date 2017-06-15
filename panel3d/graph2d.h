@@ -37,6 +37,7 @@ private:
         //QString unit;
     } GraphInfo;
     typedef QHash<QString, GraphInfo> GraphHash;
+    QStringList mGraphNames;
 
     FrameType mFrameType; // in polar coordinates x is phi and y is rho
     static const QColor mColors[8];

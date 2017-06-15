@@ -1,20 +1,20 @@
-INCLUDEPATH += $$PWD/src
+INCLUDEPATH += $$PWD
 
 android {
     CONFIG(debug, debug|release) {
-        QMAKE_LIBDIR += $$PWD/megaWidgets-android-debug/build/debug
+        QMAKE_LIBDIR += $$PWD/bin/android
         LIBS += -lmegaWidgetsd
     } else {
-        QMAKE_LIBDIR += $$PWD/megaWidgets-android-release/build/release
+        QMAKE_LIBDIR += $$PWD/bin/android
         LIBS += -lmegaWidgets
     }
 }
 win32 {
     CONFIG(debug, debug|release) {
-        QMAKE_LIBDIR += $$PWD/megaWidgets-win32-debug/build/debug
+        QMAKE_LIBDIR += $$PWD/bin
         LIBS += -lmegaWidgetsd
     } else {
-        QMAKE_LIBDIR += $$PWD/megaWidgets-win32-release/build/release
+        QMAKE_LIBDIR += $$PWD/bin
         LIBS += -lmegaWidgets
     }
 }

@@ -33,3 +33,6 @@ deploy/
 *_old/
 moc_*
 hooks/
+*/bin
+*/*.user
+*/build
