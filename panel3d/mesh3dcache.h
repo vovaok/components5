@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QMap>
 #include <QFile>
+#include <QFileInfo>
 #include <QDebug>
 #include <QThread>
 #include "mesh.h"

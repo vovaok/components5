@@ -1,14 +1,14 @@
 #include "texture.h"
 #include "qpanel3d.h"
 
-Texture::Texture(QPanel3D *scene) :
+Texture3D::Texture3D(QPanel3D *scene) :
     QObject(scene),
     mScene(scene),
     mHandle(-1)
 {
 }
 
-void Texture::bind()
+void Texture3D::bind()
 {
     if (!glIsTexture(mHandle))
         return;
@@ -16,14 +16,14 @@ void Texture::bind()
     glEnable(GL_TEXTURE_2D);
 }
 
-void Texture::disable()
+void Texture3D::disable()
 {
     glDisable(GL_TEXTURE_2D);
 }
 //---------------------------------------------------------------------------
 
 StaticTexture::StaticTexture(QPanel3D *scene, const QImage &image) :
-    Texture(scene),
+    Texture3D(scene),
     mImage(image)
 {
     mScene->makeCurrent();
@@ -46,7 +46,7 @@ void StaticTexture::update()
 //---------------------------------------------------------------------------
 
 DynamicTexture::DynamicTexture(QPanel3D *scene, QSize size):
-    Texture(scene),
+    Texture3D(scene),
     mFbo(0L)
 {
 

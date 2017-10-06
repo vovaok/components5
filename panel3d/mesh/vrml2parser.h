@@ -40,6 +40,7 @@ private:
     inline SFVec3f parseSFVec3f();
     inline SFRotation parseSFRotation();
     inline SFColor parseSFColor();
+    inline QString parseString();
 
     // multiple field type parsing
     void parseMFInt32(MFInt32 &array);
@@ -58,6 +59,7 @@ private:
 
     void parseShape(Shape *node);
     void parseAppearance(Appearance *node);
+    void parseImageTexture(ImageTexture *node);
     void parseMaterial(Material *node);
     void parseIndexedFaceSet(IndexedFaceSet* node);
     void parseColor(Color *node);

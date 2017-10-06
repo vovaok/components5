@@ -157,7 +157,7 @@ QByteArray UsbHid::getInputReport(int length)
     ba.resize(length+1);
     ba[0] = mCurrentReportId;
     unsigned char res = hid_get_input_report(mDev, ba.data(), length+1);
-    qDebug() << res;
+//    qDebug() << res;
     if (res)
     {
         ba = ba.remove(0, 1);
