@@ -48,6 +48,7 @@ private:
 	int mPointLimit;
     QColor mGridColor;
     bool mAutoBounds;
+    QFont mFont;
 
     float mWidth;
     float mHeight;
@@ -180,6 +181,8 @@ public:
         \return None.
     */
     void setGridColor(QColor color);
+
+    void setFont(QFont font);
 
 //signals:
     

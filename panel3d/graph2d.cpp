@@ -235,6 +235,11 @@ void Graph2D::setGridColor(QColor color)
     mGridColor = color;
     emit settingsChanged();
 }
+
+void Graph2D::setFont(QFont font)
+{
+    mFont = font;
+}
 //---------------------------------------------------------------------------
 
 void Graph2D::draw()
@@ -377,10 +382,11 @@ void Graph2D::draw()
         glPopMatrix();
     }
 
-    QFont font;
+    QFont font = mFont;
     int vp[4];
     glGetIntegerv(GL_VIEWPORT, vp);
-    font.setPixelSize(qMin(vp[2], vp[3]) / 40);
+    int fontsz = mFont.pixelSize();
+    font.setPixelSize(qMin(vp[2], vp[3]) * fontsz / (40 * 16));
     //QFontMetricsF fm(font, scene());
 
 //    QColor backColor = scene()->backColor();
@@ -396,6 +402,7 @@ void Graph2D::draw()
             if (fabs(yy) < 0.000001)
                 yy = 0;
             QString yt = QString::number(yy, 'g', 6);
+            yt = yt.replace('.', ',');
             glColor3f(0, 0, 0);
             scene()->renderText(-w/30, yy-sy, 1, yt, font);
         }
@@ -404,6 +411,7 @@ void Graph2D::draw()
             if (fabs(xx) < 0.000001)
                 xx = 0;
             QString xt = QString::number(xx, 'g', 6);
+            xt = xt.replace('.', ',');
             glColor3f(0, 0, 0);
             scene()->renderText(xx-sx, 0 - h/40, 1, xt, font);
         }
@@ -415,6 +423,7 @@ void Graph2D::draw()
             if (fabs(yy) < 0.000001)
                 yy = 0;
             QString yt = QString::number(yy, 'g', 6);
+            yt = yt.replace('.', ',');
 //            scene()->renderText(yy-sy, h/2+1, 1, yt, font);
             glColor3f(0, 0, 0);
             scene()->renderText(w/2, yy-sy, 1, yt, font);
