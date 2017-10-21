@@ -386,6 +386,8 @@ void Graph2D::draw()
     int vp[4];
     glGetIntegerv(GL_VIEWPORT, vp);
     int fontsz = mFont.pixelSize();
+    if (fontsz <= 0)
+        fontsz = 16;
     font.setPixelSize(qMin(vp[2], vp[3]) * fontsz / (40 * 16));
     //QFontMetricsF fm(font, scene());
 
