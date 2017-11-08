@@ -34,6 +34,7 @@ private:
         float zoomX, zoomY;
         QColor color;
         float width;
+        bool visible;
         //QString unit;
     } GraphInfo;
     typedef QHash<QString, GraphInfo> GraphHash;
@@ -153,6 +154,12 @@ public:
 		\return None.
 	*/
     void clear();
+
+    /*! Set visibility of named plot. But points are being added to the plot.
+     * \param var Name of the plot.
+     * \return None.
+     */
+    void setVisible(QString var, bool visible);
 	
 	/*! Set limit area.
 		Show area indicating logical limits of plots. Useful for visual estimation of plot characteristics.
