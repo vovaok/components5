@@ -16,7 +16,8 @@ Graph2D::Graph2D(QObject *parent, FrameType frameType) :
     mHeight(100.0),
     mBounds(0, 0, 10, 1),
     mBoundsReload(mBounds),
-    mLimitsEnabled(false)
+    mLimitsEnabled(false),
+    mDataWindowWidth(0)
 {
 }
 
@@ -207,6 +208,14 @@ void Graph2D::addPoint(QString var, float x, float y)
             mBounds.setLeft(mBounds.left() + d/2);
             mBounds.setWidth(h);
         }
+    }
+
+    if (mDataWindowWidth)
+    {
+        float xmin = qMax(mBounds.right() - mDataWindowWidth, 0.0);
+        mBounds.setLeft(xmin);
+        while (g.graph.first().x() < xmin)
+            g.graph.removeFirst();
     }
 }
 

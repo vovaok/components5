@@ -60,6 +60,8 @@ private:
     bool mLimitsEnabled;
     float mLowerLimit, mUpperLimit;
 
+    float mDataWindowWidth;
+
     void recalculateBounds(float xmin, float xmax, float ymin, float ymax);
 
 protected:
@@ -181,6 +183,8 @@ public:
         \return None.
     */
     void setPointLimit(int count);
+
+    void setDataWindowWidth(float width) {mDataWindowWidth = width;}
 
     /*! Set grid color.
         Assign the color to the grid. After that emits settingsChanged to redraw object.
