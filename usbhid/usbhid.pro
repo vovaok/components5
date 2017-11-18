@@ -6,6 +6,12 @@
 
 QT       -= gui
 
+win32-msvc*: { #FOR VisualC++
+    INCLUDEPATH += "C:/Program Files (x86)/Windows Kits/10/Include/10.0.10240.0/ucrt"
+    LIBS += -L"C:/Program Files (x86)/Windows Kits/10/Lib/10.0.10240.0/ucrt/x86"
+}
+
+
 #TARGET = usbhid
 TEMPLATE = lib
 CONFIG += staticlib
@@ -29,10 +35,10 @@ SOURCES += usbhid.cpp \
 win32 {
     SOURCES += hid_windows.c
 }
-
-unix {
-    SOURCES += hid_linux.c
-}
+#unix {
+#    SOURCES += hid_linux.c
+#    message(xep)
+#}
 
 HEADERS += usbhid.h \
     hidapi.h \

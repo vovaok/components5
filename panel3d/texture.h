@@ -6,7 +6,7 @@
 
 class QPanel3D;
 
-class Texture : public QObject
+class Texture3D : public QObject
 {
 protected:
     QPainter mPainter;
@@ -15,7 +15,7 @@ protected:
     //virtual int handle() const = 0;
 
 public:
-    explicit Texture(QPanel3D *scene);// : mScene(scene), mHandle(-1) {setParent(mScene);}
+    explicit Texture3D(QPanel3D *scene);// : mScene(scene), mHandle(-1) {setParent(mScene);}
 
 //    int handle() {return mHandle;}
     //virtual QPaintDevice *paintDevice() = 0;
@@ -27,7 +27,7 @@ public:
     static void disable();
 };
 
-class StaticTexture: public Texture
+class StaticTexture: public Texture3D
 {
 private:
     QImage mImage;
@@ -45,7 +45,7 @@ public:
     void update();
 };
 
-class DynamicTexture : public Texture
+class DynamicTexture : public Texture3D
 {
 private:
     QGLFramebufferObject *mFbo;

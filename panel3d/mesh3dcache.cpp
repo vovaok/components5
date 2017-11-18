@@ -73,6 +73,8 @@ void MeshLoaderThread::run()
     else
     {
         QTextStream stream(&file);
+        QFileInfo fi(f);
+        m->setUrlPrefix(fi.path());
         m->load(&stream);
 //        mesh = new Mesh(&stream);
         file.close();

@@ -16,7 +16,8 @@ Graph2D::Graph2D(QObject *parent, FrameType frameType) :
     mHeight(100.0),
     mBounds(0, 0, 10, 1),
     mBoundsReload(mBounds),
-    mLimitsEnabled(false)
+    mLimitsEnabled(false),
+    mDataWindowWidth(0)
 {
 }
 
@@ -29,6 +30,19 @@ void Graph2D::setSize(float width, float height)
 
 void Graph2D::recalculateBounds(float xmin, float xmax, float ymin, float ymax)
 {
+    if (fabs(xmax - xmin) < 0.000001)
+    {
+        float delta = fabs((xmax + xmin) / 2.0f) * 0.000001;
+        xmax += delta;
+        xmin -= delta;
+    }
+    if (fabs(ymax - ymin) < 0.000001)
+    {
+        float delta = fabs((ymax + ymin) / 2.0f) * 0.000001;
+        ymax += delta;
+        ymin -= delta;
+    }
+
     if (mFrameType == frameCartesian)
     {
         mBounds.setLeft(xmin);
@@ -82,6 +96,8 @@ void Graph2D::setBounds(QRectF bounds)
         foreach (QString key, mGraphs.keys())
         {
             GraphInfo &g = mGraphs[key];
+            if (!g.visible)
+                continue;
             foreach (QPointF p, g.graph)
             {
                 float px = p.x() * g.zoomX;
@@ -124,6 +140,7 @@ void Graph2D::addGraph(QString var, QColor color, float lineWidth)
     info.zoomX = 1;
     info.zoomY = 1;
     info.width = lineWidth;
+    info.visible = true;
     mGraphs[var] = info;
     mGraphNames << var;
 }
@@ -135,9 +152,16 @@ void Graph2D::addPoint(QString var, float x, float y)
     GraphInfo &g = mGraphs[var];
     g.graph << QPointF(x, y);
     if (mPointLimit > 0 && g.graph.size() > mPointLimit)
+    {
         g.graph.removeFirst();
+        if (mAutoBounds)
+        {
+            float zx = g.graph.first().x() * g.zoomX;
+                mBounds.setLeft(zx);
+        }
+    }
 
-    if (!mAutoBounds)
+    if (!mAutoBounds || !g.visible)
         return;
 
     if (mFrameType == frameCartesian)
@@ -185,6 +209,14 @@ void Graph2D::addPoint(QString var, float x, float y)
             mBounds.setWidth(h);
         }
     }
+
+    if (mDataWindowWidth)
+    {
+        float xmin = qMax(mBounds.right() - mDataWindowWidth, 0.0);
+        mBounds.setLeft(xmin);
+        while (g.graph.first().x() < xmin)
+            g.graph.removeFirst();
+    }
 }
 
 Graph2D::GraphInfo &Graph2D::info(QString var)
@@ -202,6 +234,8 @@ void Graph2D::clear(QString var)
 {
     if (mGraphs.contains(var))
         mGraphs[var].graph.clear();
+    mGraphs.remove(var);
+    mGraphNames.removeOne(var);
 }
 
 void Graph2D::clear()
@@ -209,6 +243,14 @@ void Graph2D::clear()
     foreach (QString key, mGraphs.keys())
         mGraphs[key].graph.clear();
     mBounds = mBoundsReload;
+}
+
+void Graph2D::setVisible(QString var, bool visible)
+{
+    if (mGraphs.contains(var))
+    {
+        mGraphs[var].visible = visible;
+    }
 }
 
 void Graph2D::setLimits(float lower, float upper)
@@ -235,6 +277,11 @@ void Graph2D::setGridColor(QColor color)
     mGridColor = color;
     emit settingsChanged();
 }
+
+void Graph2D::setFont(QFont font)
+{
+    mFont = font;
+}
 //---------------------------------------------------------------------------
 
 void Graph2D::draw()
@@ -260,6 +307,8 @@ void Graph2D::draw()
     foreach (QString key, mGraphNames)
     {
         GraphInfo &g = mGraphs[key];
+        if (!g.visible)
+            continue;
         glLineWidth(g.width);
         glPushMatrix();
         glTranslatef(-sx, -sy, 0);
@@ -337,6 +386,7 @@ void Graph2D::draw()
 
     if (mFrameType == frameCartesian)
     {
+//#warning "BUG!!! and what if 'dy' will be equal to zero??"
         glBegin(GL_LINES);
         for (float yy=by; yy<=ey; yy+=dy)
         {
@@ -377,10 +427,13 @@ void Graph2D::draw()
         glPopMatrix();
     }
 
-    QFont font;
+    QFont font = mFont;
     int vp[4];
     glGetIntegerv(GL_VIEWPORT, vp);
-    font.setPixelSize(qMin(vp[2], vp[3]) / 40);
+    int fontsz = mFont.pixelSize();
+    if (fontsz <= 0)
+        fontsz = 16;
+    font.setPixelSize(qMin(vp[2], vp[3]) * fontsz / (40 * 16));
     //QFontMetricsF fm(font, scene());
 
 //    QColor backColor = scene()->backColor();
@@ -393,19 +446,23 @@ void Graph2D::draw()
     {
         for (float yy=by; yy<=ey; yy+=dy)
         {
-            if (fabs(yy) < 0.000001)
-                yy = 0;
-            QString yt = QString::number(yy, 'g', 6);
+            float rendery = yy;
+            if (fabs(rendery) < 0.000001)
+                rendery = 0;
+            QString yt = QString::number(rendery, 'g', 6);
+            yt = yt.replace('.', ',');
             glColor3f(0, 0, 0);
-            scene()->renderText(-w/30, yy-sy, 1, yt, font);
+            scene()->renderText(-w/30, rendery-sy, 1, yt, font);
         }
         for (float xx=bx; xx<=ex; xx+=dx)
         {
-            if (fabs(xx) < 0.000001)
-                xx = 0;
-            QString xt = QString::number(xx, 'g', 6);
+            float renderx = xx;
+            if (fabs(renderx) < 0.000001)
+                renderx = 0;
+            QString xt = QString::number(renderx, 'g', 6);
+            xt = xt.replace('.', ',');
             glColor3f(0, 0, 0);
-            scene()->renderText(xx-sx, 0 - h/40, 1, xt, font);
+            scene()->renderText(renderx-sx, 0 - h/40, 1, xt, font);
         }
     }
     else if (mFrameType == framePolar)
@@ -415,6 +472,7 @@ void Graph2D::draw()
             if (fabs(yy) < 0.000001)
                 yy = 0;
             QString yt = QString::number(yy, 'g', 6);
+            yt = yt.replace('.', ',');
 //            scene()->renderText(yy-sy, h/2+1, 1, yt, font);
             glColor3f(0, 0, 0);
             scene()->renderText(w/2, yy-sy, 1, yt, font);

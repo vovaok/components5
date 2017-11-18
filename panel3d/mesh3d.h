@@ -21,6 +21,7 @@ private:
     Mesh *pmesh;
     bool meshOwner;
     ColorPolicy mColorPolicy;
+    StaticTexture *mTex; // only one texture per mesh supported!!!!
 
     void clearMesh();
     void drawMesh();
@@ -38,6 +39,8 @@ public:
 //    void copyMesh();
 
     ColorPolicy colorPolicy() const {return mColorPolicy;}
+
+    StaticTexture *texture() {return mTex;}
 
     void loadModel(QString filename, ColorPolicy colorPolicy = UseModelColors);
     void updateModel();

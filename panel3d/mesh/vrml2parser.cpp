@@ -132,6 +132,28 @@ inline SFColor Vrml2Parser::parseSFColor()
     return SFColor(r*255, g*255, b*255);
 }
 
+QString Vrml2Parser::parseString()
+{
+    QString str = takeNextWord();
+    if (str.startsWith('\"'))
+    {
+        str.remove(0, 1);
+        while (1) // ne nado tak, no mne len' po-drugomu
+        {
+            if (str.contains('\"'))
+            {
+                str.remove('\"');
+                return str;
+            }
+            QString w = takeNextWord();
+            str += " " + w;
+            if (w.isEmpty())
+                break;
+        }
+    }
+    return QString();
+}
+
 // multiple fields parsing
 void Vrml2Parser::parseMFInt32(MFInt32 &array)
 {
@@ -235,6 +257,11 @@ SFNode Vrml2Parser::parseSFNode(GroupingNode *parent)
     {
         node = registerNode(new Appearance, nodeName);
         parseAppearance(dynamic_cast<Appearance*>(node));
+    }
+    else if (className == "ImageTexture")
+    {
+        node = registerNode(new ImageTexture, nodeName);
+        parseImageTexture(dynamic_cast<ImageTexture*>(node));
     }
     else if (className == "Material")
     {
@@ -400,6 +427,25 @@ void Vrml2Parser::parseAppearance(Appearance *node)
                 node->setTexture(dynamic_cast<Texture*>(parseSFNode()));
             else if (token == "textureTransform")
                 node->setTextureTransform(dynamic_cast<TextureTransform*>(parseSFNode()));
+        }
+        while (token != "}");
+        bracesCount--;
+    }
+}
+
+void Vrml2Parser::parseImageTexture(ImageTexture *node)
+{
+    QString token = takeNextWord();
+    if (token == "{")
+    {
+        bracesCount++;
+        do
+        {
+            token = takeNextWord();
+            if (token == "url")
+            {
+                node->url = parseString();
+            }
         }
         while (token != "}");
         bracesCount--;

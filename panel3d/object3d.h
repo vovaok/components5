@@ -9,6 +9,23 @@
 #include "texture.h"
 #include "QtCore"
 
+class PickEvent : public QEvent
+{
+private:
+    QVector<int> mNames;
+
+    friend class QPanel3D;
+    friend class QObject3D;
+
+    void addName(int name) {mNames << name;}
+
+public:
+    PickEvent() : QEvent(QEvent::User) {}
+
+    int count() const {return mNames.count();}
+    int name(int i) const {return mNames[i];}
+};
+
 class Object3D : public QObject
 {
     Q_OBJECT
@@ -47,6 +64,7 @@ protected:
     virtual void draw();
     virtual void applySettings(){}
     void setSettingsChanged();
+    virtual void pickEvent(PickEvent &) {}
 
     GLfloat xrot, yrot, zrot;
     GLfloat transform[16];
@@ -55,11 +73,14 @@ protected:
     GLfloat xori, yori, zori;
     GLfloat xsc, ysc, zsc;
 
-    Texture *mTexture;
+    Texture3D *mTexture;
 
     bool mPickable;
+    bool mWireframe;
 
     void assignDefColor(GLfloat *a, GLfloat *d, GLfloat *e, GLfloat *s, int sh);
+
+    friend class QPanel3D;
 
 public:
     explicit Object3D(QObject *parent);
@@ -72,6 +93,9 @@ public:
 
     void setPickable(bool pickable) {mPickable = pickable;}
     bool isPickable() const {return mPickable;}
+
+    void setWireframe(bool wireframe) {mWireframe = wireframe;}
+    bool isWireframe() const {return mWireframe;}
 
 //    QMatrix4x4 transform() {return trans;}
 //    void setTransform(QMatrix4x4 &matrix);
@@ -129,7 +153,7 @@ public:
     void showBounds(bool value);
     void showAxes(bool value);
 
-    void setTexture(Texture *texture) {mTexture = texture; emit changed();}
+    void setTexture(Texture3D *texture) {mTexture = texture; emit changed();}
     void setTexture(const QImage &image);
 
     float fullDrawTime() const {return mFullDrawTime;}

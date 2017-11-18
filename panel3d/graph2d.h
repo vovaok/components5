@@ -34,6 +34,7 @@ private:
         float zoomX, zoomY;
         QColor color;
         float width;
+        bool visible;
         //QString unit;
     } GraphInfo;
     typedef QHash<QString, GraphInfo> GraphHash;
@@ -48,6 +49,7 @@ private:
 	int mPointLimit;
     QColor mGridColor;
     bool mAutoBounds;
+    QFont mFont;
 
     float mWidth;
     float mHeight;
@@ -57,6 +59,8 @@ private:
 
     bool mLimitsEnabled;
     float mLowerLimit, mUpperLimit;
+
+    float mDataWindowWidth;
 
     void recalculateBounds(float xmin, float xmax, float ymin, float ymax);
 
@@ -152,6 +156,12 @@ public:
 		\return None.
 	*/
     void clear();
+
+    /*! Set visibility of named plot. But points are being added to the plot.
+     * \param var Name of the plot.
+     * \return None.
+     */
+    void setVisible(QString var, bool visible);
 	
 	/*! Set limit area.
 		Show area indicating logical limits of plots. Useful for visual estimation of plot characteristics.
@@ -174,12 +184,16 @@ public:
     */
     void setPointLimit(int count);
 
+    void setDataWindowWidth(float width) {mDataWindowWidth = width;}
+
     /*! Set grid color.
         Assign the color to the grid. After that emits settingsChanged to redraw object.
         \param color The color of the grid.
         \return None.
     */
     void setGridColor(QColor color);
+
+    void setFont(QFont font);
 
 //signals:
     

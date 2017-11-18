@@ -29,11 +29,15 @@ void Mesh::load(QTextStream *stream)
     loadVrml2(stream);
 }
 
-//void Mesh::scaleUniform(float factor)
-//{
-//    for (int i=0; i<Shapes.count(); i++)
-//    {
-//        MeshShape *shape = Shapes[i];
+void Mesh::scaleUniform(float factor)
+{
+    for (int i=0; i<Shapes.count(); i++)
+    {
+        MeshShape *shape = Shapes[i];
+        for (int j=0; j<shape->vertices.count(); j++)
+        {
+            shape->vertices[j] *= factor;
+        }
 //        for (int j=0; j<shape->faces.count(); j++)
 //        {
 //            MeshFace *face = shape->faces[j];
@@ -44,8 +48,8 @@ void Mesh::load(QTextStream *stream)
 //                    vertex->point[v] *= factor;
 //            }
 //        }
-//    }
-//}
+    }
+}
 
 void Mesh::loadVrml2(QTextStream *stream)
 {
@@ -102,14 +106,22 @@ void Mesh::loadShape(Shape *node)
             shape->material.specularColor[3] = 1.0;
             shape->material.shininess = material->shininess * 128;
         }
+        ImageTexture *tex = dynamic_cast<ImageTexture*>(appearance->texture());
+        if (tex)
+        {
+            shape->texture.load(mUrlPrefix + "/" + tex->url);
+            shape->texture = shape->texture.mirrored();
+        }
     }
 
     IndexedFaceSet *mesh = dynamic_cast<IndexedFaceSet*>(node->geometry());
     if (mesh)
     {
         QVector3D pt, norm;
+        QVector2D texCoord;
         shape->normalPerVertex = mesh->normalPerVertex;
         bool normalIndexEmpty = mesh->normalIndex.isEmpty();
+        bool texCoordIndexEmpty = mesh->texCoordIndex.isEmpty();
 
         // !!!!!! only triangles supported for speeding up!!!!
         for (int i=0; i<mesh->coordIndex.count(); i++)
@@ -129,6 +141,15 @@ void Mesh::loadShape(Shape *node)
                     norm = mesh->normal()->vector[mesh->normalIndex[i]];
             }
             shape->normals << GLfloat3(norm.x(), norm.y(), norm.z());
+
+            if (mesh->texCoord()) // assuming texCoord per vertex
+            {
+                if (texCoordIndexEmpty)
+                    texCoord = mesh->texCoord()->point[idx];
+                else
+                    texCoord = mesh->texCoord()->point[mesh->texCoordIndex[i]];
+            }
+            shape->texCoord << texCoord;
         }
 
 

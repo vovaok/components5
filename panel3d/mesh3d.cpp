@@ -1,7 +1,8 @@
 #include "mesh3d.h"
 
 Mesh3D::Mesh3D(QObject *parent) :
-    Object3D(parent)
+    Object3D(parent),
+    mTex(0L)
 {
     listNo = 0;
     meshOwner = false;
@@ -41,6 +42,8 @@ void Mesh3D::loadModel(QString filename, ColorPolicy colorPolicy)
     pmesh = cache->loadMesh(mFilename);
     listNo = cache->listId(mFilename);
     mColorPolicy = colorPolicy;
+    if (!pmesh->shapes()[0]->texture.isNull())
+        mTex = new StaticTexture(scene(), pmesh->shapes()[0]->texture);
 
     setSettingsChanged(); // implements:    emit changed();
 }
@@ -55,8 +58,9 @@ void Mesh3D::applySettings()
 {
     if (!listNo)
         listNo = glGenLists(1);
-    else
-        return;
+//    else
+//        return;
+
     if (!listNo)
         return; // fucking error!!!!
 
@@ -101,16 +105,26 @@ void Mesh3D::drawMesh()
         }
         else
         {
+            if (mTex)
+                mTex->bind();
             glVertexPointer(3, GL_FLOAT, 0, shape->vertices.data());
             glNormalPointer(GL_FLOAT, 12, shape->normals.data());
+            if (mTex)
+                glTexCoordPointer(2, GL_FLOAT, 0, shape->texCoord.data());
 //            glColorPointer(3, GL_UNSIGNED_BYTE, 4, colors.data());
             glEnableClientState(GL_VERTEX_ARRAY);
             glEnableClientState(GL_NORMAL_ARRAY);
+            if (mTex)
+                glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 //            glEnableClientState(GL_COLOR_ARRAY);
             glDrawArrays(GL_TRIANGLES, 0, shape->vertices.count());
 //            glDisableClientState(GL_COLOR_ARRAY);
             glDisableClientState(GL_NORMAL_ARRAY);
             glDisableClientState(GL_VERTEX_ARRAY);
+            if (mTex)
+                glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+            if (mTex)
+                mTex->disable();
         }
 
 //        for (int j=0; j<shape->faces.count(); j++)

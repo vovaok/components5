@@ -2,36 +2,41 @@
 #define MESH_H
 
 #include <QVector>
+#include <QVector2D>
 #include <QVector3D>
+#include <QImage>
 #include "vrml2parser.h"
 #include <GL/gl.h>
 
-class GLfloat3
-{
-private:
-    GLfloat x;
-    GLfloat y;
-    GLfloat z;
-public:
-    GLfloat3() : x(0), y(0), z(0) {}
-    GLfloat3(GLfloat X, GLfloat Y, GLfloat Z) : x(X), y(Y), z(Z) {}
-};
+typedef QVector3D GLfloat3;
+typedef QVector2D GLfloat2;
 
-class MeshVertex
-{
-public:
-    GLfloat point[3];
-    GLfloat normal[3];
-    GLfloat color[3];
-};
+//class GLfloat3
+//{
+//private:
+//    GLfloat x;
+//    GLfloat y;
+//    GLfloat z;
+//public:
+//    GLfloat3() : x(0), y(0), z(0) {}
+//    GLfloat3(GLfloat X, GLfloat Y, GLfloat Z) : x(X), y(Y), z(Z) {}
+//};
 
-class MeshFace
-{
-public:
-    QVector<MeshVertex*> vertices;
-    GLfloat normal[3];
-    GLfloat color[3];
-};
+//class MeshVertex
+//{
+//public:
+//    GLfloat point[3];
+//    GLfloat normal[3];
+//    GLfloat color[3];
+//};
+
+//class MeshFace
+//{
+//public:
+//    QVector<MeshVertex*> vertices;
+//    GLfloat normal[3];
+//    GLfloat color[3];
+//};
 
 class MeshMaterial
 {
@@ -50,8 +55,11 @@ public:
 //    QVector<MeshFace*> faces;
     QVector<GLfloat3> vertices;
     QVector<GLfloat3> normals;
+    QVector<GLfloat2> texCoord;
     MeshMaterial material;
     bool normalPerVertex;
+
+    QImage texture;
 
 //    ~MeshShape()
 //    {
@@ -68,6 +76,7 @@ class Mesh
 {
 private:
     QVector<MeshShape*> Shapes;
+    QString mUrlPrefix;
 
     void loadVrml2(QTextStream *stream);
     void loadChildren(GroupingNode *par);
@@ -79,10 +88,11 @@ public:
     virtual ~Mesh();
 
     void clear();
+    void setUrlPrefix(QString s) {mUrlPrefix = s;}
     void load(QTextStream *stream);
     inline QVector<MeshShape*>& shapes() {return Shapes;}
 
-//    void scaleUniform(float factor);
+    void scaleUniform(float factor);
 
     //void operator =(Mesh &mesh);
 //    void copy(Mesh *mesh);

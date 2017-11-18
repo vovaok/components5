@@ -35,6 +35,7 @@ private:
     QPoint mousePos;
     QVector3D mousePoint;
     QVector3D mouseVector;
+    float mouseZplane;
 
     bool mFrame;
 
@@ -90,6 +91,7 @@ public:
 
     void setPickingEnabled(bool enabled) {mPickingEnabled = enabled;}
     bool isPickingEnabled() const {return mPickingEnabled;}
+    bool isPicking() const {return mPicking;}
 
     void renderToImage(QImage &img);
     void setBufferSize(int width, int height) {mBufferSize = QSize(width, height);}
@@ -99,11 +101,13 @@ public:
 
     bool isRenderingToBuffer() {return mRenderingToBuffer;}
 
+    void setMousePlane(QVector3D pointOnPlane);
+
 signals:
     void onUpdate();
     void onDraw();
     void overpaint(QPainter &p);
-    void mouse(QVector3D p);
+    void mouse(QVector3D v, QVector3D n);
     void clicked(QVector3D point, QVector3D vector);
     void clicked(Object3D *object);
     void moved(QVector3D point, QVector3D vector);

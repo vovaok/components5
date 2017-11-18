@@ -121,6 +121,13 @@ public:
 typedef SFNodeT Texture; // false class, need implementation
 typedef SFNodeT TextureTransform; // false class, need implementation
 
+class ImageTexture : public Texture
+{
+public:
+    QString url;
+    ImageTexture() : SFNodeT("ImageTexture")  {}
+};
+
 class Appearance : public SFNodeT
 {
 private:

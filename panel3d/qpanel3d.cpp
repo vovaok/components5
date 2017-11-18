@@ -3,6 +3,7 @@
 QPanel3D::QPanel3D(QWidget *parent) :
     QGLWidget(QGLFormat(QGL::SampleBuffers|QGL::AlphaChannel), parent),
     mOverpainting(false),
+    mouseZplane(0.5f),
     mFbo(0L),
     mRenderingToBuffer(false),
     mBufferSize(320, 240),
@@ -321,6 +322,29 @@ void QPanel3D::cursorToRootPoint(int x, int y)
     mousePoint = p2;
     mouseVector = v;
 }
+
+void QPanel3D::setMousePlane(QVector3D pointOnPlane)
+{
+    makeCurrent();
+
+    GLdouble mm[16];
+    GLdouble pm[16];
+    GLint vp[4];
+
+    glPushMatrix();
+    glMultMatrixf(pRoot->transformMatrix());
+    glGetDoublev(GL_MODELVIEW_MATRIX, mm);
+    glPopMatrix();
+    glGetDoublev(GL_PROJECTION_MATRIX, pm);
+    glGetIntegerv(GL_VIEWPORT, vp);
+
+    GLdouble win[3];
+
+    if (gluProject(pointOnPlane.x(), pointOnPlane.y(), pointOnPlane.z(), mm, pm, vp, win, win+1, win+2))
+    {
+        mouseZplane = win[2];
+    }
+}
 //----------------------------------------------------------
 
 void QPanel3D::pick(int x, int y)
@@ -347,27 +371,43 @@ void QPanel3D::pick(int x, int y)
 
     // if there are hits process them
     QMap<int, Object3D*> objList;
+    QMap<int, PickEvent> evList;
     int i = 0;
+//    qDebug() << "hits:" << hits;
     for (int hh=0; hh<hits; hh++)
     {
         QString s;
         QObject *obj = this;
         int names = mSelectBuf[i++];
+//        qDebug() << "names:" << names;
         int min = mSelectBuf[i++];
         int max = mSelectBuf[i++];
         Q_UNUSED(max);
+
+        PickEvent e;
         for (int j=0; j<names; j++)
         {
             int oidx = mSelectBuf[i++];
-            if (obj && (oidx < obj->children().size()))
+            //qDebug() << "idx" << j << "=" << oidx;
+            if (obj)
             {
-                obj = obj->children()[oidx];
+                if (oidx < obj->children().size())
+                    obj = obj->children()[oidx];
+                else
+                    e.addName(oidx);
             }
         }
-        objList[min] = qobject_cast<Object3D*>(obj);
+        Object3D *obj3d = qobject_cast<Object3D*>(obj);
+        objList[min] = obj3d;
+        evList[min] = e;
+//        if (obj3d)
+//            obj3d->pickEvent(e);
     }
     if (objList.count())
+    {
+        objList.first()->pickEvent(evList.first());
         emit clicked(objList.first());
+    }
     else
         emit clicked((Object3D*)0L);
 }
@@ -397,13 +437,15 @@ void QPanel3D::mouseMoveEvent(QMouseEvent *event)
 //    QPoint x0 = mousePos;
     mousePos = event->pos();
 
-    if (hasMouseTracking())
+//    if (hasMouseTracking())
+//    {
+    if (event->buttons() & Qt::LeftButton)
     {
         cursorToRootPoint(mousePos.x(), mousePos.y());
         emit moved(mousePoint, mouseVector);
     }
+//    }
 
-//    emit mouse(p0);
 
 //    if (!FMouseView)
 //    {
@@ -443,7 +485,35 @@ void QPanel3D::mouseMoveEvent(QMouseEvent *event)
             vx = QVector3D::normal(top, dir);
             vy = QVector3D::normal(dir, vx);
 
-            if (event->buttons() & Qt::RightButton)
+            if (event->buttons() & Qt::LeftButton)
+            {
+                GLdouble mm[16];
+                GLdouble pm[16];
+                GLint vp[4];
+
+                glPushMatrix();
+                glMultMatrixf(pRoot->transformMatrix());
+                glGetDoublev(GL_MODELVIEW_MATRIX, mm);
+                glPopMatrix();
+                glGetDoublev(GL_PROJECTION_MATRIX, pm);
+                glGetIntegerv(GL_VIEWPORT, vp);
+
+                GLdouble obj[3];
+                QVector3D p1, p2;
+                QVector3D v;
+
+                if (gluUnProject(event->x()-dx, vp[3]-event->y()+dy-1, mouseZplane, mm, pm, vp, obj, obj+1, obj+2))
+                {
+                    p1 = QVector3D(obj[0], obj[1], obj[2]);
+                    gluUnProject(event->x(), vp[3]-event->y()-1, mouseZplane, mm, pm, vp, obj, obj+1, obj+2);
+                    p2 = QVector3D(obj[0], obj[1], obj[2]);
+                    gluUnProject(event->x(), vp[3]-event->y()-1, 0, mm, pm, vp, obj, obj+1, obj+2);
+                    QVector3D n = (QVector3D(obj[0], obj[1], obj[2]) - p2).normalized();
+                    v = p2 - p1;
+                    emit mouse(v, n);
+                }
+            }
+            else if (event->buttons() & Qt::RightButton)
             {
                 if (ViewType == object)
                 {
@@ -464,8 +534,10 @@ void QPanel3D::mouseMoveEvent(QMouseEvent *event)
                     vm.setZ(mat[8]*vv.x()+mat[9]*vv.y()+mat[10]*vv.z());
                     //pRoot->rotate(angle, -0.707, 0, 0.707);
 //                    pRoot->rotate(angle, vy.x(), vy.y(), vy.z());
+
                     pRoot->rotate(angle, vm.x(), vm.y(), vm.z());
-                     emit mouse(vv);
+//                     emit mouse(vv);
+
 //                    Camera->setTopDir(vy);
 //                    qreal d = Camera->position().length();
 //                    vx = vx * (dx/10.0) * d * 0.1;

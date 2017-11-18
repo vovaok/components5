@@ -10,7 +10,8 @@ Object3D::Object3D(QObject *parent) :
     axesVisible(false),
     mFullDrawTime(0), mDrawTime(0),
     mTexture(0L),
-    mPickable(true)
+    mPickable(true),
+    mWireframe(false)
 {
     for (int i=0; i<4; i++)
         for (int j=0; j<4; j++)
@@ -217,7 +218,13 @@ void Object3D::drawObject()
         QElapsedTimer et2;
         et2.start();
 
+        if (mWireframe)
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
         draw();
+
+        if (mWireframe)
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
         mDrawTime = et2.nsecsElapsed() * 1.0e-9;
 
