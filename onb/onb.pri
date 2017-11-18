@@ -2,10 +2,15 @@ INCLUDEPATH += $$PWD
 
 QT += network
 
+message("PIZDEC1")
+
 win32 {
     include(../usbhid/usbhid.pri)
     include(../commlib/commlib.pri)
+message("PIZDEC")
 }
+
+message("PIZDEC2")
 
 PROJ_DIR = d:/projects
 OBJNET_DIR = $$PROJ_DIR/iar/components/stm32++/src/objnet
@@ -25,3 +30,5 @@ CONFIG(debug, debug|release) {
 } else {
     LIBS += -lonb
 }
+
+message("PIZDEC3")

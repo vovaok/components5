@@ -16,6 +16,7 @@ class ObjnetVirtualInterface : public ObjnetInterface
 private:
     QTcpSocket *mSocket;
     QString mNetname;
+    QString mServerIp;
     typedef struct {unsigned long id, mask;} Filter;
     QVector<Filter> mFilters;
     QQueue<CommonMessage> mRxQueue;
@@ -30,7 +31,7 @@ private slots:
     void msgReceived(const QByteArray &ba);
 
 public:
-    ObjnetVirtualInterface(QString netname);
+    ObjnetVirtualInterface(QString netname, QString serverIp="127.0.0.1");
 
     bool write(CommonMessage &msg);
     bool read(CommonMessage &msg);
