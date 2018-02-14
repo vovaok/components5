@@ -9,6 +9,7 @@ UsbHidThread::UsbHidThread(quint16 vid, quint16 pid, QObject *parent) :
     mRealInterval(0)
 {
     usb = new UsbHid(mVid, mPid);
+//    usb->moveToThread(this);
     connect(usb, SIGNAL(stateChanged(bool)), SLOT(onUsbStateChanged(bool)));
 }
 
@@ -54,6 +55,7 @@ void UsbHidThread::run()
             QStringList devs = availableDevices();
             if (devs.count() == 1)
                 usb->setDevice();
+            qDebug() << "try open usb";
             usb->open();
         }
         mAccessMutex.unlock();

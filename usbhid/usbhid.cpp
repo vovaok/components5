@@ -102,7 +102,10 @@ void UsbHid::setFeature(unsigned char reportId, const QByteArray &data)
     if (bytesWritten == -1)
     {
         if (mDev)
+        {
             qDebug() << "SetFeature error:" << QString::fromWCharArray(hid_error(mDev));
+            close();
+        }
         setErrorString("Set feature failed");
     }
 }
