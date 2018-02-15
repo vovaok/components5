@@ -36,6 +36,8 @@ hooks/
 */bin
 */*.user
 */build
+onb/androbin
+onb/android-bin/
 bin-android
 android-bin
 android-bin

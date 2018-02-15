@@ -2,8 +2,9 @@
 
 using namespace Objnet;
 
-ObjnetVirtualInterface::ObjnetVirtualInterface(QString netname) :
+ObjnetVirtualInterface::ObjnetVirtualInterface(QString netname, QString serverIp) :
     mNetname(netname),
+    mServerIp(serverIp),
     mActive(false)
 {
     mMaxFrameSize = 64;
@@ -69,7 +70,10 @@ void ObjnetVirtualInterface::setActive(bool enabled)
     {
         mActive = enabled;
         if (mActive)
-            mSocket->connectToHost(QHostAddress::LocalHost, 51966);
+        {
+//            mSocket->connectToHost(QHostAddress::LocalHost, 51966);
+            mSocket->connectToHost(QHostAddress(mServerIp), 51966);
+        }
         else
             mSocket->disconnectFromHost();
     }
