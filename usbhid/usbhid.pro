@@ -11,21 +11,19 @@ win32-msvc*: { #FOR VisualC++
     LIBS += -L"C:/Program Files (x86)/Windows Kits/10/Lib/10.0.10240.0/ucrt/x86"
 }
 
+include(../build.pri)
 
-#TARGET = usbhid
+TARGET = usbhid
 TEMPLATE = lib
 CONFIG += staticlib
-# чтобы сразу скомпилить и в дебаге, и в релизе:
-CONFIG += debug_and_release
-CONFIG += build_all
 
-CONFIG(debug, debug|release) {
-    DESTDIR = $$PWD/bin
-    TARGET = usbhidd
-} else {
-    DESTDIR = $$PWD/bin
-    TARGET = usbhid
-}
+#CONFIG(debug, debug|release) {
+#    DESTDIR = $$PWD/bin
+#    TARGET = usbhidd
+#} else {
+#    DESTDIR = $$PWD/bin
+#    TARGET = usbhid
+#}
 
 LIBS        += -lsetupapi
 

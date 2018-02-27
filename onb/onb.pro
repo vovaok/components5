@@ -5,25 +5,23 @@
 #-------------------------------------------------
 
 QT       += network
-
 QT       -= gui
 
 TARGET = onb
 TEMPLATE = lib
 CONFIG += staticlib
 CONFIG += c++11
-# чтобы сразу скомпилить и в дебаге, и в релизе:
-CONFIG += debug_and_release
-CONFIG += build_all
+
+include(../build.pri)
 
 win32 {
-CONFIG(debug, debug|release) {
-    DESTDIR = $$PWD/bin
-    TARGET = onbd
-} else {
-    DESTDIR = $$PWD/bin
-    TARGET = onb
-}
+#CONFIG(debug, debug|release) {
+#    DESTDIR = $$PWD/bin
+#    TARGET = onbd
+#} else {
+#    DESTDIR = $$PWD/bin
+#    TARGET = onb
+#}
 }
 android {
 CONFIG(debug, debug|release) {

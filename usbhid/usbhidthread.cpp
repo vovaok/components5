@@ -55,7 +55,7 @@ void UsbHidThread::run()
             QStringList devs = availableDevices();
             if (devs.count() == 1)
                 usb->setDevice();
-            qDebug() << "try open usb";
+//            qDebug() << "try open usb";
             usb->open();
         }
         mAccessMutex.unlock();

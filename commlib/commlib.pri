@@ -1,4 +1,4 @@
-INCLUDEPATH += $$PWD/src
+INCLUDEPATH += $$PWD
 
 QT += serialport
 
@@ -13,10 +13,10 @@ android {
 }
 win32 {
     CONFIG(debug, debug|release) {
-        QMAKE_LIBDIR += $$PWD/bin
-        LIBS += -lcommlibd
+        QMAKE_LIBDIR += $$PWD/../bin/commlib/debug
+        LIBS += -lcommlib
     } else {
-        QMAKE_LIBDIR += $$PWD/bin
+        QMAKE_LIBDIR += $$PWD/../bin/commlib/release
         LIBS += -lcommlib
     }
 }
