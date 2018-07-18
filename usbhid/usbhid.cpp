@@ -1,17 +1,23 @@
 #include "usbhid.h"
 
-quint16 UsbHid::mVid = 0;
-quint16 UsbHid::mPid = 0;
-QMap<QString, QString> UsbHid::mBoardMap;
-
 UsbHid::UsbHid(quint16 vid, quint16 pid, QObject *parent) :
     QIODevice(parent),
-    mDev(0L),
+    mDev(nullptr),
+    mCurrentReportId(0),
+    mInfo(nullptr)
+{
+    //hid_init();
+    UsbDeviceEnumerator::instance()->setVidPid(vid, pid);
+}
+
+UsbHid::UsbHid(QString path, QObject *parent) :
+    QIODevice(parent),
+    mDev(nullptr),
+    mPath(path),
     mCurrentReportId(0)
 {
-    mVid = vid;
-    mPid = pid;
-    hid_init();
+    //hid_init();
+    mInfo = UsbDeviceEnumerator::instance()->deviceInfo(mPath);
 }
 
 UsbHid::~UsbHid()
@@ -54,6 +60,7 @@ qint64 UsbHid::readData(char *data, qint64 maxSize)
     if (bytesRead < 0)
     {
         close();
+        qDebug() << "Read failed";
         setErrorString("Read failed");
     }
 
@@ -177,11 +184,14 @@ bool UsbHid::open(QIODevice::OpenMode mode)
     if (mDev)
         close();
 
-    mDev = hid_open_path(mBoardMap[mName].toLatin1());
+    if (mPath.isEmpty())
+        return false;
+
+    mDev = hid_open_path(mPath.toLatin1());
     if (!mDev)
     {
         mode = NotOpen;
-        setErrorString("Open device '"+mName+"' failed");
+        setErrorString("Open device '"+mPath+"' failed");
         QIODevice::close();
     }
     else
@@ -205,43 +215,44 @@ void UsbHid::close()
     }
     QIODevice::close();
 
-    mBoardProperties.clear();
-
     emit stateChanged(false);
 }
 //---------------------------------------------------------------------------
 
-void UsbHid::enumerateBoards()
+const QStringList UsbHid::availableDevices()
 {
-    QString curPath;
-    if (mDev)
-        curPath = mBoardMap[mName];
-    mBoardMap.clear();
-    if (!curPath.isEmpty())
-        mBoardMap[mName] = curPath;
+    return UsbDeviceEnumerator::instance()->devices();
+}
 
-    struct hid_device_info *devs, *cur_dev;
-    devs = hid_enumerate(mVid, mPid); // this is dynamic list
+void UsbHid::setDevice(QString path)
+{
+    QStringList devList = UsbDeviceEnumerator::instance()->devices();
+    if (devList.contains(path))
+        mPath = path;
+    else if (!devList.isEmpty())
+        mPath = devList.first();
+    else
+        mPath = QString();
+}
+//---------------------------------------------------------
 
-    for (cur_dev=devs; cur_dev; cur_dev=cur_dev->next)
-    {
-        QString serial = QString::fromWCharArray(cur_dev->serial_number);
-        mBoardMap[serial] = cur_dev->path;
+QString UsbHid::deviceName() const
+{
+    return mInfo? mInfo->product: QString();
+}
 
-        mBoardProperties["interface number"] = cur_dev->interface_number;
-        mBoardProperties["manufacturer_string"] = QString::fromWCharArray(cur_dev->manufacturer_string);
-        mBoardProperties["path"] = cur_dev->path;
-        mBoardProperties["product id"] = cur_dev->product_id;
-        mBoardProperties["product string"] = QString::fromWCharArray(cur_dev->product_string);
-        mBoardProperties["release number"] = cur_dev->release_number;
-        mBoardProperties["serial number"] = QString::fromWCharArray(cur_dev->serial_number);
-        mBoardProperties["usage"] = cur_dev->usage;
-        mBoardProperties["usage page"] = cur_dev->usage_page;
-        mBoardProperties["vendor id"] = cur_dev->vendor_id;
+unsigned short UsbHid::releaseNumber() const
+{
+    return mInfo? mInfo->revision: 0;
+}
 
-        //qDebug() << mBoardProperties;
-    }
+QString UsbHid::serial() const
+{
+    return mInfo? mInfo->serial: QString();
+}
 
-    hid_free_enumeration(devs);
+QString UsbHid::manufacturer() const
+{
+    return mInfo? mInfo->manufacturer: QString();
 }
 //---------------------------------------------------------------------------

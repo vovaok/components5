@@ -28,7 +28,8 @@ CONFIG += staticlib
 LIBS        += -lsetupapi
 
 SOURCES += usbhid.cpp \
-    usbhidthread.cpp
+    usbhidthread.cpp \
+    usbdeviceenumerator.cpp
 
 win32 {
     SOURCES += hid_windows.c
@@ -40,7 +41,8 @@ win32 {
 
 HEADERS += usbhid.h \
     hidapi.h \
-    usbhidthread.h
+    usbhidthread.h \
+    usbdeviceenumerator.h
 unix:!symbian {
     maemo5 {
         target.path = /opt/usr/lib
