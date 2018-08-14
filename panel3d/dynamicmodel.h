@@ -122,12 +122,15 @@ public:
     void setPhaseVector(const PhaseVector& phase) {mP = phase;}
 
 //    qreal pitch() const {return mPitch;}
-//    qreal yaw() const {return mYaw;}
+    float yaw() const
+    {
+        return atan2(mP.T(1, 0), mP.T(0, 0));
+    }
 //    qreal roll() const {return mRoll;}
 
-//    QVector3D ex() const {return mEx;}
-//    QVector3D ey() const {return mEy;}
-//    QVector3D ez() const {return mEz;}
+    QVector3D ex() const {return QVector3D(mP.T(0, 0), mP.T(0, 1), mP.T(0, 2));}
+    QVector3D ey() const {return QVector3D(mP.T(1, 0), mP.T(1, 1), mP.T(1, 2));}
+    QVector3D ez() const {return QVector3D(mP.T(2, 0), mP.T(2, 1), mP.T(2, 2));}
 
     virtual void setControl(qreal u) {(void)u;}
     virtual void setControl(qreal u1, qreal u2) {(void)u1; (void)u2;}

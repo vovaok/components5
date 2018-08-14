@@ -428,16 +428,32 @@ void Object3D::rotate(qreal angle, qreal vx, qreal vy, qreal vz)
 
 void Object3D::applyRotation()
 {
-    for (int i=0; i<3; i++)
-        for (int j=0; j<3; j++)
-            transform[i*4+j]=i==j?1:0;
-    glPushMatrix();
-    glLoadMatrixf(transform);
-    glRotatef(xrot, 1, 0, 0);
-    glRotatef(yrot, 0, 1, 0);
-    glRotatef(zrot, 0, 0, 1);
-    glGetFloatv(GL_MODELVIEW_MATRIX, transform);
-    glPopMatrix();
+//    for (int i=0; i<3; i++)
+//        for (int j=0; j<3; j++)
+//            transform[i*4+j]=i==j?1:0;
+//    glPushMatrix();
+//    glLoadMatrixf(transform);
+//    glRotatef(xrot, 1, 0, 0);
+//    glRotatef(yrot, 0, 1, 0);
+//    glRotatef(zrot, 0, 0, 1);
+//    glGetFloatv(GL_MODELVIEW_MATRIX, transform);
+//    glPopMatrix();
+
+    QMatrix4x4 T;
+    T.rotate(xrot, 1, 0, 0);
+    T.rotate(yrot, 0, 1, 0);
+    T.rotate(zrot, 0, 0, 1);
+
+    transform[0]  = T(0, 0);
+    transform[1]  = T(1, 0);
+    transform[2]  = T(2, 0);
+    transform[4]  = T(0, 1);
+    transform[5]  = T(1, 1);
+    transform[6]  = T(2, 1);
+    transform[8]  = T(0, 2);
+    transform[9]  = T(1, 2);
+    transform[10] = T(2, 2);
+
     computeFullTransform();
 }
 //----------------------------------------------------------
@@ -553,15 +569,23 @@ void Object3D::setUniformScale(qreal scale)
 
 void Object3D::computeFullTransform()
 {
-    glPushMatrix();
-    glLoadMatrixf(transform);
-    glRotatef(xori, 1, 0, 0);
-    glRotatef(yori, 0, 1, 0);
-    glRotatef(zori, 0, 0, 1);
-    glTranslatef(xcen, ycen, zcen);
-    glScalef(xsc, ysc, zsc);
-    glGetFloatv(GL_MODELVIEW_MATRIX, fullTransform);
-    glPopMatrix();
+//    glPushMatrix();
+//    glLoadMatrixf(transform);
+//    glRotatef(xori, 1, 0, 0);
+//    glRotatef(yori, 0, 1, 0);
+//    glRotatef(zori, 0, 0, 1);
+//    glTranslatef(xcen, ycen, zcen);
+//    glScalef(xsc, ysc, zsc);
+//    glGetFloatv(GL_MODELVIEW_MATRIX, fullTransform);
+//    glPopMatrix();
+
+    QMatrix4x4 T(transform);
+    T.rotate(xori, 1, 0, 0);
+    T.rotate(yori, 0, 1, 0);
+    T.rotate(zori, 0, 0, 1);
+    T.translate(xcen, ycen, zcen);
+    T.scale(xsc, ysc, zsc);
+    T.copyDataTo(fullTransform);
 }
 
 void Object3D::setColor(QColor diffuse, QColor specular, QColor emission, float ambient, int shininess)
