@@ -95,11 +95,11 @@ void Mesh3D::drawMesh()
 
         if (shape->normals.isEmpty())
         {
-            glVertexPointer(3, GL_FLOAT, 0, shape->vertices.data());
+            glVertexPointer(3, GL_FLOAT, 0, shape->points.data());
 //            glColorPointer(3, GL_UNSIGNED_BYTE, 4, colors.data());
             glEnableClientState(GL_VERTEX_ARRAY);
 //            glEnableClientState(GL_COLOR_ARRAY);
-            glDrawArrays(GL_POINTS, 0, shape->vertices.count());
+            glDrawArrays(GL_POINTS, 0, shape->points.count());
 //            glDisableClientState(GL_COLOR_ARRAY);
             glDisableClientState(GL_VERTEX_ARRAY);
         }
@@ -107,7 +107,7 @@ void Mesh3D::drawMesh()
         {
             if (mTex)
                 mTex->bind();
-            glVertexPointer(3, GL_FLOAT, 0, shape->vertices.data());
+            glVertexPointer(3, GL_FLOAT, 0, shape->points.data());
             glNormalPointer(GL_FLOAT, 12, shape->normals.data());
             if (mTex)
                 glTexCoordPointer(2, GL_FLOAT, 0, shape->texCoord.data());
@@ -117,7 +117,7 @@ void Mesh3D::drawMesh()
             if (mTex)
                 glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 //            glEnableClientState(GL_COLOR_ARRAY);
-            glDrawArrays(GL_TRIANGLES, 0, shape->vertices.count());
+            glDrawArrays(GL_TRIANGLES, 0, shape->points.count());
 //            glDisableClientState(GL_COLOR_ARRAY);
             glDisableClientState(GL_NORMAL_ARRAY);
             glDisableClientState(GL_VERTEX_ARRAY);

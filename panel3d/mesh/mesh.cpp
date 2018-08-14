@@ -34,10 +34,15 @@ void Mesh::scaleUniform(float factor)
     for (int i=0; i<Shapes.count(); i++)
     {
         MeshShape *shape = Shapes[i];
+        for (int j=0; j<shape->points.count(); j++)
+        {
+            shape->points[j] *= factor;
+        }
         for (int j=0; j<shape->vertices.count(); j++)
         {
-            shape->vertices[j] *= factor;
+            shape->vertices[j].point *= factor;
         }
+
 //        for (int j=0; j<shape->faces.count(); j++)
 //        {
 //            MeshFace *face = shape->faces[j];
@@ -131,7 +136,7 @@ void Mesh::loadShape(Shape *node)
                 continue;
 
             pt = mesh->coord()->point[idx];
-            shape->vertices << GLfloat3(pt.x(), pt.y(), pt.z());
+            shape->points << GLfloat3(pt.x(), pt.y(), pt.z());
 
             if (mesh->normal() && mesh->normalPerVertex)
             {
@@ -152,6 +157,29 @@ void Mesh::loadShape(Shape *node)
             shape->texCoord << texCoord;
         }
 
+        // indexed array filling
+        shape->vertices.clear();
+        shape->indices.clear();
+        if (mesh->normalPerVertex) // only this supported!!!!!!!
+        {
+            for (int i=0; i<mesh->coord()->point.count(); i++)
+            {
+                MeshShape::Vertex v;
+                v.point = mesh->coord()->point[i];
+                if (mesh->normal() && normalIndexEmpty)
+                    v.normal = mesh->normal()->vector[i];
+                if (mesh->texCoord() && texCoordIndexEmpty)
+                    v.texCoord = mesh->texCoord()->point[i];
+                shape->vertices << v;
+            }
+
+            for (int i=0; i<mesh->coordIndex.count(); i++)
+            {
+                int idx = mesh->coordIndex[i];
+                if (idx >= 0)
+                    shape->indices << mesh->coordIndex[i];
+            }
+        }
 
 
 //        for (int i=0; i<mesh->coordIndex.count(); i++)

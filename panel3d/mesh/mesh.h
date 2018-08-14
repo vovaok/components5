@@ -53,11 +53,21 @@ class MeshShape
 public:
 //    QVector<MeshVertex*> vertices;
 //    QVector<MeshFace*> faces;
-    QVector<GLfloat3> vertices;
+    QVector<GLfloat3> points;
     QVector<GLfloat3> normals;
     QVector<GLfloat2> texCoord;
     MeshMaterial material;
     bool normalPerVertex;
+
+    typedef struct
+    {
+        QVector3D point;
+        QVector3D normal;
+        QVector2D texCoord;
+    } Vertex;
+
+    QVector<Vertex> vertices;
+    QVector<unsigned short> indices;
 
     QImage texture;
 
@@ -66,9 +76,9 @@ public:
 //        for (int i=0; i<faces.count(); i++)
 //            delete faces[i];
 //        faces.clear();
-//        for (int i=0; i<vertices.count(); i++)
-//            delete vertices[i];
-//        vertices.clear();
+//        for (int i=0; i<points.count(); i++)
+//            delete points[i];
+//        points.clear();
 //    }
 };
 
