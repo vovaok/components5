@@ -6,6 +6,7 @@
 #include <QVector3D>
 #include <QImage>
 #include "vrml2parser.h"
+#include <Windows.h>
 #include <GL/gl.h>
 
 typedef QVector3D GLfloat3;

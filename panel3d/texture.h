@@ -2,6 +2,7 @@
 #define TEXTURE3D_H
 
 #include <QGLFramebufferObject>
+#include <Windows.h>
 #include <GL/gl.h>
 
 class QPanel3D;

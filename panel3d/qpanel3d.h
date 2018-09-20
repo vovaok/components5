@@ -6,7 +6,6 @@
 #include "camera3d.h"
 #include "light3d.h"
 #include <QMouseEvent>
-#include "GL/glext.h"
 //#include <QGLFramebufferObject>
 
 #ifndef GL_MULTISAMPLE

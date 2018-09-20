@@ -673,7 +673,8 @@ void Object3D::assignDefColor(GLfloat *a, GLfloat *d, GLfloat *e, GLfloat *s, in
 
 void Object3D::setTexture(const QImage &image)
 {
-    setTexture(new StaticTexture(dynamic_cast<QPanel3D*>(mPanel), image));
+    auto scene = dynamic_cast<QPanel3D*>(mPanel);
+    setTexture(new StaticTexture(scene, image));
 }
 //----------------------------------------------------------
 

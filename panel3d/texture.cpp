@@ -23,9 +23,9 @@ void Texture3D::disable()
 //---------------------------------------------------------------------------
 
 StaticTexture::StaticTexture(QPanel3D *scene, const QImage &image) :
-    Texture3D(scene),
-    mImage(image)
+    Texture3D(scene)
 {
+    mImage = image;
     mScene->makeCurrent();
     mImage.convertToFormat(QImage::Format_ARGB32_Premultiplied);
     glGenTextures(1, &mHandle);
