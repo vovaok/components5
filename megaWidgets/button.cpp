@@ -41,7 +41,7 @@ void Button::prepareBack()
     grad.setAngle(210);
     p.setBrush(grad);
     p.setPen(Qt::NoPen);
-#warning 0.8 from the potolok))0)
+//#warning 0.8 from the potolok))0)
     p.drawEllipse(QPointF(0, 0), 0.4, 0.4);
 
     QColor mColor = Qt::blue;

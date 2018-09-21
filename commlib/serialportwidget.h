@@ -22,8 +22,6 @@ protected:
 public:
     explicit SerialPortWidget(QWidget *parent = 0);
 
-    using QWidget::QObject;
-
     void setBaudrate(int baudrate) {mCom->setBaudRate(baudrate);}
     void setBaudRate(int baudrate) {mCom->setBaudRate(baudrate);}
     void setParity(QSerialPort::Parity parity) {mCom->setParity(parity);}

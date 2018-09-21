@@ -8,7 +8,10 @@ CONFIG += c++11
 
 include(../build.pri)
 
-#DESTDIR = $$PWD/bin
+DESTDIR = $$PWD/../bin/panel3d
+
+CONFIG(debug, debug|release): DESTDIR = $$join(DESTDIR,,,/debug)
+else:                         DESTDIR = $$join(DESTDIR,,,/release)
 
 #CONFIG(debug, debug|release) {
 #    TARGET = qpanel3dd
