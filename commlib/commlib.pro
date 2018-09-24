@@ -7,12 +7,6 @@ CONFIG += c++11
 
 include(../build.pri)
 
-#CONFIG(debug, debug|release) {
-#    TARGET = commlibd
-#} else {
-#    TARGET = commlib
-#}
-
 SOURCES += seriallink.cpp \
     serialframe.cpp \
     serialcan.cpp \

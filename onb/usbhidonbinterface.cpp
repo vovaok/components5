@@ -9,7 +9,7 @@ UsbHidOnbInterface::UsbHidOnbInterface(UsbHidThread *usbhid) :
 {
     mMaxFrameSize = 8;
 
-    connect(usb, UsbHidThread::reportReceived, this, UsbHidOnbInterface::onReportReceive, Qt::QueuedConnection);
+    connect(usb, &UsbHidThread::reportReceived, this, &UsbHidOnbInterface::onReportReceive, Qt::QueuedConnection);
     usb->setPollingInterval(1);
     usb->setCurrentReportId(0x23, 2);
     usb->start(QThread::HighPriority);
