@@ -1,17 +1,14 @@
-# -------------------------------------------------
-# Project created by QtCreator 2011-09-26T09:54:44
-# -------------------------------------------------
 QT += opengl
 TEMPLATE = lib
-CONFIG += staticlib
-CONFIG += c++11
+CONFIG += staticlib c++11
+TARGET = panel3d
 
 include(../build.pri)
 
-DESTDIR = $$PWD/../bin/panel3d
+#DESTDIR = $$PWD/../bin/panel3d
 
-CONFIG(debug, debug|release): DESTDIR = $$join(DESTDIR,,,/debug)
-else:                         DESTDIR = $$join(DESTDIR,,,/release)
+#CONFIG(debug, debug|release): DESTDIR = $$join(DESTDIR,,,/debug)
+#else:                         DESTDIR = $$join(DESTDIR,,,/release)
 
 #CONFIG(debug, debug|release) {
 #    TARGET = qpanel3dd

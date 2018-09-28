@@ -8,5 +8,6 @@ SUBDIRS += \
     usbhid\
     simplenet
 
-DISTFILES += build.pri\
-             component.pri
+DISTFILES += build.pri \
+             component.pri \
+             dir.pri

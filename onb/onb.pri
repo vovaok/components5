@@ -9,8 +9,7 @@ win32 {
 
 COMPONENT_NAME = "onb"
 
-PROJ_DIR = d:/projects
-OBJNET_DIR = $$PROJ_DIR/iar/components/stm32++/src/objnet
+OBJNET_DIR = $$PWD/../../iar/components/stm32++/src/objnet
 
 INCLUDEPATH += $$OBJNET_DIR
 INCLUDEPATH += $$OBJNET_DIR/../core

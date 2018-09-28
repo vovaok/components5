@@ -1,11 +1,5 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2013-08-01T15:09:09
-#
-#-------------------------------------------------
-
 QT += widgets
-
+TARGET = megaWidgets
 TEMPLATE = lib
 CONFIG += staticlib
 

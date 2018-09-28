@@ -1,28 +1,12 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2016-06-20T09:39:15
-#
-#-------------------------------------------------
-
 QT       += network
 QT       -= gui
 
-TARGET = onb
 TEMPLATE = lib
-CONFIG += staticlib
-CONFIG += c++11
+CONFIG += staticlib c++11
+TARGET = onb
 
 include(../build.pri)
 
-win32 {
-#CONFIG(debug, debug|release) {
-#    DESTDIR = $$PWD/bin
-#    TARGET = onbd
-#} else {
-#    DESTDIR = $$PWD/bin
-#    TARGET = onb
-#}
-}
 android {
 CONFIG(debug, debug|release) {
     DESTDIR = $$PWD/android-bin
@@ -34,13 +18,12 @@ CONFIG(debug, debug|release) {
 }
 
 win32 {
-    COMPONENTS = d:/projects/qt/components5
+    COMPONENTS = ../
     include($$COMPONENTS/commlib/commlib.pri)
     include($$COMPONENTS/usbhid/usbhid.pri)
 }
 
-PROJ_DIR = d:/projects
-OBJNET_DIR = $$PROJ_DIR/iar/components/stm32++/src/objnet
+OBJNET_DIR = $$PWD/../../iar/components/stm32++/src/objnet
 
 INCLUDEPATH += $$OBJNET_DIR
 INCLUDEPATH += $$OBJNET_DIR/../core
