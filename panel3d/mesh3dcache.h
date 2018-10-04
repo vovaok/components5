@@ -45,6 +45,8 @@ public:
     void setListIdForMesh(QString filename, int listId);
     int listId(QString filename) const {return mListId.value(filename, 0);}
 
+    bool isMeshLoaded(QString filename) const {return MeshCache.contains(filename);}
+
 public slots:
     void onMeshLoaded(QString filename, Mesh *mesh);
 
