@@ -1,4 +1,4 @@
-#include "usbhidonbinterface.h"
+#include "usbonbinterface.h"
 
 using namespace Objnet;
 

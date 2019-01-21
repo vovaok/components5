@@ -37,7 +37,8 @@ SOURCES += \
     $$OBJNET_DIR/objnetdevice.cpp \
     $$OBJNET_DIR/objnetnode.cpp \
     $$OBJNET_DIR/objectinfo.cpp \
-    $$OBJNET_DIR/objnetmsg.cpp
+    $$OBJNET_DIR/objnetmsg.cpp \
+    usbonbinterface.cpp
 
 HEADERS += \
     objnetvirtualinterface.h \
@@ -51,15 +52,14 @@ HEADERS += \
     $$OBJNET_DIR/objnetnode.h \
     $$OBJNET_DIR/objectinfo.h \
     $$OBJNET_DIR/../core/closure.h \
-    $$OBJNET_DIR/../core/closure_impl.h
+    $$OBJNET_DIR/../core/closure_impl.h \
+    usbonbinterface.h
 
 win32 {
 SOURCES += \
-    serialcaninterface.cpp \
-    usbhidonbinterface.cpp
+    serialcaninterface.cpp
 HEADERS += \
-    serialcaninterface.h \
-    usbhidonbinterface.h
+    serialcaninterface.h
 }
 
 unix {
