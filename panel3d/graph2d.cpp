@@ -292,8 +292,8 @@ void Graph2D::draw()
     float ey = mBounds.bottom();
     float w = mBounds.width();
     float h = mBounds.height();
-    float zx = mWidth / w;
-    float zy = mHeight / h;
+    float zx = w? mWidth / w: 1.0f;
+    float zy = h? mHeight / h: 1.0f;
     sx -= w*0.00001;
     sy -= h*0.00001;
     ex += w*0.00001;
