@@ -9,7 +9,7 @@ UsbHidThread::UsbHidThread(quint16 vid, quint16 pid, QObject *parent) :
     mRealInterval(0)
 {
     usb = new UsbHid(mVid, mPid);
-//    usb->moveToThread(this);
+    //    usb->moveToThread(this);
     connect(usb, SIGNAL(stateChanged(bool)), SLOT(onUsbStateChanged(bool)));
 }
 
@@ -49,7 +49,7 @@ void UsbHidThread::run()
 
             if (mOut.size())
             {
-//                out.append(mCounter++);
+                //                out.append(mCounter++);
                 usb->write(mOut);
             }
 
@@ -64,7 +64,7 @@ void UsbHidThread::run()
             QStringList devs = availableDevices();
             if (devs.count() == 1)
                 usb->setDevice();
-//            qDebug() << "try open usb";
+            //            qDebug() << "try open usb";
             usb->open();
         }
         mAccessMutex.unlock();
@@ -73,8 +73,8 @@ void UsbHidThread::run()
         mTimer.restart();
         mRealInterval = usecs * 1e-6;
         usecs = mPollingInterval*1000 - usecs;
-//        if (usecs > 0)
-//            usleep(usecs);
+        //        if (usecs > 0)
+        //            usleep(usecs);
         msleep(mPollingInterval);
     }
 }
@@ -116,7 +116,8 @@ bool UsbHidThread::setFeature(int id, const QByteArray &ba)
 {
     if (usb->isOpen() && mSetFeatureBuffer.size() < 64)
     {
-        Feature fe = {id, ba};
+        QByteArray bacopy(ba.data(), ba.size());
+        Feature fe = {(unsigned char)id, bacopy};
         mSetFeatureBuffer.enqueue(fe);
         return true;
     }
