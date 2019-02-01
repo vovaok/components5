@@ -55,7 +55,6 @@ private:
     GLfloat mEmissionfv[4];
 
     float mFullDrawTime;
-    float mDrawTime;
 
     void applyRotation();
     void computeFullTransform();
@@ -157,7 +156,6 @@ public:
     void setTexture(const QImage &image);
 
     float fullDrawTime() const {return mFullDrawTime;}
-    float drawTime() const {return mDrawTime;}
 
     virtual QVector3D getMinBounds();
     virtual QVector3D getMaxBounds();

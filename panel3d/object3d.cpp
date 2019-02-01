@@ -3,13 +3,13 @@
 
 Object3D::Object3D(QObject *parent) :
     QObject(parent),
-    mPanel(0L),
+    mPanel(nullptr),
     FSettingsChanged(false),
     FVisible(true),
     boundsVisible(false),
     axesVisible(false),
-    mFullDrawTime(0), mDrawTime(0),
-    mTexture(0L),
+    mFullDrawTime(0),
+    mTexture(nullptr),
     mPickable(true),
     mWireframe(false)
 {
@@ -95,11 +95,6 @@ void Object3D::drawObject()
 
     glMultMatrixf(transform);
 
-//    glTranslatef(xpos, ypos, zpos);
-//    glRotatef(xrot, 1, 0, 0);
-//    glRotatef(yrot, 0, 1, 0);
-//    glRotatef(zrot, 0, 0, 1);
-
     if (axesVisible && !scene()->mPicking)
     {
         QVector3D mn = getMinBounds();
@@ -110,9 +105,6 @@ void Object3D::drawObject()
         maxd = mx.z()>maxd? mx.z(): maxd;
         maxd *= 1.2;
         qreal r = sz/50;
-//        GLfloat par[4] = {1.0, 1.0, 1.0, 1.0};
-//
-//        glMaterialfv(GL_FRONT, GL_EMISSION, par);
 
         glEnable(GL_COLOR_MATERIAL);
 
@@ -193,8 +185,6 @@ void Object3D::drawObject()
         if (lighting)
             glEnable(GL_LIGHTING);
 
-//        par[0] = par[1] = par[2] = 0.0;
-//        glMaterialfv(GL_FRONT, GL_EMISSION, par);
     }
 
     if ((FVisible && !scene()->mPicking) || (mPickable && scene()->mPicking))
@@ -212,24 +202,16 @@ void Object3D::drawObject()
             glColor3f(mDiffuseColor.redF(), mDiffuseColor.greenF(), mDiffuseColor.blueF());
         }
 
-        if (mTexture)
-            mTexture->bind();
+        if (mTexture) mTexture->bind();
 
-        QElapsedTimer et2;
-        et2.start();
-
-        if (mWireframe)
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        if (mWireframe) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
         draw();
 
-        if (mWireframe)
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        if (mWireframe) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-        mDrawTime = et2.nsecsElapsed() * 1.0e-9;
 
-        if (mTexture)
-            mTexture->disable();
+        if (mTexture) mTexture->disable();
     }
 
     if (!scene()->mPicking || mPickable)
@@ -238,8 +220,9 @@ void Object3D::drawObject()
         for (it=children().begin(); it!=children().end(); it++)
         {
             Object3D *obj = qobject_cast<Object3D*>(*it);
-            if (!obj)
-                continue;
+
+            if (!obj) continue;
+
             obj->drawObject();
         }
     }
@@ -428,16 +411,6 @@ void Object3D::rotate(qreal angle, qreal vx, qreal vy, qreal vz)
 
 void Object3D::applyRotation()
 {
-//    for (int i=0; i<3; i++)
-//        for (int j=0; j<3; j++)
-//            transform[i*4+j]=i==j?1:0;
-//    glPushMatrix();
-//    glLoadMatrixf(transform);
-//    glRotatef(xrot, 1, 0, 0);
-//    glRotatef(yrot, 0, 1, 0);
-//    glRotatef(zrot, 0, 0, 1);
-//    glGetFloatv(GL_MODELVIEW_MATRIX, transform);
-//    glPopMatrix();
 
     QMatrix4x4 T;
     T.rotate(xrot, 1, 0, 0);
@@ -569,15 +542,6 @@ void Object3D::setUniformScale(qreal scale)
 
 void Object3D::computeFullTransform()
 {
-//    glPushMatrix();
-//    glLoadMatrixf(transform);
-//    glRotatef(xori, 1, 0, 0);
-//    glRotatef(yori, 0, 1, 0);
-//    glRotatef(zori, 0, 0, 1);
-//    glTranslatef(xcen, ycen, zcen);
-//    glScalef(xsc, ysc, zsc);
-//    glGetFloatv(GL_MODELVIEW_MATRIX, fullTransform);
-//    glPopMatrix();
 
     QMatrix4x4 T(transform);
     T.rotate(xori, 1, 0, 0);
