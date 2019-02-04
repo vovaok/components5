@@ -13,11 +13,10 @@ class MeshLoaderThread : public QThread
 {
     Q_OBJECT
 private:
-    Mesh *m;
-    QString f;
+    Mesh *m_mesh;
+    QString m_filename;
 public:
-    MeshLoaderThread(QString filename, Mesh *mesh, QObject *parent=0) :
-        QThread(parent), m(mesh), f(filename) {}
+    MeshLoaderThread(QString filename, Mesh *mesh, QObject *parent=nullptr) : QThread(parent), m_mesh(mesh), m_filename(filename) {}
     void run();
 signals:
     void loaded(QString, Mesh*);

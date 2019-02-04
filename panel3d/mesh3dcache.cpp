@@ -33,15 +33,14 @@ Mesh* Mesh3DCache::loadMesh(QString filename)
     mloader->start();
 
     while (mloader->isRunning())
-        qApp->processEvents(); // wait
+        qApp->processEvents();
 
     return mesh;
 }
 
 void Mesh3DCache::setListIdForMesh(QString filename, int listId)
 {
-    if (mMeshCache.contains(filename))
-        mListId[filename] = listId;
+    if (mMeshCache.contains(filename)) mListId[filename] = listId;
 }
 
 void Mesh3DCache::onMeshLoaded(QString filename, Mesh *mesh)
@@ -58,19 +57,19 @@ void Mesh3DCache::onMeshLoaded(QString filename, Mesh *mesh)
 
 void MeshLoaderThread::run()
 {
-    QFile file(f);
+    QFile file(m_filename);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        m = nullptr;
+        m_mesh = nullptr;
     }
     else
     {
         QTextStream stream(&file);
-        QFileInfo fi(f);
-        m->setUrlPrefix(fi.path());
-        m->load(&stream);
+        QFileInfo fi(m_filename);
+        m_mesh->setUrlPrefix(fi.path());
+        m_mesh->load(&stream);
         file.close();
     }
 
-    emit loaded(f, m);
+    emit loaded(m_filename, m_mesh);
 }
