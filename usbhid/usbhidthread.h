@@ -25,6 +25,7 @@ private:
         QByteArray ba;
     };
     QQueue<Feature> mSetFeatureBuffer;
+    Feature mCurFe;
 
 protected:
     void run();// override;
