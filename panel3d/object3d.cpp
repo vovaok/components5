@@ -44,7 +44,7 @@ void Object3D::setParent(QObject *parent)
         disconnect(mPanel, SIGNAL(onUpdate()), this, SLOT(update()));
     }
 
-    mPanel = 0L;
+    mPanel = nullptr;
     Object3D *par = qobject_cast<Object3D*>(parent);
     if (par)
     {
@@ -240,15 +240,6 @@ void Object3D::drawObject()
 
 void Object3D::draw()
 {
-//    glBegin(GL_LINES);
-//    glColor3f(1, 0, 0);
-//    glVertex3f(0, 0, 0); glVertex3f(10, 0, 0);
-//    glColor3f(0, 1, 0);
-//    glVertex3f(0, 0, 0); glVertex3f(0, 10, 0);
-//    glColor3f(0, 0, 1);
-//    glVertex3f(0, 0, 0); glVertex3f(0, 0, 10);
-//    glEnd();
-//    glColor3f(1, 1, 1);
 }
 
 void Object3D::findGlobalTransform(GLfloat *matrix)
@@ -264,14 +255,12 @@ void Object3D::findGlobalTransform(GLfloat *matrix)
     glGetFloatv(GL_MODELVIEW_MATRIX, matrix);
     glPopMatrix();
 }
-//----------------------------------------------------------
 
 void Object3D::setVisible(bool visible)
 {
     FVisible = visible;
     emit changed();
 }
-//----------------------------------------------------------
 
 void Object3D::setTransform(const GLfloat *matrix)
 {
@@ -280,7 +269,6 @@ void Object3D::setTransform(const GLfloat *matrix)
     computeFullTransform();
     emit changed();
 }
-//----------------------------------------------------------
 
 void Object3D::setXPos(qreal pos)
 {
@@ -320,7 +308,6 @@ void Object3D::setPosition(qreal x, qreal y, qreal z)
     computeFullTransform();
     emit changed();
 }
-//----------------------------------------------------------
 
 void Object3D::setXRot(qreal angle)
 {
@@ -429,7 +416,6 @@ void Object3D::applyRotation()
 
     computeFullTransform();
 }
-//----------------------------------------------------------
 
 void Object3D::setXCenter(qreal pos)
 {
