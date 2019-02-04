@@ -22,24 +22,25 @@ public:
 private:
     bool FAutoUpdate;
     bool mOverpainting;
-    Camera3D *mainCamera = nullptr;
-    Camera3D *camera = nullptr;
+    Camera3D *mMainCamera = nullptr;
+    Camera3D *mCamera = nullptr;
     QVector<Light3D*> mLights;
-    Object3D *pRoot = nullptr;
+    Object3D *mRoot = nullptr;
+    Object3D *mWorld = nullptr;
 
-    QColor BackColor;
+    QColor mBackColor;
 
-    EViewType ViewType;
+    EViewType mViewType;
 
-    QPoint mousePos;
-    QVector3D mousePoint;
-    QVector3D mouseVector;
-    float mouseZplane;
+    QPoint mMousePos;
+    QVector3D mMousePoint;
+    QVector3D mMouseVector;
+    float mMouseZplane;
 
     QVector3D cursorToPoint(int x, int y);
     void cursorToRootPoint(int x, int y);
 
-    QGLFramebufferObject *frameBufferObject = nullptr;
+    QGLFramebufferObject *mFrameBufferObject = nullptr;
     bool mRenderingToBuffer;
     QSize mBufferSize;
     Camera3D *mBufferCamera = nullptr;
@@ -65,15 +66,16 @@ protected:
 public:
     explicit QPanel3D(QWidget *parent = nullptr);
 
-    Camera3D* getCamera() {return camera;}
+    Camera3D* camera() {return mCamera;}
     void setCamera(Camera3D *value);
 
-    Object3D* root() {return pRoot;}
+    Object3D* root() {return mRoot;}
+    Object3D* world() {return mWorld;}
 
-    EViewType viewType() {return ViewType;}
+    EViewType viewType() {return mViewType;}
     void setViewType(EViewType type);
 
-    QColor backColor() {return BackColor;}
+    QColor backColor() {return mBackColor;}
     void setBackColor(QColor color);
 
     bool isOverpaintingEnabled() const {return mOverpainting;}

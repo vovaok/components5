@@ -3,26 +3,28 @@
 QPanel3D::QPanel3D(QWidget *parent) :
     QGLWidget(QGLFormat(QGL::SampleBuffers|QGL::AlphaChannel), parent),
     mOverpainting(false),
-    mouseZplane(0.5f),
+    mMouseZplane(0.5f),
     mRenderingToBuffer(false),
     mBufferSize(320, 240),
     mPickingEnabled(false),
     mPicking(false)
 {
     FAutoUpdate = false;
-    mainCamera = new Camera3D(this);
-    camera = mainCamera;
-    pRoot = new Object3D(this);
-    pRoot->setVisible(true);
-    ViewType = object;
-    BackColor = Qt::black;
+    mMainCamera = new Camera3D(this);
+    mCamera = mMainCamera;
+    mWorld = new Object3D(this);
+    mWorld->setVisible(true);
+    mRoot = new Object3D(this);
+    mRoot->setVisible(true);
+    mViewType = object;
+    mBackColor = Qt::black;
 
     setAutoFillBackground(false);
 }
 
 void QPanel3D::initializeGL()
 {
-    qglClearColor(BackColor);
+    qglClearColor(mBackColor);
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
@@ -45,13 +47,13 @@ void QPanel3D::initializeGL()
 void QPanel3D::resizeGL(int width, int height)
 {
     glViewport(0, 0, static_cast<GLint>(width), static_cast<GLint>(height));
-    camera->setAspect(static_cast<qreal>(width) / static_cast<qreal>(height));
+    mCamera->setAspect(static_cast<qreal>(width) / static_cast<qreal>(height));
     glSettings();
 }
 
 void QPanel3D::paintGL()
 {
-    Camera3D *cam = camera;
+    Camera3D *cam = mCamera;
     if (mRenderingToBuffer)
     {
         QGLFramebufferObjectFormat format;
@@ -59,41 +61,42 @@ void QPanel3D::paintGL()
         format.setInternalTextureFormat(GL_RGBA8);
         format.setSamples(4);
 
-        frameBufferObject = new QGLFramebufferObject(mBufferSize, format);
-        frameBufferObject->bind();
+        mFrameBufferObject = new QGLFramebufferObject(mBufferSize, format);
+        mFrameBufferObject->bind();
 
         qglClearColor(Qt::transparent);
         glViewport(0, 0, static_cast<GLint>(mBufferSize.width()), static_cast<GLint>(mBufferSize.height()));
         if (mBufferCamera)
         {
-            camera = mBufferCamera;
-            camera->setAspect(static_cast<qreal>(mBufferSize.width()) / static_cast<qreal>(mBufferSize.height()));
+            mCamera = mBufferCamera;
+            mCamera->setAspect(static_cast<qreal>(mBufferSize.width()) / static_cast<qreal>(mBufferSize.height()));
         }
-        gluPerspective(camera->viewAngle() / camera->zoom(), camera->aspect(), camera->nearPlane(), camera->distanceLimit());
+        gluPerspective(mCamera->viewAngle() / mCamera->zoom(), mCamera->aspect(), mCamera->nearPlane(), mCamera->distanceLimit());
     }
 
-    if (this != camera->parent())
+    if (this != mCamera->parent())
     {
         GLfloat matrix[16];
-        camera->findGlobalTransform(matrix);
-        camera->setTransform(matrix);
+        mCamera->findGlobalTransform(matrix);
+        mCamera->setTransform(matrix);
     }
 
-    qglClearColor(BackColor);
+    qglClearColor(mBackColor);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
 
-    pRoot->drawObject();
+    mWorld->drawObject();
+    mRoot->drawObject();
 
     if (mRenderingToBuffer)
     {
-        frameBufferObject->release();
-        qglClearColor(BackColor);
+        mFrameBufferObject->release();
+        qglClearColor(mBackColor);
         glViewport(0, 0, static_cast<GLint>(width()), static_cast<GLint>(height()));
         if (mBufferCamera)
         {
-            camera = cam;
-            camera->setAspect(static_cast<qreal>(width()) / static_cast<qreal>(height()));
+            mCamera = cam;
+            mCamera->setAspect(static_cast<qreal>(width()) / static_cast<qreal>(height()));
         }
     }
 }
@@ -122,8 +125,8 @@ void QPanel3D::paintEvent(QPaintEvent *)
 
 void QPanel3D::setCamera(Camera3D *value)
 {
-    camera = value;
-    camera->setAspect((GLfloat)width() / (GLfloat)height());
+    mCamera = value;
+    mCamera->setAspect((GLfloat)width() / (GLfloat)height());
     updateGL();
 }
 
@@ -134,18 +137,18 @@ void QPanel3D::setAutoUpdate(bool on)
 
 void QPanel3D::setViewType(EViewType type)
 {
-    ViewType = type;
-    if (ViewType == fly)
-        camera->setFollowing(false);
-    else if (ViewType == object)
-        camera->setFollowing(true);
+    mViewType = type;
+    if (mViewType == fly)
+        mCamera->setFollowing(false);
+    else if (mViewType == object)
+        mCamera->setFollowing(true);
 }
 
 void QPanel3D::setBackColor(QColor color)
 {
-    BackColor = color;
+    mBackColor = color;
     makeCurrent();
-    qglClearColor(BackColor);
+    qglClearColor(mBackColor);
     updateGL();
 }
 
@@ -175,29 +178,29 @@ void QPanel3D::glSettings()
         gluPickMatrix(mPickPoint.x(), viewport[3]-mPickPoint.y(), 3, 3, viewport);
     }
 
-    if (camera->ortho())
+    if (mCamera->ortho())
     {
         int w, h, d;
-        d = camera->distanceLimit();
-        if (camera->fixedViewport())
+        d = mCamera->distanceLimit();
+        if (mCamera->fixedViewport())
         {
-                w = camera->fixedViewportSize().width() / 2;
-                h = camera->fixedViewportSize().height() / 2;
+                w = mCamera->fixedViewportSize().width() / 2;
+                h = mCamera->fixedViewportSize().height() / 2;
         }
         else
         {
-                h = d / camera->zoom();
-                w = h * camera->aspect();
+                h = d / mCamera->zoom();
+                w = h * mCamera->aspect();
         }
         glOrtho(-w,w, -h,h, -d,d);
     }
     else
     {
-        gluPerspective(camera->viewAngle() / camera->zoom(), camera->aspect(), camera->nearPlane(), camera->distanceLimit());
+        gluPerspective(mCamera->viewAngle() / mCamera->zoom(), mCamera->aspect(), mCamera->nearPlane(), mCamera->distanceLimit());
     }
-    gluLookAt(camera->position().x(), camera->position().y(), camera->position().z(),
-              camera->target().x(), camera->target().y(), camera->target().z(),
-              camera->topDir().x(), camera->topDir().y(), camera->topDir().z());
+    gluLookAt(mCamera->position().x(), mCamera->position().y(), mCamera->position().z(),
+              mCamera->target().x(), mCamera->target().y(), mCamera->target().z(),
+              mCamera->topDir().x(), mCamera->topDir().y(), mCamera->topDir().z());
 
     glMatrixMode(GL_MODELVIEW);
 }
@@ -242,7 +245,7 @@ void QPanel3D::cursorToRootPoint(int x, int y)
     GLint vp[4];
 
     glPushMatrix();
-    glMultMatrixf(pRoot->transformMatrix());
+    glMultMatrixf(mRoot->transformMatrix());
     glGetDoublev(GL_MODELVIEW_MATRIX, mm);
     glPopMatrix();
     glGetDoublev(GL_PROJECTION_MATRIX, pm);
@@ -263,8 +266,8 @@ void QPanel3D::cursorToRootPoint(int x, int y)
         v = p2 - p1;
     }
 
-    mousePoint = p2;
-    mouseVector = v;
+    mMousePoint = p2;
+    mMouseVector = v;
 }
 
 void QPanel3D::setMousePlane(QVector3D pointOnPlane)
@@ -276,7 +279,7 @@ void QPanel3D::setMousePlane(QVector3D pointOnPlane)
     GLint vp[4];
 
     glPushMatrix();
-    glMultMatrixf(pRoot->transformMatrix());
+    glMultMatrixf(mRoot->transformMatrix());
     glGetDoublev(GL_MODELVIEW_MATRIX, mm);
     glPopMatrix();
     glGetDoublev(GL_PROJECTION_MATRIX, pm);
@@ -286,7 +289,7 @@ void QPanel3D::setMousePlane(QVector3D pointOnPlane)
 
     if (gluProject(pointOnPlane.x(), pointOnPlane.y(), pointOnPlane.z(), mm, pm, vp, win, win+1, win+2))
     {
-        mouseZplane = win[2];
+        mMouseZplane = win[2];
     }
 }
 
@@ -352,51 +355,51 @@ void QPanel3D::pick(int x, int y)
 
 void QPanel3D::mousePressEvent(QMouseEvent *event)
 {
-    mousePos = event->pos();
+    mMousePos = event->pos();
     if (event->buttons() & Qt::LeftButton)
     {
-        cursorToRootPoint(mousePos.x(), mousePos.y());
-        emit clicked(mousePoint, mouseVector);
+        cursorToRootPoint(mMousePos.x(), mMousePos.y());
+        emit clicked(mMousePoint, mMouseVector);
 
         if (mPickingEnabled)
-            pick(mousePos.x(), mousePos.y());
+            pick(mMousePos.x(), mMousePos.y());
     }
 }
 
 void QPanel3D::mouseMoveEvent(QMouseEvent *event)
 {
-    int dx = event->x() - mousePos.x();
-    int dy = event->y() - mousePos.y();
+    int dx = event->x() - mMousePos.x();
+    int dy = event->y() - mMousePos.y();
 
-    mousePos = event->pos();
+    mMousePos = event->pos();
 
     if (event->buttons() & Qt::LeftButton)
     {
-        cursorToRootPoint(mousePos.x(), mousePos.y());
-        emit moved(mousePoint, mouseVector);
+        cursorToRootPoint(mMousePos.x(), mMousePos.y());
+        emit moved(mMousePoint, mMouseVector);
     }
 
-    if (this == camera->parent() && event->buttons())
+    if (this == mCamera->parent() && event->buttons())
     {
-        if (camera->ortho())
+        if (mCamera->ortho())
         {
-            GLfloat zoom = 2 * camera->distanceLimit() / this->height() / camera->zoom();
+            GLfloat zoom = 2 * mCamera->distanceLimit() / this->height() / mCamera->zoom();
             QVector3D vx;
-            vx = QVector3D::normal(camera->topDir(), camera->direction()) * zoom;
-            QVector3D vy = camera->topDir();
+            vx = QVector3D::normal(mCamera->topDir(), mCamera->direction()) * zoom;
+            QVector3D vy = mCamera->topDir();
             vy.normalize();
             vy = vy * zoom;
 
             if (event->buttons() & Qt::MidButton)
             {
-                camera->setPosition(camera->position() + vx*dx + vy*dy);
+                mCamera->setPosition(mCamera->position() + vx*dx + vy*dy);
             }
         }
         else
         {
             QVector3D vx, vy;
-            QVector3D dir = camera->direction();
-            QVector3D top = camera->topDir();
+            QVector3D dir = mCamera->direction();
+            QVector3D top = mCamera->topDir();
             vx = QVector3D::normal(top, dir);
             vy = QVector3D::normal(dir, vx);
 
@@ -407,7 +410,7 @@ void QPanel3D::mouseMoveEvent(QMouseEvent *event)
                 GLint vp[4];
 
                 glPushMatrix();
-                glMultMatrixf(pRoot->transformMatrix());
+                glMultMatrixf(mRoot->transformMatrix());
                 glGetDoublev(GL_MODELVIEW_MATRIX, mm);
                 glPopMatrix();
                 glGetDoublev(GL_PROJECTION_MATRIX, pm);
@@ -417,10 +420,10 @@ void QPanel3D::mouseMoveEvent(QMouseEvent *event)
                 QVector3D p1, p2;
                 QVector3D v;
 
-                if (gluUnProject(event->x()-dx, vp[3]-event->y()+dy-1, mouseZplane, mm, pm, vp, obj, obj+1, obj+2))
+                if (gluUnProject(event->x()-dx, vp[3]-event->y()+dy-1, mMouseZplane, mm, pm, vp, obj, obj+1, obj+2))
                 {
                     p1 = QVector3D(obj[0], obj[1], obj[2]);
-                    gluUnProject(event->x(), vp[3]-event->y()-1, mouseZplane, mm, pm, vp, obj, obj+1, obj+2);
+                    gluUnProject(event->x(), vp[3]-event->y()-1, mMouseZplane, mm, pm, vp, obj, obj+1, obj+2);
                     p2 = QVector3D(obj[0], obj[1], obj[2]);
                     gluUnProject(event->x(), vp[3]-event->y()-1, 0, mm, pm, vp, obj, obj+1, obj+2);
                     QVector3D n = (QVector3D(obj[0], obj[1], obj[2]) - p2).normalized();
@@ -430,42 +433,42 @@ void QPanel3D::mouseMoveEvent(QMouseEvent *event)
             }
             else if (event->buttons() & Qt::RightButton)
             {
-                if (ViewType == object)
+                if (mViewType == object)
                 {
 
                     QVector3D vv = vx*dx + vy*dy;
                     qreal angle = vv.length() * 0.5;
                     vv = QVector3D::normal(dir, vv);
-                    GLfloat *mat = pRoot->transformMatrix();
+                    GLfloat *mat = mRoot->transformMatrix();
                     QVector3D vm;
                     vm.setX(mat[0]*vv.x()+mat[1]*vv.y()+mat[2]*vv.z());
                     vm.setY(mat[4]*vv.x()+mat[5]*vv.y()+mat[6]*vv.z());
                     vm.setZ(mat[8]*vv.x()+mat[9]*vv.y()+mat[10]*vv.z());
 
-                    pRoot->rotate(angle, vm.x(), vm.y(), vm.z());
+                    mRoot->rotate(angle, vm.x(), vm.y(), vm.z());
                 }
-                else if (ViewType == fly)
+                else if (mViewType == fly)
                 {
-                    camera->setTopDir(vy);
+                    mCamera->setTopDir(vy);
                     vx = vx * (dx/360.0);
                     vy = vy * (dy/360.0);
-                    camera->setDirection(camera->direction() + vy + vx);
+                    mCamera->setDirection(mCamera->direction() + vy + vx);
                 }
             }
             else if (event->buttons() & Qt::MidButton)
             {
-                if (ViewType == object)
+                if (mViewType == object)
                 {
-                    qreal d = (camera->position() - pRoot->pos()).length();
+                    qreal d = (mCamera->position() - mRoot->pos()).length();
                     vx = vx * (dx/10.0) * d * 0.015;
                     vy = vy * (dy/10.0) * d * 0.015;
-                    camera->setPosition(camera->position() + vx + vy);
+                    mCamera->setPosition(mCamera->position() + vx + vy);
                 }
-                else if (ViewType == fly)
+                else if (mViewType == fly)
                 {
-                    vx = vx * (dx/10.0) * camera->distanceLimit()/250.0;
-                    vy = vy * (dy/10.0) * camera->distanceLimit()/250.0;
-                    camera->setPosition(camera->position() + vx + vy);
+                    vx = vx * (dx/10.0) * mCamera->distanceLimit()/250.0;
+                    vy = vy * (dy/10.0) * mCamera->distanceLimit()/250.0;
+                    mCamera->setPosition(mCamera->position() + vx + vy);
                 }
             }
         }
@@ -475,25 +478,25 @@ void QPanel3D::mouseMoveEvent(QMouseEvent *event)
 void QPanel3D::wheelEvent(QWheelEvent *event)
 {
     QVector3D p1 = cursorToPoint(event->x(), event->y());
-    if (this == camera->parent())
+    if (this == mCamera->parent())
     {
-        if (camera->ortho())
+        if (mCamera->ortho())
         {
-            camera->setZoom(camera->zoom() * (1 + event->delta()/5000.0));
+            mCamera->setZoom(mCamera->zoom() * (1 + event->delta()/5000.0));
         }
         else
         {
-            if (ViewType == object)
+            if (mViewType == object)
             {
-                qreal d = camera->position().length();
-                QVector3D dir = (p1 - camera->position()).normalized();
+                qreal d = mCamera->position().length();
+                QVector3D dir = (p1 - mCamera->position()).normalized();
                 QVector3D v = dir * (event->delta()/100.0) * d * 0.01;
-                camera->setPosition(camera->position() + v);
+                mCamera->setPosition(mCamera->position() + v);
             }
-            else if (ViewType == fly)
+            else if (mViewType == fly)
             {
-                QVector3D v = camera->direction() * (event->delta()/100.0 * camera->distanceLimit()/250.0);
-                camera->setPosition(camera->position() + v);
+                QVector3D v = mCamera->direction() * (event->delta()/100.0 * mCamera->distanceLimit()/250.0);
+                mCamera->setPosition(mCamera->position() + v);
             }
         }
     }
@@ -512,10 +515,10 @@ void QPanel3D::renderToImage(QImage &img)
 {
     mRenderingToBuffer = true;
     updateGL();
-    if (frameBufferObject)
+    if (mFrameBufferObject)
     {
-        img = frameBufferObject->toImage();
-        delete frameBufferObject;
+        img = mFrameBufferObject->toImage();
+        delete mFrameBufferObject;
     }
     mRenderingToBuffer = false;
 }
@@ -543,7 +546,7 @@ void QPanel3D::renderText(double x, double y, double z, const QString &str, cons
         int winX = lrintf(((point.x() + 1) / 2.0) * vp[2]);
         int winY = lrintf(((1 - point.y()) / 2.0) * vp[3]);
 
-        QPainter painter(frameBufferObject);
+        QPainter painter(mFrameBufferObject);
         painter.setFont(font);
         QColor qcol = QColor(col[0] * 255, col[1] * 255, col[2] * 255);
         painter.setPen(qcol);
