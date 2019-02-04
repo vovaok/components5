@@ -1,7 +1,7 @@
 #include "mesh3dcache.h"
 #include <QApplication>
 
-Mesh3DCache *Mesh3DCache::self = nullptr;
+Mesh3DCache *Mesh3DCache::mSelf = nullptr;
 
 Mesh3DCache::Mesh3DCache(QObject *parent) : QObject(parent)
 {
@@ -9,20 +9,20 @@ Mesh3DCache::Mesh3DCache(QObject *parent) : QObject(parent)
 
 Mesh3DCache::~Mesh3DCache()
 {
-    for(auto mesh : MeshCache) delete mesh;
-    MeshCache.clear();
+    for(auto mesh : mMeshCache) delete mesh;
+    mMeshCache.clear();
 }
 
 Mesh3DCache *Mesh3DCache::instance()
 {
-    if (!self) self = new Mesh3DCache();
+    if (!mSelf) mSelf = new Mesh3DCache();
 
-    return self;
+    return mSelf;
 }
 
 Mesh* Mesh3DCache::loadMesh(QString filename)
 {
-    Mesh *mesh = MeshCache.value(filename, nullptr);
+    Mesh *mesh = mMeshCache.value(filename, nullptr);
     if (mesh)
         return mesh;
 
@@ -40,7 +40,7 @@ Mesh* Mesh3DCache::loadMesh(QString filename)
 
 void Mesh3DCache::setListIdForMesh(QString filename, int listId)
 {
-    if (MeshCache.contains(filename)) mListId[filename] = listId;
+    if (mMeshCache.contains(filename)) mListId[filename] = listId;
 }
 
 void Mesh3DCache::onMeshLoaded(QString filename, Mesh *mesh)
@@ -51,8 +51,8 @@ void Mesh3DCache::onMeshLoaded(QString filename, Mesh *mesh)
         return;
     }
 
-    MeshCache[filename] = mesh;
-    qDebug() << "model '" + filename + "' loaded";
+    mMeshCache[filename] = mesh;
+    //qDebug() << "model '" + filename + "' loaded";
 }
 
 void MeshLoaderThread::run()

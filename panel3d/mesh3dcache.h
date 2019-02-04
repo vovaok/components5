@@ -27,14 +27,14 @@ class Mesh3DCache : public QObject
     Q_OBJECT
 
 private:
-    QMap <QString, Mesh*> MeshCache;
+    QMap <QString, Mesh*> mMeshCache;
     QMap<QString, int> mListId;
 
 private:
     explicit Mesh3DCache(QObject *parent = 0);
     virtual ~Mesh3DCache();
 
-    static Mesh3DCache *self;
+    static Mesh3DCache *mSelf;
     Q_DISABLE_COPY(Mesh3DCache)
 
 public:
@@ -44,7 +44,7 @@ public:
     void setListIdForMesh(QString filename, int listId);
     int listId(QString filename) const {return mListId.value(filename, 0);}
 
-    bool isMeshLoaded(QString filename) const {return MeshCache.contains(filename);}
+    bool isMeshLoaded(QString filename) const {return mMeshCache.contains(filename);}
 
 public slots:
     void onMeshLoaded(QString filename, Mesh *mesh);
