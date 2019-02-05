@@ -1,4 +1,4 @@
-QT       += network
+QT       += network concurrent
 QT       -= gui
 
 TEMPLATE = lib
