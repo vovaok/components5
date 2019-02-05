@@ -1,4 +1,7 @@
 #include "usbhidthread.h"
+#include <QtConcurrent/QtConcurrent>
+#include <QFuture>
+#include <QFutureWatcher>
 
 UsbHidThread::UsbHidThread(quint16 vid, quint16 pid, QObject *parent) :
     QThread(parent),
@@ -8,8 +11,8 @@ UsbHidThread::UsbHidThread(quint16 vid, quint16 pid, QObject *parent) :
     mCounter(0),
     mRealInterval(0)
 {
+
     usb = new UsbHid(mVid, mPid);
-    //    usb->moveToThread(this);
     connect(usb, SIGNAL(stateChanged(bool)), SLOT(onUsbStateChanged(bool)));
 }
 
@@ -22,10 +25,7 @@ UsbHidThread::~UsbHidThread()
 
 void UsbHidThread::setReportData(const QByteArray &ba)
 {
-    // mb stoit mutex pouzat, a mb stoit ne uzat
-    mAccessMutex.lock();
     mOut = ba;
-    mAccessMutex.unlock();
 }
 
 void UsbHidThread::run()
@@ -49,14 +49,13 @@ void UsbHidThread::run()
 
             if (mOut.size())
             {
-                //                out.append(mCounter++);
                 usb->write(mOut);
             }
 
             while (!mSetFeatureBuffer.isEmpty())
             {
-                Feature fe = mSetFeatureBuffer.dequeue();
-                usb->setFeature(fe.id, fe.ba);
+                Feature feature = mSetFeatureBuffer.dequeue();
+                usb->setFeature(feature.id, feature.ba);
             }
         }
         else // autoconnect
@@ -64,7 +63,6 @@ void UsbHidThread::run()
             QStringList devs = availableDevices();
             if (devs.count() == 1)
                 usb->setDevice();
-            //            qDebug() << "try open usb";
             usb->open();
         }
         mAccessMutex.unlock();

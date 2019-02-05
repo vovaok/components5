@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QGLWidget>
-#include <GL/glu.h>
+#include <gl/GLU.h>
 #include <QMatrix4x4>
 #include <math.h>
 #include "texture.h"
@@ -95,9 +95,6 @@ public:
 
     void setWireframe(bool wireframe) {mWireframe = wireframe;}
     bool isWireframe() const {return mWireframe;}
-
-//    QMatrix4x4 transform() {return trans;}
-//    void setTransform(QMatrix4x4 &matrix);
 
     GLfloat* transformMatrix() {return transform;}
     GLfloat* fullTransformMatrix() {return fullTransform;}

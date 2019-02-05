@@ -29,11 +29,10 @@ void Mesh::load(QTextStream *stream)
 
 void Mesh::scaleUniform(float factor)
 {
-    for (auto shape : Shapes)
+    for (auto& shape : Shapes)
     {
-        for (auto point : shape->points) point *= factor;
-
-        for (auto vertex : shape->vertices) vertex.point *= factor;
+        for (auto& point : shape->points) point *= factor;
+        for (auto& vertex : shape->vertices) vertex.point *= factor;
     }
 }
 
