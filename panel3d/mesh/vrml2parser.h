@@ -50,7 +50,7 @@ private:
 
     // node parsing
     SFNode registerNode(SFNode node, QString nodeName);
-    SFNode parseSFNode(GroupingNode *parent=0L);
+    SFNode parseSFNode(GroupingNode *parent = nullptr);
     void parseMFNode(GroupingNode *parent);
 
     // complex type parsing
@@ -70,7 +70,7 @@ private:
     void parseUnknown();
 
 public:
-    explicit Vrml2Parser(QObject *parent = 0);
+    explicit Vrml2Parser(QObject *parent = nullptr);
     ~Vrml2Parser();
 
     void clearScene();

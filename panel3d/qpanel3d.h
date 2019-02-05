@@ -22,29 +22,28 @@ public:
 private:
     bool FAutoUpdate;
     bool mOverpainting;
-    Camera3D *MainCam;
-    Camera3D *Camera;
+    Camera3D *mMainCamera = nullptr;
+    Camera3D *mCamera = nullptr;
     QVector<Light3D*> mLights;
-    Object3D *pWorld, *pRoot;
+    Object3D *mRoot = nullptr;
+    Object3D *mWorld = nullptr;
 
-    QColor BackColor;
+    QColor mBackColor;
 
-    EViewType ViewType;
+    EViewType mViewType;
 
-    QPoint mousePos;
-    QVector3D mousePoint;
-    QVector3D mouseVector;
-    float mouseZplane;
-
-    bool mFrame;
+    QPoint mMousePos;
+    QVector3D mMousePoint;
+    QVector3D mMouseVector;
+    float mMouseZplane;
 
     QVector3D cursorToPoint(int x, int y);
     void cursorToRootPoint(int x, int y);
 
-    QGLFramebufferObject *mFbo;
+    QGLFramebufferObject *mFrameBufferObject = nullptr;
     bool mRenderingToBuffer;
     QSize mBufferSize;
-    Camera3D *mBufferCamera;
+    Camera3D *mBufferCamera = nullptr;
 
     const static int mSelectBufSize = 512;
     GLuint mSelectBuf[mSelectBufSize];
@@ -64,21 +63,19 @@ protected:
     void mouseMoveEvent(QMouseEvent *event);
     void wheelEvent(QWheelEvent *event);
 
-//    void childEvent(QChildEvent *e);
-
 public:
-    explicit QPanel3D(QWidget *parent = 0);
+    explicit QPanel3D(QWidget *parent = nullptr);
 
-    Camera3D* camera() {return Camera;}
-    void setCamera(Camera3D *camera);
+    Camera3D* camera() {return mCamera;}
+    void setCamera(Camera3D *value);
 
-    Object3D* root() {return pRoot;}
-    Object3D* world() {return pWorld;}
+    Object3D* root() {return mRoot;}
+    Object3D* world() {return mWorld;}
 
-    EViewType viewType() {return ViewType;}
+    EViewType viewType() {return mViewType;}
     void setViewType(EViewType type);
 
-    QColor backColor() {return BackColor;}
+    QColor backColor() {return mBackColor;}
     void setBackColor(QColor color);
 
     bool isOverpaintingEnabled() const {return mOverpainting;}

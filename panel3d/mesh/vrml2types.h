@@ -109,10 +109,10 @@ public:
     SFFloat transparency;
 
     Material() : SFNodeT("Material"),
-        ambientIntensity(0.2),
-        diffuseColor(0.8*255, 0.8*255, 0.8*255),
+        ambientIntensity(0.2f),
+        diffuseColor(static_cast<int>(0.8 * 255), static_cast<int>(0.8 * 255), static_cast<int>(0.8 * 255)),
         emissiveColor(0, 0, 0),
-        shininess(0.2),
+        shininess(0.2f),
         specularColor(0, 0, 0),
         transparency(0)
     {}
@@ -141,9 +141,9 @@ private:
 
 public:
     Appearance() : SFNodeT("Appearance"),
-        _material(0L),
-        _texture(0L),
-        _textureTransform(0L)
+        _material(nullptr),
+        _texture(nullptr),
+        _textureTransform(nullptr)
     {}
     ~Appearance()
     {
@@ -230,10 +230,10 @@ public:
     MFInt32 texCoordIndex;
 
     IndexedFaceSet() : SFNodeT("IndexedFaceSet"),
-        _color(0L),
-        _coord(0L),
-        _normal(0L),
-        _texCoord(0L),
+        _color(nullptr),
+        _coord(nullptr),
+        _normal(nullptr),
+        _texCoord(nullptr),
         ccw(true),
         colorPerVertex(true),
         convex(true),
@@ -273,8 +273,8 @@ private:
 
 public:
     explicit Shape(GroupingNode *parent) : ChildNode(parent, "Shape"),
-        _appearance(0L),
-        _geometry(0L)
+        _appearance(nullptr),
+        _geometry(nullptr)
     {}
     ~Shape()
     {
