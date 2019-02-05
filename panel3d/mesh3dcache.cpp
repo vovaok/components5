@@ -59,7 +59,7 @@ void Mesh3DCache::onMeshLoaded(QString filename, Mesh *mesh)
 
 //    mesh->setMinMaxValues();
     MeshCache[filename] = mesh;
-    qDebug() << "model '" + filename + "' loaded";
+    //qDebug() << "model '" + filename + "' loaded";
 }
 //---------------------------------------------------------
 
