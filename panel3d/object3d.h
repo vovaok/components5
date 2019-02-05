@@ -106,37 +106,37 @@ public:
 
     void setTransform(const GLfloat *matrix);
 
-    void setXPos(qreal pos);
-    void setYPos(qreal pos);
-    void setZPos(qreal pos);
+    void setXPos(float pos);
+    void setYPos(float pos);
+    void setZPos(float pos);
     void setPosition(QVector3D pos);
-    void setPosition(qreal x, qreal y, qreal z);
+    void setPosition(float x, float y, float z);
 
-    void setXRot(qreal angle);
-    void setYRot(qreal angle);
-    void setZRot(qreal angle);
+    void setXRot(float angle);
+    void setYRot(float angle);
+    void setZRot(float angle);
     void setRotation(QVector3D rot);
-    void setRotation(qreal x, qreal y, qreal z);
+    void setRotation(float x, float y, float z);
     void setRotation(const QQuaternion &q);
     void setRotation(const QMatrix3x3 &m);
-    void rotate(qreal angle, qreal vx, qreal vy, qreal vz);
+    void rotate(float angle, float vx, float vy, float vz);
 
-    void setXCenter(qreal pos);
-    void setYCenter(qreal pos);
-    void setZCenter(qreal pos);
+    void setXCenter(float pos);
+    void setYCenter(float pos);
+    void setZCenter(float pos);
     void setCenter(QVector3D center);
-    void setCenter(qreal x, qreal y, qreal z);
+    void setCenter(float x, float y, float z);
 
-    void setXOrient(qreal angle);
-    void setYOrient(qreal angle);
-    void setZOrient(qreal angle);
+    void setXOrient(float angle);
+    void setYOrient(float angle);
+    void setZOrient(float angle);
     void setOrient(QVector3D orient);
-    void setOrient(qreal x, qreal y, qreal z);
+    void setOrient(float x, float y, float z);
 
-    void setXScale(qreal scale);
-    void setYScale(qreal scale);
-    void setZScale(qreal scale);
-    void setUniformScale(qreal scale);
+    void setXScale(float scale);
+    void setYScale(float scale);
+    void setZScale(float scale);
+    void setUniformScale(float scale);
 
     void setColor(QColor diffuse, QColor specular=Qt::black, QColor emission=Qt::black, float ambient=0.25, int shininess=0);
     void setDiffuseColor(QColor color);
