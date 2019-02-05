@@ -54,8 +54,8 @@ void UsbHidThread::run()
 
             while (!mSetFeatureBuffer.isEmpty())
             {
-                Feature feature = mSetFeatureBuffer.dequeue();
-                usb->setFeature(feature.id, feature.ba);
+                mCurFe = mSetFeatureBuffer.dequeue();
+                usb->setFeature(mCurFe.id, mCurFe.ba);
             }
         }
         else // autoconnect
@@ -116,7 +116,9 @@ bool UsbHidThread::setFeature(int id, const QByteArray &ba)
     {
         QByteArray bacopy(ba.data(), ba.size());
         Feature fe = {(unsigned char)id, bacopy};
+        mAccessMutex.lock();
         mSetFeatureBuffer.enqueue(fe);
+        mAccessMutex.unlock();
         return true;
     }
     return false;
