@@ -11,7 +11,6 @@ UsbHidThread::UsbHidThread(quint16 vid, quint16 pid, QObject *parent) :
     mCounter(0),
     mRealInterval(0)
 {
-
     usb = new UsbHid(mVid, mPid);
     connect(usb, SIGNAL(stateChanged(bool)), SLOT(onUsbStateChanged(bool)));
 }
@@ -25,7 +24,10 @@ UsbHidThread::~UsbHidThread()
 
 void UsbHidThread::setReportData(const QByteArray &ba)
 {
+    // zachem bilo vipilivat mutex?? komu on meshal?
+    mAccessMutex.lock();
     mOut = ba;
+    mAccessMutex.unlock();
 }
 
 void UsbHidThread::run()
