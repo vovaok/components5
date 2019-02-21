@@ -58,6 +58,7 @@ void SerialPortWidget::onDataReady()
 {
     QByteArray ba = mCom->readAll();
     read(ba);
+    emit dataReceived(ba);
 }
 
 void SerialPortWidget::pollPorts()

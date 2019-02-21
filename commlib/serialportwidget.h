@@ -38,6 +38,7 @@ public:
 signals:
     void connected();
     void disconnected();
+    void dataReceived(const QByteArray &ba);
 
 private slots:
     void onTimer();
