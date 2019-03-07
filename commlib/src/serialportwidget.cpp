@@ -1,8 +1,7 @@
 #include "serialportwidget.h"
 
 SerialPortWidget::SerialPortWidget(QWidget *parent) :
-    QWidget(parent),
-    mAutoIdx(0)
+    QWidget(parent)
 {
     mCom = new QSerialPort();
     mCom->setBaudRate(62500);
@@ -13,16 +12,16 @@ SerialPortWidget::SerialPortWidget(QWidget *parent) :
 
     mPorts = new QComboBox();
     mPorts->setMinimumWidth(100);
-    pollPorts();
+    mPorts->addItem("- Выберите порт -");
     connect(mPorts, SIGNAL(activated(QString)), SLOT(onPortChanged(QString)));
+
+    mEnum = DeviceEnumerator::instance();
+    connect(mEnum, SIGNAL(deviceConnected(QString)), SLOT(onDeviceConnected(QString)));
+    connect(mEnum, SIGNAL(deviceRemoved(QString)), SLOT(onDeviceDisconnected(QString)));
 
     QHBoxLayout *lay = new QHBoxLayout;
     lay->addWidget(mPorts);
     setLayout(lay);
-
-    QTimer *timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), SLOT(onTimer()));
-    timer->start(100);
 }
 
 void SerialPortWidget::setParity(QString parity)
@@ -39,19 +38,21 @@ void SerialPortWidget::setParity(QString parity)
         mCom->setParity(QSerialPort::MarkParity);
 }
 
+void SerialPortWidget::setStopBits(float stopbits)
+{
+    QSerialPort::StopBits bits = QSerialPort::UnknownStopBits;
+    if (stopbits == 1.0)
+        bits = QSerialPort::OneStop;
+    else if (stopbits == 1.5)
+        bits = QSerialPort::OneAndHalfStop;
+    else if (stopbits == 2.0)
+        bits = QSerialPort::TwoStop;
+    mCom->setStopBits(bits);
+}
+
 void SerialPortWidget::autoConnect(QString description)
 {
     mAutoDesc = description;
-    pollPorts();
-}
-
-void SerialPortWidget::onTimer()
-{
-    if (!mCom->isOpen() && mAutoIdx > 0)
-    {
-        mPorts->setCurrentIndex(mAutoIdx);
-        onPortChanged(mPorts->itemText(mAutoIdx));
-    }
 }
 
 void SerialPortWidget::onDataReady()
@@ -59,48 +60,60 @@ void SerialPortWidget::onDataReady()
     QByteArray ba = mCom->readAll();
     read(ba);
 }
+//---------------------------------------------------------
 
-void SerialPortWidget::pollPorts()
+void SerialPortWidget::onDeviceConnected(QString port)
 {
-    mPorts->clear();
-    QList<QSerialPortInfo> ports = QSerialPortInfo::availablePorts();
-    mPorts->addItem("- Выберите порт -");
-    mAutoIdx = 0;
-    foreach (QSerialPortInfo port, ports)
-    {
-        QString s;
-        if (port.isBusy())
-            s += "busy ";
-        if (port.isNull())
-            s += "null ";
-        if (!port.isValid())
-            s += "invalid ";
-        QString description = port.description();
-        qDebug() << port.portName() << ":" << s << "//" << description;
+    QString text = port;
+    const QSerialPortInfo &info = mEnum->getInfo(port);
+//    if (info.isBusy())
+//        text += " (занят)";
+//    if (!info.isValid())
+//        text += " (ошибка)";
+    mPorts->addItem(text);
 
-        mPorts->addItem(port.portName());
-        if (!mAutoDesc.isEmpty())
+    if (!mAutoDesc.isEmpty())
+    {
+        if (info.description().contains(mAutoDesc) && !info.isBusy() && !mCom->isOpen())
         {
-            if (description.contains(mAutoDesc))
-                mAutoIdx = mPorts->count() - 1;
+            mPorts->setCurrentText(port);
+            onPortChanged(port);
         }
     }
 }
 
-void SerialPortWidget::onPortChanged(QString portname)
+void SerialPortWidget::onDeviceDisconnected(QString port)
 {
-    if (portname == mPorts->itemText(0))
+    int idx = mPorts->findText(port);
+//    qDebug() << port << "removed";
+    if (idx > 0)
     {
-        mCom->close();
-        disconnectEvent();
-        emit disconnected();
-    }
-    else
-    {
-        mCom->setPortName(portname);
-        if (mCom->open(QIODevice::ReadWrite))
-            emit connected();
-        connectEvent();
+        if (mPorts->currentText() == port)
+        {
+//            qDebug() << port << "removed while in use!!";
+            mPorts->setCurrentIndex(0);
+            onPortChanged("");
+        }
+        mPorts->removeItem(idx);
     }
 }
+//---------------------------------------------------------
 
+void SerialPortWidget::onPortChanged(QString portname)
+{
+    if (mCom->isOpen())
+    {
+        mCom->close();
+//        qDebug() << mCom->portName() << "closed";
+        emit disconnected();
+    }
+
+    if (!portname.isEmpty())
+    {
+        mCom->setPortName(portname);
+//        qDebug() << "try open" << portname;
+        if (mCom->open(QIODevice::ReadWrite))
+            emit connected();
+    }
+}
+//---------------------------------------------------------

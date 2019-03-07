@@ -4,49 +4,51 @@
 #include <QtWidgets>
 #include <qserialport.h>
 #include <qserialportinfo.h>
-#include "uartinterface.h"
+#include "deviceenumerator.h"
 
-class SerialPortWidget : public QWidget, public UartInterface
+class SerialPortWidget : public QWidget
 {
     Q_OBJECT
 
 private:
     QComboBox *mPorts;
     QSerialPort *mCom;
-    int mAutoIdx;
+    DeviceEnumerator *mEnum;
     QString mAutoDesc;
 
 protected:
-    //virtual void read(QByteArray &ba) {Q_UNUSED(ba);}
+    virtual void read(QByteArray &ba) {Q_UNUSED(ba);}
 
 public:
     explicit SerialPortWidget(QWidget *parent = 0);
 
-    using QWidget::QObject;
+    QIODevice *getDevice() {return mCom;}
 
     void setBaudrate(int baudrate) {mCom->setBaudRate(baudrate);}
-    void setBaudRate(int baudrate) {mCom->setBaudRate(baudrate);}
     void setParity(QSerialPort::Parity parity) {mCom->setParity(parity);}
     void setParity(QString parity);
     void setStopBits(QSerialPort::StopBits stopBits) {mCom->setStopBits(stopBits);}
+    void setStopBits(float stopbits);
+    void setDataBits(QSerialPort::DataBits databits) {mCom->setDataBits(databits);}
     void setFlowControl(QSerialPort::FlowControl flowControl) {mCom->setFlowControl(flowControl);}
 
+    void disableAutoRead() {disconnect(mCom, SIGNAL(readyRead()), this, SLOT(onDataReady()));}
     void autoConnect(QString description);
 
-    virtual void write(const QByteArray &ba) override {mCom->write(ba);}
+    qint64 write(const QByteArray &ba) {return mCom->isOpen()? mCom->write(ba): 0;}
 
-    QSerialPort *device() {return mCom;}
+    bool isActive() const {return mCom->isOpen();}
 
 signals:
     void connected();
     void disconnected();
 
 private slots:
-    void onTimer();
     void onDataReady();
+    void onDeviceConnected(QString port);
+    void onDeviceDisconnected(QString port);
 
 public slots:
-    void pollPorts();
     void onPortChanged(QString portname);
 };
 

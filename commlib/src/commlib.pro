@@ -21,13 +21,15 @@ CONFIG(debug, debug|release) {
 SOURCES += seriallink.cpp \
     serialframe.cpp \
     serialcan.cpp \
-    serialportwidget.cpp
+    serialportwidget.cpp \
+    deviceenumerator.cpp
 
 HEADERS += seriallink.h \
     serialframe.h \
     serialcan.h \
     serialportwidget.h \
-    uartinterface.h
+    uartinterface.h \
+    deviceenumerator.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

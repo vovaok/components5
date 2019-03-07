@@ -3,7 +3,8 @@
 LedContainer::LedContainer(QWidget *parent) :
     QGroupBox(parent),
     mLedSize(24),
-    mHorizontal(false)
+    mHorizontal(false),
+    mBytesInColumn(0)
 {
     setMinimumHeight(64);
     QGridLayout *lay = new QGridLayout;
@@ -40,6 +41,22 @@ void LedContainer::add(QString label, QColor color)
         lay->addWidget(led, vcnt, hcnt*2, Qt::AlignVCenter);
         lay->addWidget(lbl, vcnt, hcnt*2+1, Qt::AlignVCenter);
     }
+    else if (mBytesInColumn)
+    {
+        int hcnt = cnt / (8 * mBytesInColumn);
+        int vcnt = cnt % (8 * mBytesInColumn);
+
+        if (vcnt && !(vcnt & 7))
+        {
+            QLabel *l = new QLabel();
+            l->setFixedHeight(8);
+            lay->addWidget(l, vcnt+(vcnt>>3)-1, hcnt*2+1);
+        }
+
+        vcnt += vcnt>>3;
+        lay->addWidget(led, vcnt, hcnt*2, Qt::AlignVCenter);
+        lay->addWidget(lbl, vcnt, hcnt*2+1, Qt::AlignVCenter);
+    }
     else
     {
         cnt += cnt>>3;
@@ -50,7 +67,7 @@ void LedContainer::add(QString label, QColor color)
     mLeds << led;
     mLabels << lbl;
 
-    if (!(mLeds.count() & 7) && !mHorizontal)
+    if (!(mLeds.count() & 7) && !mHorizontal && !mBytesInColumn)
     {
         QLabel *l = new QLabel();
         l->setFixedHeight(8);
@@ -59,8 +76,10 @@ void LedContainer::add(QString label, QColor color)
 
     if (mHorizontal)
         setMinimumHeight((8+1)*mLedSize*2/3);
+    else if (mBytesInColumn)
+        setMinimumHeight((8+1)*mBytesInColumn*mLedSize*2/3);
     else
-        setMinimumHeight((cnt+1)*mLedSize*2/3);
+        recalcHeight();
 }
 
 void LedContainer::add(QStringList labels)
@@ -131,11 +150,12 @@ void LedContainer::setLedSize(int size)
     int cnt = mLeds.count();
     for (int i=0; i<cnt; i++)
     {
+        if (!mLeds[i])
+            continue;
         mLeds[i]->setFixedSize(mLedSize, mLedSize);
         mLabels[i]->setFixedHeight(mLedSize);
     }
-    cnt += cnt>>3;
-    setMinimumHeight(cnt*mLedSize*2/3);
+    recalcHeight();
 }
 
 void LedContainer::setLedsClickable(bool enabled)
@@ -155,3 +175,16 @@ void LedContainer::onLedClick()
     led->setState(!led->state());
 }
 //---------------------------------------------------------------------------
+
+void LedContainer::recalcHeight()
+{
+    int cnt = mLeds.count();
+    int realcnt = 0;
+    for (int i=0; i<cnt; i++)
+    {
+        if (mLeds[i])
+            realcnt++;
+    }
+    realcnt += realcnt>>3;
+    setMinimumHeight(realcnt*mLedSize*2/3);
+}

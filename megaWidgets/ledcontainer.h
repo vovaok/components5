@@ -14,6 +14,9 @@ private:
     QVector<QLabel*> mLabels;
     int mLedSize;
     bool mHorizontal;
+    int mBytesInColumn;
+
+    void recalcHeight();
 
 protected:
 
@@ -26,6 +29,8 @@ public:
 
     int ledSize() const {return mLedSize;}
     void setLedSize(int size);
+
+    void setBytesInColumn(int value) {mBytesInColumn = value;}
 
 signals:
 

@@ -135,7 +135,12 @@ void Graph2D::addPoint(QString var, float x, float y)
     GraphInfo &g = mGraphs[var];
     g.graph << QPointF(x, y);
     if (mPointLimit > 0 && g.graph.size() > mPointLimit)
+    {
         g.graph.removeFirst();
+        float zx = g.graph.first().x() * g.zoomX;
+        if (zx > mBounds.left())
+            mBounds.setLeft(zx);
+    }
 
     if (!mAutoBounds)
         return;
