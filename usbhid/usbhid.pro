@@ -2,6 +2,7 @@ QT       -= gui
 TARGET = usbhid
 TEMPLATE = lib
 CONFIG += staticlib
+CONFIG += c++11
 
 win32-msvc*: { #FOR VisualC++
     INCLUDEPATH += "C:/Program Files (x86)/Windows Kits/10/Include/10.0.10240.0/ucrt"
