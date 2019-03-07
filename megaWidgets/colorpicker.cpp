@@ -1,3 +1,6 @@
+#define _USE_MATH_DEFINES
+#include <cmath>
+
 #include "colorpicker.h"
 
 ColorPicker::ColorPicker(QWidget *parent) :

@@ -1,29 +1,22 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2013-08-01T15:09:09
-#
-#-------------------------------------------------
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-
+QT += widgets
+TARGET = megaWidgets
 TEMPLATE = lib
 CONFIG += staticlib
-# чтобы сразу скомпилить и в дебаге, и в релизе:
-CONFIG += debug_and_release
-CONFIG += build_all
 
-#android {
-#    DESTDIR = $$PWD/bin/android
+include(../build.pri)
+
+##android {
+##    DESTDIR = $$PWD/bin/android
+##}
+#win32 {
+#    DESTDIR = $$PWD/bin
 #}
-win32 {
-    DESTDIR = $$PWD/bin
-}
 
-CONFIG(debug, debug|release) {
-    TARGET = megaWidgetsd
-} else {
-    TARGET = megaWidgets
-}
+#CONFIG(debug, debug|release) {
+#    TARGET = megaWidgetsd
+#} else {
+#    TARGET = megaWidgets
+#}
 
 SOURCES += led.cpp \
     labeledled.cpp \

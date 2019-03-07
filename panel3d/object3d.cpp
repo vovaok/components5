@@ -3,13 +3,13 @@
 
 Object3D::Object3D(QObject *parent) :
     QObject(parent),
-    mPanel(0L),
+    mPanel(nullptr),
     FSettingsChanged(false),
     FVisible(true),
     boundsVisible(false),
     axesVisible(false),
-    mFullDrawTime(0), mDrawTime(0),
-    mTexture(0L),
+    mFullDrawTime(0),
+    mTexture(nullptr),
     mPickable(true),
     mWireframe(false)
 {
@@ -44,7 +44,7 @@ void Object3D::setParent(QObject *parent)
         disconnect(mPanel, SIGNAL(onUpdate()), this, SLOT(update()));
     }
 
-    mPanel = 0L;
+    mPanel = nullptr;
     Object3D *par = qobject_cast<Object3D*>(parent);
     if (par)
     {
@@ -69,8 +69,7 @@ void Object3D::setParent(QObject *parent)
 
 void Object3D::update()
 {
-    if (FSettingsChanged)
-        applySettings();
+    if (FSettingsChanged) applySettings();
 }
 
 void Object3D::setSettingsChanged()
@@ -88,31 +87,23 @@ void Object3D::drawObject()
 
     if (mPanel && scene()->mPicking)
     {
-        glPushName(parent()->children().indexOf(this));
+        glPushName(uint(parent()->children().indexOf(this)));
     }
 
     glPushMatrix();
 
     glMultMatrixf(transform);
 
-//    glTranslatef(xpos, ypos, zpos);
-//    glRotatef(xrot, 1, 0, 0);
-//    glRotatef(yrot, 0, 1, 0);
-//    glRotatef(zrot, 0, 0, 1);
-
     if (axesVisible && !scene()->mPicking)
     {
         QVector3D mn = getMinBounds();
         QVector3D mx = getMaxBounds();
         QVector3D mm = mx - mn;
-        qreal sz = mm.length();
-        qreal maxd = mx.x()>mx.y()? mx.x(): mx.y();
-        maxd = mx.z()>maxd? mx.z(): maxd;
-        maxd *= 1.2;
-        qreal r = sz/50;
-//        GLfloat par[4] = {1.0, 1.0, 1.0, 1.0};
-//
-//        glMaterialfv(GL_FRONT, GL_EMISSION, par);
+        float sz = mm.length();
+        float maxd = mx.x() > mx.y() ? mx.x() : mx.y();
+        maxd = mx.z() > maxd? mx.z() : maxd;
+        maxd *= 1.2f;
+        qreal r = qreal(sz / 50);
 
         glEnable(GL_COLOR_MATERIAL);
 
@@ -121,7 +112,7 @@ void Object3D::drawObject()
         gluSphere(quad, 2*r, 10, 10);
         glColor3f(0, 0, 1);
         glPushMatrix();
-            gluCylinder(quad, r, r, maxd, 10, 1);
+            gluCylinder(quad, r, r, double(maxd), 10, 1);
             glTranslatef(0, 0, maxd);
             gluCylinder(quad, r*2, 0, r*8, 10, 5);
             glRotatef(180, 0, 1, 0);
@@ -130,20 +121,20 @@ void Object3D::drawObject()
         glColor3f(1, 0, 0);
         glPushMatrix();
             glRotatef(90, 0, 1, 0);
-            gluCylinder(quad, r, r, maxd, 10, 1);
+            gluCylinder(quad, r, r, double(maxd), 10, 1);
             glTranslatef(0, 0, maxd);
-            gluCylinder(quad, r*2, 0, r*8, 10, 5);
+            gluCylinder(quad, r * 2, 0, r * 8, 10, 5);
             glRotatef(180, 0, 1, 0);
             gluDisk(quad, 0, 2*r, 10, 5);
         glPopMatrix();
         glColor3f(0, 1, 0);
         glPushMatrix();
             glRotatef(90, -1, 0, 0);
-            gluCylinder(quad, r, r, maxd, 10, 1);
+            gluCylinder(quad, r, r, double(maxd), 10, 1);
             glTranslatef(0, 0, maxd);
-            gluCylinder(quad, r*2, 0, r*8, 10, 5);
+            gluCylinder(quad, r * 2, 0, r * 8, 10, 5);
             glRotatef(180, 0, 1, 0);
-            gluDisk(quad, 0, 2*r, 10, 5);
+            gluDisk(quad, 0, 2 * r, 10, 5);
         glPopMatrix();
         gluDeleteQuadric(quad);
 
@@ -193,8 +184,6 @@ void Object3D::drawObject()
         if (lighting)
             glEnable(GL_LIGHTING);
 
-//        par[0] = par[1] = par[2] = 0.0;
-//        glMaterialfv(GL_FRONT, GL_EMISSION, par);
     }
 
     if ((FVisible && !scene()->mPicking) || (mPickable && scene()->mPicking))
@@ -209,27 +198,21 @@ void Object3D::drawObject()
         }
         else
         {
-            glColor3f(mDiffuseColor.redF(), mDiffuseColor.greenF(), mDiffuseColor.blueF());
+            glColor3f(float(mDiffuseColor.redF()),
+                      float(mDiffuseColor.greenF()),
+                      float(mDiffuseColor.blueF()));
         }
 
-        if (mTexture)
-            mTexture->bind();
+        if (mTexture) mTexture->bind();
 
-        QElapsedTimer et2;
-        et2.start();
-
-        if (mWireframe)
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        if (mWireframe) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
         draw();
 
-        if (mWireframe)
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        if (mWireframe) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-        mDrawTime = et2.nsecsElapsed() * 1.0e-9;
 
-        if (mTexture)
-            mTexture->disable();
+        if (mTexture) mTexture->disable();
     }
 
     if (!scene()->mPicking || mPickable)
@@ -238,8 +221,9 @@ void Object3D::drawObject()
         for (it=children().begin(); it!=children().end(); it++)
         {
             Object3D *obj = qobject_cast<Object3D*>(*it);
-            if (!obj)
-                continue;
+
+            if (!obj) continue;
+
             obj->drawObject();
         }
     }
@@ -252,20 +236,11 @@ void Object3D::drawObject()
     if (mPanel && scene()->mPicking)
         glPopName();
 
-    mFullDrawTime = etimer.nsecsElapsed() * 1.0e-9;
+    mFullDrawTime = etimer.nsecsElapsed() * 1.0e-9f;
 }
 
 void Object3D::draw()
 {
-//    glBegin(GL_LINES);
-//    glColor3f(1, 0, 0);
-//    glVertex3f(0, 0, 0); glVertex3f(10, 0, 0);
-//    glColor3f(0, 1, 0);
-//    glVertex3f(0, 0, 0); glVertex3f(0, 10, 0);
-//    glColor3f(0, 0, 1);
-//    glVertex3f(0, 0, 0); glVertex3f(0, 0, 10);
-//    glEnd();
-//    glColor3f(1, 1, 1);
 }
 
 void Object3D::findGlobalTransform(GLfloat *matrix)
@@ -281,14 +256,12 @@ void Object3D::findGlobalTransform(GLfloat *matrix)
     glGetFloatv(GL_MODELVIEW_MATRIX, matrix);
     glPopMatrix();
 }
-//----------------------------------------------------------
 
 void Object3D::setVisible(bool visible)
 {
     FVisible = visible;
     emit changed();
 }
-//----------------------------------------------------------
 
 void Object3D::setTransform(const GLfloat *matrix)
 {
@@ -297,23 +270,22 @@ void Object3D::setTransform(const GLfloat *matrix)
     computeFullTransform();
     emit changed();
 }
-//----------------------------------------------------------
 
-void Object3D::setXPos(qreal pos)
+void Object3D::setXPos(float pos)
 {
     transform[12] = pos;
     computeFullTransform();
     emit changed();
 }
 
-void Object3D::setYPos(qreal pos)
+void Object3D::setYPos(float pos)
 {
     transform[13] = pos;
     computeFullTransform();
     emit changed();
 }
 
-void Object3D::setZPos(qreal pos)
+void Object3D::setZPos(float pos)
 {
     transform[14] = pos;
     computeFullTransform();
@@ -329,7 +301,7 @@ void Object3D::setPosition(QVector3D pos)
     emit changed();
 }
 
-void Object3D::setPosition(qreal x, qreal y, qreal z)
+void Object3D::setPosition(float x, float y, float z)
 {
     transform[12] = x;
     transform[13] = y;
@@ -337,23 +309,22 @@ void Object3D::setPosition(qreal x, qreal y, qreal z)
     computeFullTransform();
     emit changed();
 }
-//----------------------------------------------------------
 
-void Object3D::setXRot(qreal angle)
+void Object3D::setXRot(float angle)
 {
     xrot = angle;
     applyRotation();
     emit changed();
 }
 
-void Object3D::setYRot(qreal angle)
+void Object3D::setYRot(float angle)
 {
     yrot = angle;
     applyRotation();
     emit changed();
 }
 
-void Object3D::setZRot(qreal angle)
+void Object3D::setZRot(float angle)
 {
     zrot = angle;
     applyRotation();
@@ -369,7 +340,7 @@ void Object3D::setRotation(QVector3D rot)
     emit changed();
 }
 
-void Object3D::setRotation(qreal x, qreal y, qreal z)
+void Object3D::setRotation(float x, float y, float z)
 {
     xrot = x;
     yrot = y;
@@ -415,7 +386,7 @@ void Object3D::setRotation(const QMatrix3x3 &m)
     emit changed();
 }
 
-void Object3D::rotate(qreal angle, qreal vx, qreal vy, qreal vz)
+void Object3D::rotate(float angle, float vx, float vy, float vz)
 {
     glPushMatrix();
     glLoadMatrixf(transform);
@@ -428,35 +399,40 @@ void Object3D::rotate(qreal angle, qreal vx, qreal vy, qreal vz)
 
 void Object3D::applyRotation()
 {
-    for (int i=0; i<3; i++)
-        for (int j=0; j<3; j++)
-            transform[i*4+j]=i==j?1:0;
-    glPushMatrix();
-    glLoadMatrixf(transform);
-    glRotatef(xrot, 1, 0, 0);
-    glRotatef(yrot, 0, 1, 0);
-    glRotatef(zrot, 0, 0, 1);
-    glGetFloatv(GL_MODELVIEW_MATRIX, transform);
-    glPopMatrix();
+
+    QMatrix4x4 T;
+    T.rotate(xrot, 1, 0, 0);
+    T.rotate(yrot, 0, 1, 0);
+    T.rotate(zrot, 0, 0, 1);
+
+    transform[0]  = T(0, 0);
+    transform[1]  = T(1, 0);
+    transform[2]  = T(2, 0);
+    transform[4]  = T(0, 1);
+    transform[5]  = T(1, 1);
+    transform[6]  = T(2, 1);
+    transform[8]  = T(0, 2);
+    transform[9]  = T(1, 2);
+    transform[10] = T(2, 2);
+
     computeFullTransform();
 }
-//----------------------------------------------------------
 
-void Object3D::setXCenter(qreal pos)
+void Object3D::setXCenter(float pos)
 {
     xcen = pos;
     computeFullTransform();
     emit changed();
 }
 
-void Object3D::setYCenter(qreal pos)
+void Object3D::setYCenter(float pos)
 {
     ycen = pos;
     computeFullTransform();
     emit changed();
 }
 
-void Object3D::setZCenter(qreal pos)
+void Object3D::setZCenter(float pos)
 {
     zcen = pos;
     computeFullTransform();
@@ -472,7 +448,7 @@ void Object3D::setCenter(QVector3D center)
     emit changed();
 }
 
-void Object3D::setCenter(qreal x, qreal y, qreal z)
+void Object3D::setCenter(float x, float y, float z)
 {
     xcen = x;
     ycen = y;
@@ -482,21 +458,21 @@ void Object3D::setCenter(qreal x, qreal y, qreal z)
 }
 //----------------------------------------------------------
 
-void Object3D::setXOrient(qreal angle)
+void Object3D::setXOrient(float angle)
 {
     xori = angle;
     computeFullTransform();
     emit changed();
 }
 
-void Object3D::setYOrient(qreal angle)
+void Object3D::setYOrient(float angle)
 {
     yori = angle;
     computeFullTransform();
     emit changed();
 }
 
-void Object3D::setZOrient(qreal angle)
+void Object3D::setZOrient(float angle)
 {
     zori = angle;
     computeFullTransform();
@@ -512,7 +488,7 @@ void Object3D::setOrient(QVector3D orient)
     emit changed();
 }
 
-void Object3D::setOrient(qreal x, qreal y, qreal z)
+void Object3D::setOrient(float x, float y, float z)
 {
     xori = x;
     yori = y;
@@ -520,48 +496,45 @@ void Object3D::setOrient(qreal x, qreal y, qreal z)
     computeFullTransform();
     emit changed();
 }
-//---------------------------------------------------------
 
-void Object3D::setXScale(qreal scale)
+void Object3D::setXScale(float scale)
 {
     xsc = scale;
     computeFullTransform();
     emit changed();
 }
 
-void Object3D::setYScale(qreal scale)
+void Object3D::setYScale(float scale)
 {
     ysc = scale;
     computeFullTransform();
     emit changed();
 }
 
-void Object3D::setZScale(qreal scale)
+void Object3D::setZScale(float scale)
 {
     zsc = scale;
     computeFullTransform();
     emit changed();
 }
 
-void Object3D::setUniformScale(qreal scale)
+void Object3D::setUniformScale(float scale)
 {
     xsc = ysc = zsc = scale;
     computeFullTransform();
     emit changed();
 }
-//----------------------------------------------------------
 
 void Object3D::computeFullTransform()
 {
-    glPushMatrix();
-    glLoadMatrixf(transform);
-    glRotatef(xori, 1, 0, 0);
-    glRotatef(yori, 0, 1, 0);
-    glRotatef(zori, 0, 0, 1);
-    glTranslatef(xcen, ycen, zcen);
-    glScalef(xsc, ysc, zsc);
-    glGetFloatv(GL_MODELVIEW_MATRIX, fullTransform);
-    glPopMatrix();
+
+    QMatrix4x4 T(transform);
+    T.rotate(xori, 1, 0, 0);
+    T.rotate(yori, 0, 1, 0);
+    T.rotate(zori, 0, 0, 1);
+    T.translate(xcen, ycen, zcen);
+    T.scale(xsc, ysc, zsc);
+    T.copyDataTo(fullTransform);
 }
 
 void Object3D::setColor(QColor diffuse, QColor specular, QColor emission, float ambient, int shininess)
@@ -569,16 +542,16 @@ void Object3D::setColor(QColor diffuse, QColor specular, QColor emission, float 
     mDiffuseColor = diffuse;
     mSpecularColor = specular;
     mEmissionColor = emission;
-    mAmbientColor.setRed(mDiffuseColor.red() * ambient);
-    mAmbientColor.setGreen(mDiffuseColor.green() * ambient);
-    mAmbientColor.setBlue(mDiffuseColor.blue() * ambient);
+    mAmbientColor.setRed(int(mDiffuseColor.red() * ambient));
+    mAmbientColor.setGreen(int(mDiffuseColor.green() * ambient));
+    mAmbientColor.setBlue(int(mDiffuseColor.blue() * ambient));
     mAmbientColor.setAlpha(mDiffuseColor.alpha());
     mShininess = shininess;
 
-    mAmbientfv[0] = mAmbientColor.redF(); mAmbientfv[1] = mAmbientColor.greenF(); mAmbientfv[2] = mAmbientColor.blueF(); mAmbientfv[3] = mAmbientColor.alphaF();
-    mDiffusefv[0] = mDiffuseColor.redF(); mDiffusefv[1] = mDiffuseColor.greenF(); mDiffusefv[2] = mDiffuseColor.blueF(); mDiffusefv[3] = mDiffuseColor.alphaF();
-    mSpecularfv[0] = mSpecularColor.redF(); mSpecularfv[1] = mSpecularColor.greenF(); mSpecularfv[2] = mSpecularColor.blueF(); mSpecularfv[3] = mSpecularColor.alphaF();
-    mEmissionfv[0] = mEmissionColor.redF(); mEmissionfv[1] = mEmissionColor.greenF(); mEmissionfv[2] = mEmissionColor.blueF(); mEmissionfv[3] = mEmissionColor.alphaF();
+    mAmbientfv[0]  = float(mAmbientColor.redF());  mAmbientfv[1]  = float(mAmbientColor.greenF());  mAmbientfv[2]  = float(mAmbientColor.blueF());  mAmbientfv[3]  = float(mAmbientColor.alphaF());
+    mDiffusefv[0]  = float(mDiffuseColor.redF());  mDiffusefv[1]  = float(mDiffuseColor.greenF());  mDiffusefv[2]  = float(mDiffuseColor.blueF());  mDiffusefv[3]  = float(mDiffuseColor.alphaF());
+    mSpecularfv[0] = float(mSpecularColor.redF()); mSpecularfv[1] = float(mSpecularColor.greenF()); mSpecularfv[2] = float(mSpecularColor.blueF()); mSpecularfv[3] = float(mSpecularColor.alphaF());
+    mEmissionfv[0] = float(mEmissionColor.redF()); mEmissionfv[1] = float(mEmissionColor.greenF()); mEmissionfv[2] = float(mEmissionColor.blueF()); mEmissionfv[3] = float(mEmissionColor.alphaF());
 
     emit changed();
 }
@@ -586,31 +559,31 @@ void Object3D::setColor(QColor diffuse, QColor specular, QColor emission, float 
 void Object3D::setDiffuseColor(QColor color)
 {
     mDiffuseColor = color;
-    mDiffusefv[0] = mDiffuseColor.redF(); mDiffusefv[1] = mDiffuseColor.greenF(); mDiffusefv[2] = mDiffuseColor.blueF(); mDiffusefv[3] = mDiffuseColor.alphaF();
+    mDiffusefv[0] = float(mDiffuseColor.redF()); mDiffusefv[1] = float(mDiffuseColor.greenF()); mDiffusefv[2] = float(mDiffuseColor.blueF()); mDiffusefv[3] = float(mDiffuseColor.alphaF());
     emit changed();
 }
 
 void Object3D::setSpecularColor(QColor color)
 {
     mSpecularColor = color;
-    mSpecularfv[0] = mSpecularColor.redF(); mSpecularfv[1] = mSpecularColor.greenF(); mSpecularfv[2] = mSpecularColor.blueF(); mSpecularfv[3] = mSpecularColor.alphaF();
+    mSpecularfv[0] = float(mSpecularColor.redF()); mSpecularfv[1] = float(mSpecularColor.greenF()); mSpecularfv[2] = float(mSpecularColor.blueF()); mSpecularfv[3] = float(mSpecularColor.alphaF());
     emit changed();
 }
 
 void Object3D::setEmissionColor(QColor color)
 {
     mEmissionColor = color;
-    mEmissionfv[0] = mEmissionColor.redF(); mEmissionfv[1] = mEmissionColor.greenF(); mEmissionfv[2] = mEmissionColor.blueF(); mEmissionfv[3] = mEmissionColor.alphaF();
+    mEmissionfv[0] = float(mEmissionColor.redF()); mEmissionfv[1] = float(mEmissionColor.greenF()); mEmissionfv[2] = float(mEmissionColor.blueF()); mEmissionfv[3] = float(mEmissionColor.alphaF());
     emit changed();
 }
 
 void Object3D::setAmbient(float value)
 {
-    mAmbientColor.setRed(mDiffuseColor.red() * value);
-    mAmbientColor.setGreen(mDiffuseColor.green() * value);
-    mAmbientColor.setBlue(mDiffuseColor.blue() * value);
-    mAmbientColor.setAlpha(mDiffuseColor.alpha());
-    mAmbientfv[0] = mAmbientColor.redF(); mAmbientfv[1] = mAmbientColor.greenF(); mAmbientfv[2] = mAmbientColor.blueF(); mAmbientfv[3] = mAmbientColor.alphaF();
+    mAmbientColor.setRed(int(mDiffuseColor.red() * value));
+    mAmbientColor.setGreen(int(mDiffuseColor.green() * value));
+    mAmbientColor.setBlue(int(mDiffuseColor.blue() * value));
+    mAmbientColor.setAlpha(int(mDiffuseColor.alpha()));
+    mAmbientfv[0] = float(mAmbientColor.redF()); mAmbientfv[1] = float(mAmbientColor.greenF()); mAmbientfv[2] = float(mAmbientColor.blueF()); mAmbientfv[3] = float(mAmbientColor.alphaF());
     emit changed();
 }
 
@@ -622,7 +595,7 @@ void Object3D::setShininess(int value)
 
 void Object3D::setDefaultColor()
 {
-    float a = mDefDiffuseColor.redF()? mDefAmbientColor.redF() / mDefDiffuseColor.redF(): 1;
+    float a = mDefDiffuseColor.redF() != 0.0 ? float(mDefAmbientColor.redF() / mDefDiffuseColor.redF()) : 1.0f;
     setColor(mDefDiffuseColor, mDefSpecularColor, mDefEmissionColor, a, mDefShininess);
 }
 
@@ -630,7 +603,7 @@ void Object3D::assignDefColor(GLfloat *a, GLfloat *d, GLfloat *e, GLfloat *s, in
 {
     mDefShininess = sh;
 
-    for (int i=0; i<4; i++)
+    for (int i = 0; i < 4; i++)
     {
         mAmbientfv[i] = a[i];
         mDiffusefv[i] = d[i];
@@ -638,10 +611,10 @@ void Object3D::assignDefColor(GLfloat *a, GLfloat *d, GLfloat *e, GLfloat *s, in
         mEmissionfv[i] = e[i];
     }
 
-    mDefDiffuseColor = QColor::fromRgbF(d[0], d[1], d[2], d[3]);
-    mDefAmbientColor = QColor::fromRgbF(a[0], a[1], a[2], a[3]);
-    mDefEmissionColor = QColor::fromRgbF(e[0], e[1], e[2], e[3]);
-    mDefSpecularColor = QColor::fromRgbF(s[0], s[1], s[2], s[3]);
+    mDefDiffuseColor  = QColor::fromRgbF(qreal(d[0]), qreal(d[1]), qreal(d[2]), qreal(d[3]));
+    mDefAmbientColor  = QColor::fromRgbF(qreal(a[0]), qreal(a[1]), qreal(a[2]), qreal(a[3]));
+    mDefEmissionColor = QColor::fromRgbF(qreal(e[0]), qreal(e[1]), qreal(e[2]), qreal(e[3]));
+    mDefSpecularColor = QColor::fromRgbF(qreal(s[0]), qreal(s[1]), qreal(s[2]), qreal(s[3]));
 
     setDefaultColor();
 }
@@ -649,7 +622,8 @@ void Object3D::assignDefColor(GLfloat *a, GLfloat *d, GLfloat *e, GLfloat *s, in
 
 void Object3D::setTexture(const QImage &image)
 {
-    setTexture(new StaticTexture(dynamic_cast<QPanel3D*>(mPanel), image));
+    auto scene = dynamic_cast<QPanel3D*>(mPanel);
+    setTexture(new StaticTexture(scene, image));
 }
 //----------------------------------------------------------
 

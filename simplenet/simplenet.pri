@@ -1,5 +1,8 @@
 INCLUDEPATH += $$PWD
 
-COMPONENT_NAME = "megaWidgets"
+QT += serialport
+
+COMPONENT_NAME = "simplenet"
 
 include(../component.pri)
+

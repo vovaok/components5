@@ -1,33 +1,28 @@
 #include "mesh3dcache.h"
 #include <QApplication>
 
-Mesh3DCache *Mesh3DCache::self = 0L;
+Mesh3DCache *Mesh3DCache::mSelf = nullptr;
 
-Mesh3DCache::Mesh3DCache(QObject *parent) :
-    QObject(parent)
+Mesh3DCache::Mesh3DCache(QObject *parent) : QObject(parent)
 {
 }
 
 Mesh3DCache::~Mesh3DCache()
 {
-    // clear the cache
-    QMap <QString, Mesh*>::iterator it;
-    for (it=MeshCache.begin(); it!=MeshCache.end(); it++)
-        delete (*it);
-    MeshCache.clear();
+    for(auto mesh : mMeshCache) delete mesh;
+    mMeshCache.clear();
 }
 
 Mesh3DCache *Mesh3DCache::instance()
 {
-    if (!self)
-        self = new Mesh3DCache();
-    return self;
+    if (!mSelf) mSelf = new Mesh3DCache();
+
+    return mSelf;
 }
-//----------------------------------------------------------
 
 Mesh* Mesh3DCache::loadMesh(QString filename)
 {
-    Mesh *mesh = MeshCache.value(filename, 0L);
+    Mesh *mesh = mMeshCache.value(filename, nullptr);
     if (mesh)
         return mesh;
 
@@ -38,15 +33,14 @@ Mesh* Mesh3DCache::loadMesh(QString filename)
     mloader->start();
 
     while (mloader->isRunning())
-        qApp->processEvents(); // wait
+        qApp->processEvents();
 
     return mesh;
 }
 
 void Mesh3DCache::setListIdForMesh(QString filename, int listId)
 {
-    if (MeshCache.contains(filename))
-        mListId[filename] = listId;
+    if (mMeshCache.contains(filename)) mListId[filename] = listId;
 }
 
 void Mesh3DCache::onMeshLoaded(QString filename, Mesh *mesh)
@@ -57,29 +51,25 @@ void Mesh3DCache::onMeshLoaded(QString filename, Mesh *mesh)
         return;
     }
 
-//    mesh->setMinMaxValues();
-    MeshCache[filename] = mesh;
-    qDebug() << "model '" + filename + "' loaded";
+    mMeshCache[filename] = mesh;
+    //qDebug() << "model '" + filename + "' loaded";
 }
-//---------------------------------------------------------
 
 void MeshLoaderThread::run()
 {
-    QFile file(f);
+    QFile file(m_filename);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        m = 0L;
+        m_mesh = nullptr;
     }
     else
     {
         QTextStream stream(&file);
-        QFileInfo fi(f);
-        m->setUrlPrefix(fi.path());
-        m->load(&stream);
-//        mesh = new Mesh(&stream);
+        QFileInfo fi(m_filename);
+        m_mesh->setUrlPrefix(fi.path());
+        m_mesh->load(&stream);
         file.close();
     }
 
-    emit loaded(f, m);
+    emit loaded(m_filename, m_mesh);
 }
-//---------------------------------------------------------

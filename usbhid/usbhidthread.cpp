@@ -1,4 +1,7 @@
 #include "usbhidthread.h"
+#include <QtConcurrent/QtConcurrent>
+#include <QFuture>
+#include <QFutureWatcher>
 
 UsbHidThread::UsbHidThread(quint16 vid, quint16 pid, QObject *parent) :
     QThread(parent),
@@ -21,7 +24,7 @@ UsbHidThread::~UsbHidThread()
 
 void UsbHidThread::setReportData(const QByteArray &ba)
 {
-    // mb stoit mutex pouzat, a mb stoit ne uzat
+    // zachem bilo vipilivat mutex?? komu on meshal?
     mAccessMutex.lock();
     mOut = ba;
     mAccessMutex.unlock();
@@ -40,13 +43,21 @@ void UsbHidThread::run()
             {
                 mIn = usb->read(mReadSize);
                 if (mIn.size())
+                {
+                    reportReceivedEvent(mIn);
                     emit reportReceived(mIn);
+                }
             }
 
             if (mOut.size())
             {
-//                out.append(mCounter++);
                 usb->write(mOut);
+            }
+
+            while (!mSetFeatureBuffer.isEmpty())
+            {
+                mCurFe = mSetFeatureBuffer.dequeue();
+                usb->setFeature(mCurFe.id, mCurFe.ba);
             }
         }
         else // autoconnect
@@ -62,8 +73,8 @@ void UsbHidThread::run()
         mTimer.restart();
         mRealInterval = usecs * 1e-6;
         usecs = mPollingInterval*1000 - usecs;
-//        if (usecs > 0)
-//            usleep(usecs);
+        //        if (usecs > 0)
+        //            usleep(usecs);
         msleep(mPollingInterval);
     }
 }
@@ -73,39 +84,55 @@ void UsbHidThread::setFeature(int id, bool val)
 {
     QByteArray ba;
     ba.append(val? '\1': '\0');
-    mAccessMutex.lock();
-    usb->setFeature(id, ba);
-    mAccessMutex.unlock();
+    setFeature(id, ba);
 }
 
 void UsbHidThread::setFeature(int id, char val)
 {
     QByteArray ba;
     ba.append(val);
-    mAccessMutex.lock();
-    usb->setFeature(id, ba);
-    mAccessMutex.unlock();}
+    setFeature(id, ba);
+}
 
 void UsbHidThread::setFeature(int id, short val)
 {
     QByteArray ba(reinterpret_cast<const char*>(&val), sizeof(short));
-    mAccessMutex.lock();
-    usb->setFeature(id, ba);
-    mAccessMutex.unlock();}
+    setFeature(id, ba);
+}
 
 void UsbHidThread::setFeature(int id, long val)
 {
     QByteArray ba(reinterpret_cast<const char*>(&val), sizeof(long));
-    mAccessMutex.lock();
-    usb->setFeature(id, ba);
-    mAccessMutex.unlock();}
+    setFeature(id, ba);
+}
 
 void UsbHidThread::setFeature(int id, float val)
 {
     QByteArray ba(reinterpret_cast<const char*>(&val), sizeof(float));
+    setFeature(id, ba);
+}
+
+bool UsbHidThread::setFeature(int id, const QByteArray &ba)
+{
+    if (usb->isOpen() && mSetFeatureBuffer.size() < 64)
+    {
+        QByteArray bacopy(ba.data(), ba.size());
+        Feature fe = {(unsigned char)id, bacopy};
+        mAccessMutex.lock();
+        mSetFeatureBuffer.enqueue(fe);
+        mAccessMutex.unlock();
+        return true;
+    }
+    return false;
+}
+
+bool UsbHidThread::getFeature(int id, QByteArray &ba)
+{
     mAccessMutex.lock();
-    usb->setFeature(id, ba);
-    mAccessMutex.unlock();}
+    bool result = usb->getFeature(id, ba);
+    mAccessMutex.unlock();
+    return result;
+}
 //---------------------------------------------------------------------------
 
 void UsbHidThread::onUsbStateChanged(bool active)

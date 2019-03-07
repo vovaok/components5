@@ -4,6 +4,7 @@
 #include <QtCore>
 #include <QIODevice>
 #include "hidapi.h"
+#include "usbdeviceenumerator.h"
 
 class UsbHid : public QIODevice
 {
@@ -11,16 +12,9 @@ class UsbHid : public QIODevice
 
 private:
     hid_device *mDev;
-    QString mName;
+    QString mPath;
     unsigned char mCurrentReportId;
-//    QByteArray mOutReportBuffer;
-//    TheReport *mOutReport;
-
-    static quint16 mVid, mPid;
-    static QMap<QString, QString> mBoardMap; // serial -> path_to_open
-    QMap<QString, QVariant> mBoardProperties;
-
-    void enumerateBoards();
+    const UsbDeviceEnumerator::DevInfo *mInfo;
 
 protected:
     virtual qint64 readData(char *data, qint64 maxSize);
@@ -29,15 +23,19 @@ protected:
 
 public:
     explicit UsbHid(quint16 vid=0, quint16 pid=0, QObject *parent = 0);
+    explicit UsbHid(QString path, QObject *parent = 0);
     virtual ~UsbHid();
 
-    void setVidPid(quint16 vid, quint16 pid) {mVid = vid; mPid = pid;}
-    quint16 vid() const {return mVid;}
-    quint16 pid() const {return mPid;}
+//    void setVidPid(quint16 vid, quint16 pid) {mVid = vid; mPid = pid;}
+//    quint16 vid() const {return mVid;}
+//    quint16 pid() const {return mPid;}
 
-    const QStringList availableDevices() {enumerateBoards(); return mBoardMap.keys();}
-    void setDevice(QString name=QString()) {mName = mBoardMap.contains(name)? name: mBoardMap.count()? mBoardMap.keys().first(): "";}
-    QString deviceName() const {return mName;}
+    const QStringList availableDevices();
+    void setDevice(QString path = QString());
+    QString deviceName() const;
+    unsigned short releaseNumber() const;
+    QString serial() const;
+    QString manufacturer() const;
 
     virtual bool isSequential() const {return true;} // doesn't have random access
 
@@ -49,14 +47,10 @@ public:
 
     QString getString(unsigned char index);
 
-    unsigned short releaseNumber() const {return mBoardProperties["release number"].toInt();}
-
     int getNumInputBuffers();
     QByteArray getInputReport(int length);
 
 signals:
-//    void connected(QString boardName);      // new device enumerated
-//    void disconnected(QString boardName);   // device removed
     void stateChanged(bool active);
     void readyRead();
 

@@ -36,3 +36,13 @@ hooks/
 */bin
 */*.user
 */build
+onb/androbin
+onb/android-bin/
+bin-android/
+bin-msvc/
+android-bin
+*.stash
+Makefile
+*.Makefile
+Makefile*
+

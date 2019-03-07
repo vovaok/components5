@@ -1,12 +1,9 @@
 INCLUDEPATH += $$PWD
 
-QMAKE_LIBDIR += $$PWD/bin
-#LIBS += -lusbhid
+COMPONENT_NAME = "usbhid"
 
-CONFIG(debug, debug|release) {
-    LIBS += -lusbhidd
-} else {
-    LIBS += -lusbhid
-}
+include(../component.pri)
+
+INCLUDEPATH
 
 LIBS += -lsetupapi

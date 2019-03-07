@@ -19,8 +19,18 @@ private:
     float mRealInterval;
     QMutex mAccessMutex;
 
+    struct Feature
+    {
+        unsigned char id;
+        QByteArray ba;
+    };
+    QQueue<Feature> mSetFeatureBuffer;
+    Feature mCurFe;
+
 protected:
     void run();// override;
+    virtual void reportReceivedEvent(const QByteArray &ba) {Q_UNUSED(ba);}
+    bool getFeatureUnsafe(int id, QByteArray &ba) {return usb->getFeature(id, ba);}
 
 private slots:
     void onUsbStateChanged(bool active);
@@ -38,8 +48,8 @@ public:
     void setFeature(int id, short val);
     void setFeature(int id, long val);
     void setFeature(int id, float val);
-    void setFeature(int id, const QByteArray &ba) {usb->setFeature(id, ba);}
-    bool getFeature(int id, QByteArray &ba) {return usb->getFeature(id, ba);}
+    bool setFeature(int id, const QByteArray &ba);
+    bool getFeature(int id, QByteArray &ba);
 
     bool isReady() const {return usb->isOpen();} // temporary!!!!
     float realInterval() const {return mRealInterval;}

@@ -1,30 +1,12 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2016-06-20T09:39:15
-#
-#-------------------------------------------------
-
-QT       += network
-
+QT       += network concurrent
 QT       -= gui
 
-TARGET = onb
 TEMPLATE = lib
-CONFIG += staticlib
-CONFIG += c++11
-# чтобы сразу скомпилить и в дебаге, и в релизе:
-CONFIG += debug_and_release
-CONFIG += build_all
+CONFIG += staticlib c++11
+TARGET = onb
 
-win32 {
-CONFIG(debug, debug|release) {
-    DESTDIR = $$PWD/bin
-    TARGET = onbd
-} else {
-    DESTDIR = $$PWD/bin
-    TARGET = onb
-}
-}
+include(../build.pri)
+
 android {
 CONFIG(debug, debug|release) {
     DESTDIR = $$PWD/android-bin
@@ -36,13 +18,12 @@ CONFIG(debug, debug|release) {
 }
 
 win32 {
-    COMPONENTS = d:/projects/qt/components5
+    COMPONENTS = ../
     include($$COMPONENTS/commlib/commlib.pri)
     include($$COMPONENTS/usbhid/usbhid.pri)
 }
 
-PROJ_DIR = d:/projects
-OBJNET_DIR = $$PROJ_DIR/iar/components/stm32++/src/objnet
+OBJNET_DIR = $$PWD/../../iar/components/stm32++/src/objnet
 
 INCLUDEPATH += $$OBJNET_DIR
 INCLUDEPATH += $$OBJNET_DIR/../core
@@ -56,7 +37,8 @@ SOURCES += \
     $$OBJNET_DIR/objnetdevice.cpp \
     $$OBJNET_DIR/objnetnode.cpp \
     $$OBJNET_DIR/objectinfo.cpp \
-    $$OBJNET_DIR/objnetmsg.cpp
+    $$OBJNET_DIR/objnetmsg.cpp \
+    usbonbinterface.cpp
 
 HEADERS += \
     objnetvirtualinterface.h \
@@ -70,15 +52,14 @@ HEADERS += \
     $$OBJNET_DIR/objnetnode.h \
     $$OBJNET_DIR/objectinfo.h \
     $$OBJNET_DIR/../core/closure.h \
-    $$OBJNET_DIR/../core/closure_impl.h
+    $$OBJNET_DIR/../core/closure_impl.h \
+    usbonbinterface.h
 
 win32 {
 SOURCES += \
-    serialcaninterface.cpp \
-    usbhidonbinterface.cpp
+    serialcaninterface.cpp
 HEADERS += \
-    serialcaninterface.h \
-    usbhidonbinterface.h
+    serialcaninterface.h
 }
 
 unix {
