@@ -35,7 +35,7 @@ public:
 signals:
     void connected();
     void disconnected();
-    void dataReceived(QByteArray &data);
+    void dataReceived(const QByteArray &data);
 
 private slots:
     void onDataReady();

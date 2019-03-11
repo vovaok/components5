@@ -23,7 +23,7 @@ win32 {
     include($$COMPONENTS/usbhid/usbhid.pri)
 }
 
-OBJNET_DIR = $$PWD/../../iar/components/stm32++/src/objnet
+OBJNET_DIR = $$PWD/../../../iar/components/stm32++/src/objnet
 
 INCLUDEPATH += $$OBJNET_DIR
 INCLUDEPATH += $$OBJNET_DIR/../core
@@ -38,7 +38,8 @@ SOURCES += \
     $$OBJNET_DIR/objnetnode.cpp \
     $$OBJNET_DIR/objectinfo.cpp \
     $$OBJNET_DIR/objnetmsg.cpp \
-    usbonbinterface.cpp
+    usbonbinterface.cpp \
+    serialonbinterface.cpp
 
 HEADERS += \
     objnetvirtualinterface.h \
@@ -53,7 +54,8 @@ HEADERS += \
     $$OBJNET_DIR/objectinfo.h \
     $$OBJNET_DIR/../core/closure.h \
     $$OBJNET_DIR/../core/closure_impl.h \
-    usbonbinterface.h
+    usbonbinterface.h \
+    serialonbinterface.h
 
 win32 {
 SOURCES += \
