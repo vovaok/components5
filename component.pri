@@ -1,4 +1,4 @@
 include(dir.pri)
-message(LIBDIR $$LIBDIR)
+#message(LIBDIR $$LIBDIR)
 QMAKE_LIBDIR += $${LIBDIR}
 LIBS += -l$$COMPONENT_NAME

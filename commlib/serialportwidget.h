@@ -15,7 +15,7 @@ private:
     QComboBox *mPorts;
     QSerialPort *mCom;
     DeviceEnumerator *mEnum;
-    QString mAutoDesc;
+    QString mAutoSerial;
 
 protected:
     virtual void read(QByteArray &ba) {Q_UNUSED(ba);}
@@ -33,7 +33,7 @@ public:
     void setFlowControl(QSerialPort::FlowControl flowControl) {mCom->setFlowControl(flowControl);}
 
     void disableAutoRead() {disconnect(mCom, SIGNAL(readyRead()), this, SLOT(onDataReady()));}
-    void autoConnect(QString description);
+    void autoConnect(QString serial);
 
     virtual void write(const QByteArray &ba) override {mCom->write(ba);}
     //qint64 write(const QByteArray &ba) {return mCom->isOpen()? mCom->write(ba): 0;}

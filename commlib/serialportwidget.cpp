@@ -50,9 +50,9 @@ void SerialPortWidget::setStopBits(float stopbits)
     mCom->setStopBits(bits);
 }
 
-void SerialPortWidget::autoConnect(QString description)
+void SerialPortWidget::autoConnect(QString serial)
 {
-    mAutoDesc = description;
+    mAutoSerial = serial;
 }
 
 void SerialPortWidget::onDataReady()
@@ -73,9 +73,9 @@ void SerialPortWidget::onDeviceConnected(QString port)
 //        text += " (ошибка)";
     mPorts->addItem(text);
 
-    if (!mAutoDesc.isEmpty())
+    if (!mAutoSerial.isEmpty())
     {
-        if (info.description().contains(mAutoDesc) && !info.isBusy() && !mCom->isOpen())
+        if (info.serialNumber().contains(mAutoSerial) && !info.isBusy() && !mCom->isOpen())
         {
             mPorts->setCurrentText(port);
             onPortChanged(port);
