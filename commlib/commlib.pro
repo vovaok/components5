@@ -10,14 +10,16 @@ SOURCES += seriallink.cpp \
     serialframe.cpp \
     serialcan.cpp \
     serialportwidget.cpp \
-    deviceenumerator.cpp
+    deviceenumerator.cpp \
+    DonglePort.cpp
 
 HEADERS += seriallink.h \
     serialframe.h \
     serialcan.h \
     serialportwidget.h \
     uartinterface.h \
-    deviceenumerator.h
+    deviceenumerator.h \
+    DonglePort.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

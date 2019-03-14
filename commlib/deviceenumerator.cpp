@@ -1,4 +1,5 @@
 #include "deviceenumerator.h"
+#include <QSerialPort>
 
 DeviceEnumerator *DeviceEnumerator::mSelf = nullptr;
 
@@ -11,43 +12,41 @@ DeviceEnumerator::DeviceEnumerator() : QObject(nullptr)
 
 void DeviceEnumerator::enumerate()
 {
-    foreach (QString p, mPresence.keys())
-        mPresence[p] = false;
+    for (auto& name : mPresence.keys()) mPresence[name] = false;
 
     QList<QSerialPortInfo> ports = QSerialPortInfo::availablePorts();
-    for (int i=0; i<ports.size(); i++)
+    for(auto& info : ports)
     {
-        QSerialPortInfo &info = ports[i];
         QString name = info.portName();
-        mPresence[name] = true;
+
+        mPresence[name] = info.isValid();
         if (!mDevs.contains(name))
         {
             mDevs[name] = info;
             emit deviceConnected(name);
         }
+
     }
 
-    foreach (QString p, mDevs.keys())
+    for (auto& name : mDevs.keys())
     {
-        if (!mPresence[p])
+        if (!mPresence[name])
         {
-            emit deviceRemoved(p);
-            mDevs.remove(p);
-            mPresence.remove(p);
+            emit deviceRemoved(name);
+            mDevs.remove(name);
+            mPresence.remove(name);
         }
     }
 }
 
 DeviceEnumerator *DeviceEnumerator::instance()
 {
-    if (!mSelf)
-        new DeviceEnumerator();
+    if (!mSelf) new DeviceEnumerator();
+
     return mSelf;
 }
-//---------------------------------------------------------
 
-DeviceEnumerator::DevEventFilter::DevEventFilter(DeviceEnumerator *enumObj) :
-    mEnumObj(enumObj)
+DeviceEnumerator::DevEventFilter::DevEventFilter(DeviceEnumerator *enumObj) : mEnumObj(enumObj)
 {
     qApp->installNativeEventFilter(this);
 }
@@ -57,8 +56,10 @@ bool DeviceEnumerator::DevEventFilter::nativeEventFilter(const QByteArray &event
     Q_UNUSED(eventType);
     Q_UNUSED(result);
     auto pWindowsMessage = static_cast<MSG*>(message);
+    auto uMsg = pWindowsMessage->message;
+
     auto wParam = pWindowsMessage->wParam;
-    if (wParam == DBT_DEVNODES_CHANGED)
+    if (wParam == DBT_DEVNODES_CHANGED && uMsg == WM_DEVICECHANGE)
     {
         mEnumObj->enumerate();
     }
