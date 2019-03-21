@@ -16,7 +16,8 @@ bool SerialOnbInterface::write(CommonMessage &msg)
     ba.append(reinterpret_cast<const char*>(&id), 4);
     ba.append(msg.data());
     mSerial->sendData(ba);
-    emit message("serial", msg); // for debug purposes
+    if (mSerial->isActive())
+        emit message("serial", msg); // for debug purposes
     return true;
 }
 
