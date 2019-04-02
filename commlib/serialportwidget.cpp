@@ -5,10 +5,13 @@ SerialPortWidget::SerialPortWidget(DonglePort *port, QWidget *parent) : QWidget(
     portsCombo = new QComboBox();
     portsCombo->setMinimumWidth(100);
     portsCombo->addItem("- Выберите порт -");
-    connect(portsCombo, SIGNAL(activated(QString)), SLOT(onPortChanged(QString)));
+    connect(portsCombo, SIGNAL(activated(int)), SLOT(onPortChanged(int)));
 
     connect(DeviceEnumerator::instance(), SIGNAL(deviceConnected(QString)), this, SLOT(onDeviceConnected(QString)));
     connect(DeviceEnumerator::instance(), SIGNAL(deviceRemoved(QString)), this, SLOT(onDeviceDisconnected(QString)));
+
+    connect(port, SIGNAL(connected()), SLOT(onPortConnected()));
+    connect(port, SIGNAL(disconnected()), SLOT(onPortDisconnected()));
 
     auto layout = new QHBoxLayout;
     layout->addWidget(portsCombo);
@@ -21,30 +24,42 @@ SerialPortWidget::~SerialPortWidget()
     disconnect(DeviceEnumerator::instance(), SIGNAL(deviceRemoved(QString)), this, SLOT(onDeviceDisconnected(QString)));
 }
 
-void SerialPortWidget::onPortChanged(QString portname)
+void SerialPortWidget::addPort(QString name)
 {
-    port->changePort(portname);
+    if (portsCombo->findData(port->portName()) != -1)
+        return;
+    const QSerialPortInfo &info = DeviceEnumerator::instance()->getInfo(name);
+    QString text = name;
+    if (!info.serialNumber().isEmpty())
+        text += " [" + info.serialNumber() + "]";
+    portsCombo->addItem(text, name);
+}
+
+void SerialPortWidget::onPortChanged(int index)
+{
+    QString portname = portsCombo->itemData(index).toString();
+    port->changePort(index? portname: "");
+}
+
+void SerialPortWidget::onPortConnected()
+{
+    addPort(port->portName());
+    int index = portsCombo->findData(port->portName());
+    portsCombo->setCurrentIndex(index);
+}
+
+void SerialPortWidget::onPortDisconnected()
+{
+    portsCombo->setCurrentIndex(0);
 }
 
 void SerialPortWidget::onDeviceConnected(QString name)
 {
-    const QSerialPortInfo &info = DeviceEnumerator::instance()->getInfo(name);
-    portsCombo->addItem(name);
-
-    if (!info.isBusy() && !port->isOpen())
-    {
-        portsCombo->setCurrentText(name);
-        onPortChanged(name);
-    }
+    addPort(name);
 }
 
 void SerialPortWidget::onDeviceDisconnected(QString name)
 {
-    portsCombo->removeItem(portsCombo->findText(name));
-
-    if (portsCombo->currentText() == name)
-    {
-        portsCombo->setCurrentIndex(0);
-        onPortChanged("");
-    }
+    int index = portsCombo->findData(name);
+    portsCombo->removeItem(index);
 }

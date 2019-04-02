@@ -17,10 +17,16 @@ public:
 
 private:
     DonglePort *port = nullptr;
-    QComboBox * portsCombo = nullptr;
+    QComboBox *portsCombo = nullptr;
+
+    void addPort(QString name);
+
+private slots:
+    void onPortChanged(int index);
+    void onPortConnected();
+    void onPortDisconnected();
 
 public slots:
-    void onPortChanged(QString portname);
     void onDeviceConnected(QString name);
     void onDeviceDisconnected(QString name);
 };

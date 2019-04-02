@@ -55,11 +55,17 @@ void DonglePort::onDataReady()
 void DonglePort::onDeviceConnected(QString port)
 {
     const QSerialPortInfo &info = DeviceEnumerator::instance()->getInfo(port);
-    if(info.description().compare(serial, Qt::CaseInsensitive) == 0 && !info.isBusy() && !isOpen())
-        changePort(port);
+    if (info.serialNumber().compare(serial, Qt::CaseInsensitive) == 0)
+    {
+        if (info.isBusy())
+            qDebug() << info.portName() << info.serialNumber() << "is busy((";
+        else
+            changePort(port);
+    }
 }
 
-void DonglePort::onDeviceDisconnected(QString)
+void DonglePort::onDeviceDisconnected(QString port)
 {
-    changePort("");
+    if (portName() == port)
+        changePort("");
 }

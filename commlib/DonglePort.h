@@ -25,7 +25,6 @@ private slots:
     void onDeviceConnected(QString port);
     void onDeviceDisconnected(QString port);
 
-
 private:
     QString serial;
 };
