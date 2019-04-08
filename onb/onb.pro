@@ -37,6 +37,7 @@ SOURCES += \
     $$OBJNET_DIR/objnetdevice.cpp \
     $$OBJNET_DIR/objnetnode.cpp \
     $$OBJNET_DIR/objectinfo.cpp \
+    $$OBJNET_DIR/onbupgrader.cpp \
     $$OBJNET_DIR/objnetmsg.cpp \
     usbonbinterface.cpp \
     serialonbinterface.cpp
@@ -51,6 +52,7 @@ HEADERS += \
     $$OBJNET_DIR/objnetcommon.h \
     $$OBJNET_DIR/objnetdevice.h \
     $$OBJNET_DIR/objnetnode.h \
+    $$OBJNET_DIR/onbupgrader.h \
     $$OBJNET_DIR/objectinfo.h \
     $$OBJNET_DIR/../core/closure.h \
     $$OBJNET_DIR/../core/closure_impl.h \
