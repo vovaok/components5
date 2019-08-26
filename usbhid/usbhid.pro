@@ -21,19 +21,19 @@ include(../build.pri)
 #    TARGET = usbhid
 #}
 
-LIBS        += -lsetupapi
+
 
 SOURCES += usbhid.cpp \
     usbhidthread.cpp \
     usbdeviceenumerator.cpp
 
-win32 {
+win32: {
     SOURCES += hid_windows.c
+    LIBS        += -lsetupapi
 }
-#unix {
-#    SOURCES += hid_linux.c
-#    message(xep)
-#}
+unix: {
+    SOURCES += hid_linux.c
+}
 
 HEADERS += usbhid.h \
     hidapi.h \

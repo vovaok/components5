@@ -12,7 +12,7 @@ SerialOnbInterface::SerialOnbInterface(QIODevice *device)
 bool SerialOnbInterface::write(CommonMessage &msg)
 {
     QByteArray ba;
-    unsigned long id = msg.rawId();
+    uint32_t id = msg.rawId();
     ba.append(reinterpret_cast<const char*>(&id), 4);
     ba.append(msg.data());
     mSerial->sendData(ba);
@@ -41,7 +41,7 @@ int SerialOnbInterface::availableWriteCount()
 }
 //---------------------------------------------------------
 
-int SerialOnbInterface::addFilter(unsigned long id, unsigned long mask)
+int SerialOnbInterface::addFilter(uint32_t id, uint32_t mask)
 {
     Q_UNUSED(id);
     Q_UNUSED(mask);
@@ -57,7 +57,7 @@ void SerialOnbInterface::removeFilter(int number)
 void SerialOnbInterface::onDataReceived(const QByteArray &ba)
 {
     CommonMessage msg;
-    unsigned long id = *reinterpret_cast<const unsigned long*>(ba.data());
+    uint32_t id = *reinterpret_cast<const uint32_t*>(ba.data());
     msg.setId(id);
     msg.setData(ba.mid(4));
     mRxQueue << msg;

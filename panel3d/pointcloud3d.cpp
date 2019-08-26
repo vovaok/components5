@@ -95,7 +95,7 @@ void PointCloud3D::clear()
 }
 
 
-void PointCloud3D::addXYZRGBAPoint(float *data, unsigned long rgba, float *normalData)
+void PointCloud3D::addXYZRGBAPoint(float *data, uint32_t rgba, float *normalData)
 {
     vertices << *reinterpret_cast<xyz*>(data);
     colors << rgba;

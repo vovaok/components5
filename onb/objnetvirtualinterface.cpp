@@ -20,7 +20,7 @@ ObjnetVirtualInterface::ObjnetVirtualInterface(QString netname, QString serverIp
 bool ObjnetVirtualInterface::write(Objnet::CommonMessage &msg)
 {
     QByteArray ba;
-    unsigned long id = msg.rawId();
+    uint32_t id = msg.rawId();
     ba.append(reinterpret_cast<const char*>(&id), 4);
     ba.append(msg.data());
     if (mSocket->isOpen())
@@ -49,7 +49,7 @@ int ObjnetVirtualInterface::availableWriteCount()
     return 256;
 }
 
-int ObjnetVirtualInterface::addFilter(unsigned long id, unsigned long mask)
+int ObjnetVirtualInterface::addFilter(uint32_t id, uint32_t mask)
 {
     Filter f;
     f.id = id & 0x1FFFFFFF;
@@ -83,7 +83,7 @@ void ObjnetVirtualInterface::setActive(bool enabled)
 void ObjnetVirtualInterface::onSocketConnected()
 {
     QByteArray ba;
-    unsigned long id = 0xFF000000;
+    uint32_t id = 0xFF000000;
     ba.append(reinterpret_cast<const char*>(&id), 4);
     ba.append(mNetname.toLatin1());
     ba = mCodec.encode(ba);
@@ -106,7 +106,7 @@ void ObjnetVirtualInterface::onSocketRead()
 
 void ObjnetVirtualInterface::msgReceived(const QByteArray &ba)
 {
-    unsigned long id = *reinterpret_cast<const unsigned long*>(ba.data());
+    uint32_t id = *reinterpret_cast<const uint32_t*>(ba.data());
 
     bool accept = false;
     if (!mFilters.size())

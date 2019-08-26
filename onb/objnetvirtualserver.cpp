@@ -133,7 +133,7 @@ void ObjnetVirtualServer::clientRead()
     QByteArray ba;
     while (!(ba=mCodec.decode(in)).isEmpty())
     {
-        unsigned long id = *reinterpret_cast<const unsigned long*>(ba.data());
+        uint32_t id = *reinterpret_cast<const uint32_t*>(ba.data());
 
         QString netname;
         if (id == 0xff000000)

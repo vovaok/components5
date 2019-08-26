@@ -50,7 +50,7 @@ void SerialCan::onData(QByteArray &data)
     }
 }
 
-void SerialCan::sendMessage(unsigned long id, QByteArray &data)
+void SerialCan::sendMessage(uint32_t id, QByteArray &data)
 {
     if (pProto == protoCommon)
     {
@@ -59,7 +59,7 @@ void SerialCan::sendMessage(unsigned long id, QByteArray &data)
         msg.length = data.size();
         QByteArray dadata = data;
         dadata.resize(8);
-        unsigned long *params = reinterpret_cast<unsigned long*>(dadata.data());
+        uint32_t *params = reinterpret_cast<uint32_t*>(dadata.data());
         msg.lparam = params[0];
         msg.hparam = params[1];
         QByteArray ba;

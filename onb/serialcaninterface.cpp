@@ -57,7 +57,7 @@ int SerialCanInterface::availableWriteCount()
     return 256;
 }
 
-int SerialCanInterface::addFilter(unsigned long id, unsigned long mask)
+int SerialCanInterface::addFilter(uint32_t id, uint32_t mask)
 {
     Filter f;
     f.id = id;
