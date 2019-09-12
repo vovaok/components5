@@ -6,6 +6,7 @@ SerialOnbInterface::SerialOnbInterface(QIODevice *device)
 {
     mMaxFrameSize = 64;
     mSerial = new SerialFrame(device);
+    disconnect(device, SIGNAL(readyRead()));
     connect(mSerial, &SerialFrame::dataReceived, this, &SerialOnbInterface::onDataReceived);
 }
 
@@ -41,7 +42,7 @@ int SerialOnbInterface::availableWriteCount()
 }
 //---------------------------------------------------------
 
-int SerialOnbInterface::addFilter(uint32_t id, uint32_t mask)
+int SerialOnbInterface::addFilter(unsigned long id, unsigned long mask)
 {
     Q_UNUSED(id);
     Q_UNUSED(mask);

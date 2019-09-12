@@ -65,7 +65,7 @@ void UsbHidOnbInterface::flush()
     qDebug() << "[UsbHidOnbInterface]: flush is not implemented";
 }
 
-int UsbHidOnbInterface::addFilter(uint32_t id, uint32_t mask)
+int UsbHidOnbInterface::addFilter(unsigned long id, unsigned long mask)
 {
     qDebug() << "[UsbHidOnbInterface]: Filter is not implemented. id=" << id << "mask=" << mask;
     return 0;
