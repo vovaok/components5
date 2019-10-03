@@ -42,7 +42,7 @@ int SerialOnbInterface::availableWriteCount()
 }
 //---------------------------------------------------------
 
-int SerialOnbInterface::addFilter(unsigned long id, unsigned long mask)
+int SerialOnbInterface::addFilter(uint32_t id, uint32_t mask)
 {
     Q_UNUSED(id);
     Q_UNUSED(mask);
