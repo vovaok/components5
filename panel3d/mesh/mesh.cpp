@@ -31,8 +31,38 @@ void Mesh::scaleUniform(float factor)
 {
     for (auto& shape : Shapes)
     {
-        for (auto& point : shape->points) point *= factor;
-        for (auto& vertex : shape->vertices) vertex.point *= factor;
+        for (auto& point : shape->points)
+            point *= factor;
+        for (auto& vertex : shape->vertices)
+            vertex.point *= factor;
+    }
+}
+
+void Mesh::translate(QVector3D p)
+{
+    for (auto& shape : Shapes)
+    {
+        for (auto& point : shape->points)
+            point += p;
+        for (auto& vertex : shape->vertices)
+            vertex.point += p;
+    }
+}
+
+void Mesh::rotate(float angle, QVector3D axis)
+{
+    QQuaternion rot = QQuaternion::fromAxisAndAngle(axis, angle);
+    for (auto& shape : Shapes)
+    {
+        for (auto& point : shape->points)
+            point = rot * point;
+        for (auto& n : shape->normals)
+            n = rot * n;
+        for (auto& vertex : shape->vertices)
+        {
+            vertex.point = rot * vertex.point;
+            vertex.normal = rot * vertex.normal;
+        }
     }
 }
 

@@ -65,6 +65,8 @@ public:
     inline QVector<MeshShape*>& shapes() {return Shapes;}
 
     void scaleUniform(float factor);
+    void translate(QVector3D p);
+    void rotate(float angle, QVector3D axis);
 };
 
 #endif // MESH_H
