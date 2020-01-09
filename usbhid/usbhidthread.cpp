@@ -37,6 +37,10 @@ void UsbHidThread::run()
     while (!isInterruptionRequested())
     {
         mAccessMutex.lock();
+        QStringList devs = availableDevices();
+        if (devs.isEmpty())
+            usb->close();
+
         if (usb->isOpen())
         {
             if (mReadSize)
@@ -62,7 +66,7 @@ void UsbHidThread::run()
         }
         else // autoconnect
         {
-            QStringList devs = availableDevices();
+//            QStringList devs = availableDevices();
             if (devs.count() == 1)
                 usb->setDevice();
             usb->open();
