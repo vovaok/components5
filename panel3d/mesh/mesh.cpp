@@ -31,6 +31,7 @@ void Mesh::scaleUniform(float factor)
 {
     for (auto& shape : Shapes)
     {
+//        shape->transform.scale(factor);
         for (auto& point : shape->points)
             point *= factor;
         for (auto& vertex : shape->vertices)
@@ -80,18 +81,22 @@ void Mesh::loadChildren(GroupingNode *par)
     {
         ChildNode *node = (*it);
 
-        loadShape(dynamic_cast<Shape*>(node));
+        Shape *shape = dynamic_cast<Shape*>(node);
+        if (shape)
+            loadShape(shape);
 
         GroupingNode *par2 = dynamic_cast<GroupingNode*>(node);
         if (par2)
+        {
             loadChildren(par2);
+        }
     }
 }
 
-void Mesh::loadShape(Shape *node)
+MeshShape *Mesh::loadShape(Shape *node)
 {
     if (!node)
-        return;
+        return 0L;
 
     MeshShape *shape = new MeshShape;
     Shapes << shape;
@@ -128,6 +133,15 @@ void Mesh::loadShape(Shape *node)
         }
     }
 
+    QMatrix4x4 transform;
+    const Transform *trans = dynamic_cast<const Transform*>(node->parent());
+    if (trans)
+    {
+        transform.rotate(trans->rotation);
+        transform.translate(trans->translation);
+        transform.scale(trans->scale);
+    }
+
     IndexedFaceSet *mesh = dynamic_cast<IndexedFaceSet*>(node->geometry());
     if (mesh)
     {
@@ -144,6 +158,7 @@ void Mesh::loadShape(Shape *node)
                 continue;
 
             pt = mesh->coord()->point[idx];
+            pt = transform * pt;
             shape->points << GLfloat3(pt.x(), pt.y(), pt.z());
 
             if (mesh->normal() && mesh->normalPerVertex)
@@ -153,6 +168,7 @@ void Mesh::loadShape(Shape *node)
                 else
                     norm = mesh->normal()->vector[mesh->normalIndex[i]];
             }
+            norm = transform * norm;
             shape->normals << GLfloat3(norm.x(), norm.y(), norm.z());
 
             if (mesh->texCoord()) // assuming texCoord per vertex
@@ -189,4 +205,6 @@ void Mesh::loadShape(Shape *node)
             }
         }
     }
+
+    return shape;
 }

@@ -93,6 +93,8 @@ void Mesh3D::drawMesh()
             glMaterialf(GL_FRONT, GL_SHININESS, shape->material.shininess);
         }
 
+//        glPushMatrix();
+//        glMultMatrixf(shape->transform.data());
         if (shape->normals.isEmpty())
         {
             glVertexPointer(3, GL_FLOAT, 0, shape->points.data());
@@ -126,6 +128,7 @@ void Mesh3D::drawMesh()
             if (mTex)
                 mTex->disable();
         }
+//        glPopMatrix();
 
 //        for (int j=0; j<shape->faces.count(); j++)
 //        {

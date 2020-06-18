@@ -5,6 +5,7 @@
 #include <QVector2D>
 #include <QVector3D>
 #include <QImage>
+#include <QMatrix4x4>
 #include "vrml2parser.h"
 #include <Windows.h>
 #include <GL/gl.h>
@@ -52,7 +53,7 @@ private:
 
     void loadVrml2(QTextStream *stream);
     void loadChildren(GroupingNode *par);
-    void loadShape(Shape *node);
+    MeshShape *loadShape(Shape *node);
 
 public:
     explicit Mesh();
