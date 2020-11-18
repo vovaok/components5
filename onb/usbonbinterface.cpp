@@ -44,11 +44,19 @@ bool UsbHidOnbInterface::read(Objnet::CommonMessage &msg)
     if (success)
     {
         uint32_t id = *reinterpret_cast<uint32_t*>(ba.data());
-        msg.setId(id);
-        unsigned char sz = ba[4];
-        msg.setData(QByteArray(ba.data() + 5, sz));
+        success = false;
+        for (const Filter &filter: mFilters)
+            if ((id & filter.mask) == (filter.id & filter.mask))
+                success = true;
 
-        emit message("usbonb", msg); // for debug purposes
+        if (success)
+        {
+            msg.setId(id);
+            unsigned char sz = static_cast<unsigned char>(ba[4]);
+            msg.setData(QByteArray(ba.data() + 5, sz));
+
+            emit message("usbonb", msg); // for debug purposes
+        }
     }
 //    else
 //        qDebug() << "ne success(";
@@ -67,11 +75,12 @@ void UsbHidOnbInterface::flush()
 
 int UsbHidOnbInterface::addFilter(uint32_t id, uint32_t mask)
 {
-    qDebug() << "[UsbHidOnbInterface]: Filter is not implemented. id=" << id << "mask=" << mask;
-    return 0;
+    mFilters << Filter{id, mask};
+    return mFilters.size() - 1;
 }
 
 void UsbHidOnbInterface::removeFilter(int number)
 {
-    qDebug() << "[UsbHidOnbInterface]: Filter is not implemented. number=" << number;
+    if (number >= 0 && number < mFilters.size())
+        mFilters[number] = Filter{0xFFFFFFFF, 0xFFFFFFFF};
 }

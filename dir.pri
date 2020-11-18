@@ -36,13 +36,16 @@ win32: {
 }
 else { COMPILER = $$QMAKE_CXX }
 
-#FOR UNIX and MINGW
+
 LIBDIR = "$$PWD/bin"
 
+win32:contains(QMAKE_TARGET.arch, x86_64)
+{
+    LIBDIR = "$$PWD/bin64"
+}
 win32-msvc*: {
     LIBDIR = "$$PWD/bin-msvc"
 }
-
 android {
     LIBDIR = "$$PWD/bin-android"
 }
