@@ -55,6 +55,8 @@ private:
     void loadChildren(GroupingNode *par);
     MeshShape *loadShape(Shape *node);
 
+    QMatrix4x4 mCurTransform;
+
 public:
     explicit Mesh();
     Mesh(QTextStream *stream);

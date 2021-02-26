@@ -71,6 +71,7 @@ void Mesh::loadVrml2(QTextStream *stream)
 {
     Vrml2Parser *parser = new Vrml2Parser();
     parser->parse(stream);
+    mCurTransform.setToIdentity();
     loadChildren(parser->sceneGraph());
     delete parser;
 }
@@ -88,7 +89,18 @@ void Mesh::loadChildren(GroupingNode *par)
         GroupingNode *par2 = dynamic_cast<GroupingNode*>(node);
         if (par2)
         {
+            QMatrix4x4 transform = mCurTransform;
+            const Transform *trans = dynamic_cast<const Transform*>(par2);
+            if (trans)
+            {
+                mCurTransform.translate(trans->translation);
+                mCurTransform.rotate(trans->rotation);
+                mCurTransform.scale(trans->scale);
+            }
+
             loadChildren(par2);
+
+            mCurTransform = transform;
         }
     }
 }
@@ -133,14 +145,14 @@ MeshShape *Mesh::loadShape(Shape *node)
         }
     }
 
-    QMatrix4x4 transform;
-    const Transform *trans = dynamic_cast<const Transform*>(node->parent());
-    if (trans)
-    {
-        transform.rotate(trans->rotation);
-        transform.translate(trans->translation);
-        transform.scale(trans->scale);
-    }
+//    QMatrix4x4 transform;
+//    const Transform *trans = dynamic_cast<const Transform*>(node->parent());
+//    if (trans)
+//    {
+//        transform.rotate(trans->rotation);
+//        transform.translate(trans->translation);
+//        transform.scale(trans->scale);
+//    }
 
     IndexedFaceSet *mesh = dynamic_cast<IndexedFaceSet*>(node->geometry());
     if (mesh)
@@ -158,7 +170,7 @@ MeshShape *Mesh::loadShape(Shape *node)
                 continue;
 
             pt = mesh->coord()->point[idx];
-            pt = transform * pt;
+            pt = mCurTransform * pt;
             shape->points << GLfloat3(pt.x(), pt.y(), pt.z());
 
             if (mesh->normal() && mesh->normalPerVertex)
@@ -168,7 +180,7 @@ MeshShape *Mesh::loadShape(Shape *node)
                 else
                     norm = mesh->normal()->vector[mesh->normalIndex[i]];
             }
-            norm = transform * norm;
+            norm = mCurTransform * norm;
             shape->normals << GLfloat3(norm.x(), norm.y(), norm.z());
 
             if (mesh->texCoord()) // assuming texCoord per vertex
