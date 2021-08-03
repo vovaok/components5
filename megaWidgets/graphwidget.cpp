@@ -76,10 +76,13 @@ void GraphWidget::setBounds(float xmin, float ymin, float xmax, float ymax)
 void GraphWidget::clear()
 {
     foreach (QString s, mGraphs.keys())
-    {
-        mGraphs[s].pointBuffer.clear();
-        mGraphs[s].pointCount = 0;
-    }
+        mGraphs[s].clear();
+}
+
+void GraphWidget::clear(QString name)
+{
+    if (mGraphs.contains(name))
+        mGraphs[name].clear();
 }
 
 void GraphWidget::setXlabel(QString label)
@@ -429,6 +432,12 @@ void GraphWidget::Graph::addPoint(float x, float y)
     {
         pointBuffer << x << y;
     }
+}
+
+void GraphWidget::Graph::clear()
+{
+    pointBuffer.clear();
+    pointCount = 0;
 }
 
 void GraphWidget::Graph::writeBuf()

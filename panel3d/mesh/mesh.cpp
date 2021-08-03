@@ -180,6 +180,10 @@ MeshShape *Mesh::loadShape(Shape *node)
                 else
                     norm = mesh->normal()->vector[mesh->normalIndex[i]];
             }
+            else
+            {
+                qDebug() << "empty normals";
+            }
             norm = mCurTransform * norm;
             shape->normals << GLfloat3(norm.x(), norm.y(), norm.z());
 

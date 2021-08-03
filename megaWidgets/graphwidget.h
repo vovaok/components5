@@ -30,6 +30,7 @@ private:
         Graph();
         void initialize(int maxPointCount);
         void addPoint(float x, float y);
+        void clear();
         void writeBuf();
     };
 
@@ -92,6 +93,7 @@ public:
     void setPointCount(int cnt) {mPointCount = cnt;}
 
     void clear();
+    void clear(QString name);
 
     void setBackColor(QColor col) {mBackColor = col; update();}
     QFont font() const {return mFont;}

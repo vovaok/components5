@@ -224,6 +224,13 @@ SFNode Vrml2Parser::parseSFNode(GroupingNode *parent)
 {
     QString nodeName;
     QString token = takeNextWord();
+
+    if (token == "]")
+    {
+        CurrentWordParsed = false;
+        return 0L;
+    }
+
     if (token == "DEF")
     {
         nodeName = takeNextWord();

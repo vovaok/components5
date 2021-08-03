@@ -22,7 +22,6 @@ COMPILER = ''
 win32: {
     win32-msvc* {
         MSVC_VER = $$(VisualStudioVersion)
-    #    message($${MSVC_VER})
         equals(MSVC_VER, 10.0){ COMPILER = 'msvc2008' }
         equals(MSVC_VER, 11.0){ COMPILER = 'msvc2010' }
         equals(MSVC_VER, 12.0){ COMPILER = 'msvc2012' }
