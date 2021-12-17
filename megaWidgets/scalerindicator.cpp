@@ -8,6 +8,7 @@ ScalerIndicator::ScalerIndicator(QWidget *parent) :
     mGraduation(0.1), mDivs(5),
     mScaleWidth(180),
     mIndicatorAngle(180),
+    mOrient(0),
     mPrecision(-1),
     mR(16)
 {
@@ -97,6 +98,7 @@ void ScalerIndicator::paintEvent(QPaintEvent *)
 
     QPainter p(this);
     p.setRenderHint(QPainter::Antialiasing);
+    p.rotate(mOrient);
     p.drawImage(0, 0, back);
 
     // draw value

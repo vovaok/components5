@@ -257,6 +257,22 @@ void Object3D::findGlobalTransform(GLfloat *matrix)
     glPopMatrix();
 }
 
+void Object3D::findRootTransform(GLfloat *matrix)
+{
+    Object3D *root = dynamic_cast<QPanel3D*>(mPanel)->root();
+
+    QList<Object3D*> objs;
+    for (Object3D *obj = this; obj && obj != root; obj = dynamic_cast<Object3D*>(obj->parent()))
+        objs.prepend(obj);
+
+    glPushMatrix();
+    glLoadIdentity();
+    foreach (Object3D *o, objs)
+        glMultMatrixf(o->fullTransformMatrix());
+    glGetFloatv(GL_MODELVIEW_MATRIX, matrix);
+    glPopMatrix();
+}
+
 void Object3D::setVisible(bool visible)
 {
     FVisible = visible;
