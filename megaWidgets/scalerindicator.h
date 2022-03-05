@@ -56,7 +56,7 @@ public:
     void setIndicatorAngle(float angle_deg) {mIndicatorAngle = angle_deg; repaint();}
     QString unit() const {return mUnit;}
     void setUnit(QString unit) {mUnit = unit; repaint();}
-    void setPrecision(int digits) {mPrecision = digits; calcPrec();}
+    void setPrecision(int digits) {mPrecision = digits; /*calcPrec();*/}
     void setOrient(float angle_deg) {mOrient = angle_deg; repaint();}
     
 signals:

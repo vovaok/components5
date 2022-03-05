@@ -80,4 +80,4 @@ QMAKE_TARGET_COMPANY = "Neurobotics"
 QMAKE_TARGET_COPYRIGHT = "Copyright (C) 2008-2018 Neurobotics, Ltd <info@neurobotics.ru>"
 
 
-message(LD $$LIBDIR)
+#message(LD $$LIBDIR)
