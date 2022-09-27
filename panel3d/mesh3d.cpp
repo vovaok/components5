@@ -42,7 +42,9 @@ void Mesh3D::loadModel(QString filename, ColorPolicy colorPolicy)
     pmesh = cache->loadMesh(mFilename);
     listNo = cache->listId(mFilename);
     mColorPolicy = colorPolicy;
-    if (!pmesh->shapes()[0]->texture.isNull())
+    if (pmesh->shapes().isEmpty())
+        qDebug() << filename << "is empty";
+    else if (!pmesh->shapes()[0]->texture.isNull())
         mTex = new StaticTexture(scene(), pmesh->shapes()[0]->texture);
 
     setSettingsChanged(); // implements:    emit changed();

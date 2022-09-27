@@ -29,6 +29,10 @@ LIBS += -lGLU
 }
 
 SOURCES += qpanel3d.cpp \
+    dynamics/disc3d.cpp \
+    dynamics/joint3d.cpp \
+    dynamics/palka3d.cpp \
+    dynamics/solidbody3d.cpp \
     primitive3d.cpp \
     object3d.cpp \
     mesh3d.cpp \
@@ -46,6 +50,10 @@ SOURCES += qpanel3d.cpp \
     dynamicmodel.cpp \
     terrain3d.cpp
 HEADERS += qpanel3d.h \
+    dynamics/disc3d.h \
+    dynamics/joint3d.h \
+    dynamics/palka3d.h \
+    dynamics/solidbody3d.h \
     primitive3d.h \
     panel3d.h \
     object3d.h \

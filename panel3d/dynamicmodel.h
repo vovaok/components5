@@ -47,12 +47,6 @@ public:
     };
 
 private:
-//    qreal mPitch;
-//    qreal mYaw;
-//    qreal mRoll;
-
-//    QVector3D mEx, mEy, mEz;
-
     PhaseVector mP;
 
 protected:
