@@ -157,8 +157,11 @@ void Graph2D::addPoint(QString var, float x, float y)
 //    }
         if (mAutoBounds)
         {
-            float zx = g.graph.first().x() * g.zoomX;
-                mBounds.setLeft(zx);
+            if (mFrameType == frameCartesian)
+            {
+                float zx = g.graph.first().x() * g.zoomX;
+                    mBounds.setLeft(zx);
+            }
         }
     }
 

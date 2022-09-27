@@ -41,6 +41,8 @@ public:
     bool isActive() const {return mCom->isOpen();}
     QSerialPort *device() {return mCom;}
 
+    QComboBox *getPortsComboBox() {return mPorts;}
+
 signals:
     void connected();
     void disconnected();
