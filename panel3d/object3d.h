@@ -99,6 +99,7 @@ public:
     GLfloat* transformMatrix() {return transform;}
     GLfloat* fullTransformMatrix() {return fullTransform;}
     void findGlobalTransform(GLfloat *matrix);
+    void findRootTransform(GLfloat *matrix);
     QVector3D pos() const {return QVector3D(transform[12], transform[13], transform[14]);}
     QVector3D rot() const {return QVector3D(xrot, yrot, zrot);}
     QVector3D center() const {return QVector3D(xcen, ycen, zcen);}

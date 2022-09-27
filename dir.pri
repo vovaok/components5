@@ -38,10 +38,13 @@ else { COMPILER = $$QMAKE_CXX }
 
 LIBDIR = "$$PWD/bin"
 
-win32:contains(QMAKE_TARGET.arch, x86_64)
-{
-    LIBDIR = "$$PWD/bin64"
-}
+#message($$QMAKE_TARGET.arch)
+
+#win32:contains(QMAKE_TARGET.arch, x86_64)
+#{
+#    LIBDIR = "$$PWD/bin64"
+#    message("nahoy")
+#}
 win32-msvc*: {
     LIBDIR = "$$PWD/bin-msvc"
 }

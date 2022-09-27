@@ -2,9 +2,9 @@
 
 GraphWidget::GraphWidget(QWidget *parent) :
     QOpenGLWidget(parent),
-    m_program(nullptr),
     m_vshader(nullptr),
     m_fshader(nullptr),
+    m_program(nullptr),
     mMaxPointCount(16384),
     mPointCount(0),
     xMin(0), xMax(1),

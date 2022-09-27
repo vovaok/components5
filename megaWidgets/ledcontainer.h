@@ -22,17 +22,23 @@ protected:
 
 public:
     explicit LedContainer(QWidget *parent = 0);
+    LedContainer(const QString &title, QWidget *parent = 0);
 
-    void add(QString label=QString(), QColor color=Qt::green);
+    void add(QString label);
+    void add(QString label, QColor color);
     void add(QStringList labels);
     void setLed(int number, bool state);
+    bool ledState(int number);
 
     int ledSize() const {return mLedSize;}
     void setLedSize(int size);
 
     void setBytesInColumn(int value) {mBytesInColumn = value;}
 
+    LedContainer &operator << (QString label) {add(label); return *this;}
+
 signals:
+    void ledClicked(int idx);
 
 private slots:
     void onLedClick();

@@ -12,7 +12,33 @@ LedContainer::LedContainer(QWidget *parent) :
     lay->setSpacing(0);
     setLayout(lay);
 }
+
+LedContainer::LedContainer(const QString &title, QWidget *parent) :
+    QGroupBox(title, parent),
+    mLedSize(24),
+    mHorizontal(false),
+    mBytesInColumn(0)
+{
+    setMinimumHeight(64);
+    QGridLayout *lay = new QGridLayout;
+    lay->setContentsMargins(0, 0, 4, 8);
+    lay->setSpacing(0);
+    setLayout(lay);
+}
 //---------------------------------------------------------------------------
+
+void LedContainer::add(QString label)
+{
+    QRegExp rx("([^\\|]*)\\|(.*)");
+    if (rx.indexIn(label) != -1)
+    {
+        add(rx.cap(1), rx.cap(2));
+    }
+    else
+    {
+        add(label, Qt::green);
+    }
+}
 
 void LedContainer::add(QString label, QColor color)
 {
@@ -84,18 +110,9 @@ void LedContainer::add(QString label, QColor color)
 
 void LedContainer::add(QStringList labels)
 {
-    QRegExp rx("([^\\|]*)\\|(.*)");
-//    rx.setMinimal(true);
     foreach (QString label, labels)
     {
-        if (rx.indexIn(label) != -1)
-        {
-            add(rx.cap(1), rx.cap(2));
-        }
-        else
-        {
-            add(label);
-        }
+        add(label);
     }
 }
 //---------------------------------------------------------------------------
@@ -107,6 +124,16 @@ void LedContainer::setLed(int number, bool state)
         if (mLeds[number])
             mLeds[number]->setState(state);
     }
+}
+
+bool LedContainer::ledState(int number)
+{
+    if (number >= 0 && number < mLeds.count())
+    {
+        if (mLeds[number])
+            return mLeds[number]->state();
+    }
+    return false;
 }
 
 void LedContainer::setData(const void *data)
@@ -161,7 +188,10 @@ void LedContainer::setLedSize(int size)
 void LedContainer::setLedsClickable(bool enabled)
 {
     for (int i=0; i<mLeds.count(); i++)
-        mLeds[i]->setFlags(enabled? Led::Clickable: Led::NoFlags);
+    {
+        if (mLeds[i])
+            mLeds[i]->setFlags(enabled? Led::Clickable: Led::NoFlags);
+    }
 }
 
 void LedContainer::setHorizontal(bool horizontal)
@@ -173,6 +203,8 @@ void LedContainer::onLedClick()
 {
     Led *led = qobject_cast<Led*>(sender());
     led->setState(!led->state());
+    int idx = mLeds.indexOf(led);
+    emit ledClicked(idx);
 }
 //---------------------------------------------------------------------------
 
