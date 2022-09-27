@@ -5,6 +5,7 @@
 #include <QVector2D>
 #include <QVector3D>
 #include <QImage>
+#include <QMatrix4x4>
 #include "vrml2parser.h"
 #include <Windows.h>
 #include <GL/gl.h>
@@ -52,7 +53,9 @@ private:
 
     void loadVrml2(QTextStream *stream);
     void loadChildren(GroupingNode *par);
-    void loadShape(Shape *node);
+    MeshShape *loadShape(Shape *node);
+
+    QMatrix4x4 mCurTransform;
 
 public:
     explicit Mesh();
@@ -65,6 +68,8 @@ public:
     inline QVector<MeshShape*>& shapes() {return Shapes;}
 
     void scaleUniform(float factor);
+    void translate(QVector3D p);
+    void rotate(float angle, QVector3D axis);
 };
 
 #endif // MESH_H

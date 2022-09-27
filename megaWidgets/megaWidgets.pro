@@ -19,6 +19,7 @@ include(../build.pri)
 #}
 
 SOURCES += led.cpp \
+    graphwidget.cpp \
     labeledled.cpp \
     toggleswitch.cpp \
     segmentindicator.cpp \
@@ -32,6 +33,7 @@ SOURCES += led.cpp \
     button.cpp
 
 HEADERS += led.h \
+    graphwidget.h \
     labeledled.h \
     toggleswitch.h \
     segmentindicator.h \

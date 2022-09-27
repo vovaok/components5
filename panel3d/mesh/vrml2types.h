@@ -84,7 +84,10 @@ public:
     SFVec3f bboxCenter;
     SFVec3f bboxSize;
 
-    explicit Transform(GroupingNode *parent) : GroupingNode(parent, "Transform") {}
+    explicit Transform(GroupingNode *parent) : GroupingNode(parent, "Transform")
+    {
+        scale = SFVec3f(1, 1, 1);
+    }
 };
 
 class Group : public GroupingNode

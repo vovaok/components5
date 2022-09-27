@@ -98,6 +98,7 @@ bool UsbDeviceEnumerator::DevEventFilter::nativeEventFilter(const QByteArray &ev
     if (wParam == DBT_DEVNODES_CHANGED)
     {
         mEnumObj->enumerate();
+//        qDebug() << "DBT_DEVNODES_CHANGED";
     }
     return false;
 }

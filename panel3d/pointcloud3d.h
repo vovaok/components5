@@ -38,7 +38,7 @@ public:
     explicit PointCloud3D(QObject *parent = 0);
 
     void clear();
-    void addXYZRGBAPoint(float *data, unsigned long rgba, float *normalData=0L);
+    void addXYZRGBAPoint(float *data, uint32_t rgba, float *normalData=0L);
     void setDataBuffer(const void *data, int colorOffset, int stride, int count);
     
     float pointSize() const {return pPointSize;}

@@ -71,6 +71,12 @@ class UsbHidOnbInterface : public ObjnetInterface
 
 private:
     UsbOnbThread *usb;
+    typedef struct
+    {
+        uint32_t id;
+        uint32_t mask;
+    } Filter;
+    QVector<Filter> mFilters;
 
 public:
     explicit UsbHidOnbInterface(UsbOnbThread *usbhid);
@@ -82,7 +88,7 @@ public:
 
     int availableWriteCount();
 
-    int addFilter(unsigned long id, unsigned long mask=0xFFFFFFFF);
+    int addFilter(uint32_t id, uint32_t mask=0xFFFFFFFF);
     void removeFilter(int number);
 
 signals:

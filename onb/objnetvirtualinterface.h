@@ -17,7 +17,7 @@ private:
     QTcpSocket *mSocket;
     QString mNetname;
     QString mServerIp;
-    typedef struct {unsigned long id, mask;} Filter;
+    typedef struct {uint32_t id, mask;} Filter;
     QVector<Filter> mFilters;
     QQueue<CommonMessage> mRxQueue;
     bool mActive;
@@ -39,7 +39,7 @@ public:
 
     int availableWriteCount();
 
-    int addFilter(unsigned long id, unsigned long mask=0xFFFFFFFF);
+    int addFilter(uint32_t id, uint32_t mask=0xFFFFFFFF);
     void removeFilter(int number);
 
     bool isActive() const {return mActive;}

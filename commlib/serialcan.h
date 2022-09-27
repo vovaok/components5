@@ -6,15 +6,15 @@
 #pragma pack(push,1)
 typedef struct
 {
-    unsigned long id;
-    unsigned long lparam;
-    unsigned long hparam;
+    uint32_t id;
+    uint32_t lparam;
+    uint32_t hparam;
     char length;
 } CanMessage;
 
 typedef struct
 {
-    unsigned long id;
+    uint32_t id;
 } CanMessageHeader;
 
 typedef enum
@@ -48,15 +48,15 @@ private:
 public:
     explicit SerialCan(QIODevice *parent);
     explicit SerialCan(QIODevice *parent, ProtocolVersion proto = protoCommon);
-    void sendMessage(unsigned long id, QByteArray &data);
+    void sendMessage(uint32_t id, QByteArray &data);
 
     ProtocolVersion protocolVersion() const {return pProto;}
     void changeProtocolVersion(ProtocolVersion protocol);
     void clearBoardBuffer();
 
 signals:
-    void onMessage(unsigned long id, QByteArray &data);
-    void onMessageSent(unsigned long id, QByteArray &data);
+    void onMessage(uint32_t id, QByteArray &data);
+    void onMessageSent(uint32_t id, QByteArray &data);
     void onMessageAccepted();
 
 private slots:

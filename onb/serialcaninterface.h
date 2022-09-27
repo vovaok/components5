@@ -15,7 +15,7 @@ class SerialCanInterface : public ObjnetInterface
 private:
     SerialCan *mCan;
     QQueue<CommonMessage> mRxQueue;
-    typedef struct {unsigned long id, mask;} Filter;
+    typedef struct {uint32_t id, mask;} Filter;
     QVector<Filter> mFilters;
 
 protected:
@@ -29,7 +29,7 @@ public:
 
     int availableWriteCount();
 
-    int addFilter(unsigned long id, unsigned long mask=0xFFFFFFFF);
+    int addFilter(uint32_t id, uint32_t mask=0xFFFFFFFF);
     void removeFilter(int number);
     
 signals:

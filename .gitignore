@@ -46,3 +46,4 @@ Makefile
 *.Makefile
 Makefile*
 
+bin64/

@@ -70,7 +70,7 @@ void SerialLink::onData(QByteArray &data)
                 switch (frm->data[0])
                 {
                   case icmdProductID:
-                    FProductID = *reinterpret_cast<unsigned long*>(newdata);
+                    FProductID = *reinterpret_cast<uint32_t*>(newdata);
                     break;
 
                   case icmdProductName:

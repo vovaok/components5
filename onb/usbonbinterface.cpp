@@ -21,11 +21,11 @@ bool UsbHidOnbInterface::write(Objnet::CommonMessage &msg)
 {
     if (!usb->isReady()) //isOpen())
         return false;
-    unsigned long id = msg.rawId();
+    uint32_t id = msg.rawId();
     unsigned char sz = msg.data().size();
     QByteArray ba;
     ba.resize(13);
-    *reinterpret_cast<unsigned long*>(ba.data()) = id;
+    *reinterpret_cast<uint32_t*>(ba.data()) = id;
     ba[4] = sz;
     for (int i=0; i<sz; i++)
         ba[5+i] = msg.data()[i];
@@ -43,12 +43,20 @@ bool UsbHidOnbInterface::read(Objnet::CommonMessage &msg)
     bool success = usb->readFeature(ba);
     if (success)
     {
-        unsigned long id = *reinterpret_cast<unsigned long*>(ba.data());
-        msg.setId(id);
-        unsigned char sz = ba[4];
-        msg.setData(QByteArray(ba.data() + 5, sz));
+        uint32_t id = *reinterpret_cast<uint32_t*>(ba.data());
+        success = false;
+        for (const Filter &filter: mFilters)
+            if ((id & filter.mask) == (filter.id & filter.mask))
+                success = true;
 
-        emit message("usbonb", msg); // for debug purposes
+        if (success)
+        {
+            msg.setId(id);
+            unsigned char sz = static_cast<unsigned char>(ba[4]);
+            msg.setData(QByteArray(ba.data() + 5, sz));
+
+            emit message("usbonb", msg); // for debug purposes
+        }
     }
 //    else
 //        qDebug() << "ne success(";
@@ -65,13 +73,14 @@ void UsbHidOnbInterface::flush()
     qDebug() << "[UsbHidOnbInterface]: flush is not implemented";
 }
 
-int UsbHidOnbInterface::addFilter(unsigned long id, unsigned long mask)
+int UsbHidOnbInterface::addFilter(uint32_t id, uint32_t mask)
 {
-    qDebug() << "[UsbHidOnbInterface]: Filter is not implemented. id=" << id << "mask=" << mask;
-    return 0;
+    mFilters << Filter{id, mask};
+    return mFilters.size() - 1;
 }
 
 void UsbHidOnbInterface::removeFilter(int number)
 {
-    qDebug() << "[UsbHidOnbInterface]: Filter is not implemented. number=" << number;
+    if (number >= 0 && number < mFilters.size())
+        mFilters[number] = Filter{0xFFFFFFFF, 0xFFFFFFFF};
 }

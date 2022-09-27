@@ -7,15 +7,15 @@ TARGET = onb
 
 include(../build.pri)
 
-android {
-CONFIG(debug, debug|release) {
-    DESTDIR = $$PWD/android-bin
-    TARGET = onbd
-} else {
-    DESTDIR = $$PWD/android-bin
-    TARGET = onb
-}
-}
+#android {
+#CONFIG(debug, debug|release) {
+#    DESTDIR = $$PWD/android-bin
+#    TARGET = onbd
+#} else {
+#    DESTDIR = $$PWD/android-bin
+#    TARGET = onb
+#}
+#}
 
 win32 {
     COMPONENTS = ../
@@ -23,7 +23,7 @@ win32 {
     include($$COMPONENTS/usbhid/usbhid.pri)
 }
 
-OBJNET_DIR = $$PWD/../../iar/components/stm32++/src/objnet
+OBJNET_DIR = $$PWD/../../../iar/components/stm32++/src/objnet
 
 INCLUDEPATH += $$OBJNET_DIR
 INCLUDEPATH += $$OBJNET_DIR/../core
@@ -37,8 +37,8 @@ SOURCES += \
     $$OBJNET_DIR/objnetdevice.cpp \
     $$OBJNET_DIR/objnetnode.cpp \
     $$OBJNET_DIR/objectinfo.cpp \
-    $$OBJNET_DIR/objnetmsg.cpp \
-    usbonbinterface.cpp
+    $$OBJNET_DIR/onbupgrader.cpp \
+    $$OBJNET_DIR/objnetmsg.cpp
 
 HEADERS += \
     objnetvirtualinterface.h \
@@ -50,10 +50,18 @@ HEADERS += \
     $$OBJNET_DIR/objnetcommon.h \
     $$OBJNET_DIR/objnetdevice.h \
     $$OBJNET_DIR/objnetnode.h \
+    $$OBJNET_DIR/onbupgrader.h \
     $$OBJNET_DIR/objectinfo.h \
     $$OBJNET_DIR/../core/closure.h \
-    $$OBJNET_DIR/../core/closure_impl.h \
-    usbonbinterface.h
+    $$OBJNET_DIR/../core/closure_impl.h
+
+!android {
+SOURCES += usbonbinterface.cpp \
+    serialonbinterface.cpp
+
+HEADERS += usbonbinterface.h \
+    serialonbinterface.h
+}
 
 win32 {
 SOURCES += \

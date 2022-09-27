@@ -121,7 +121,7 @@ inline SFRotation Vrml2Parser::parseSFRotation()
     SFFloat y = parseSFFloat();
     SFFloat z = parseSFFloat();
     SFFloat a = parseSFFloat();
-    return SFRotation(x, y, z, a);
+    return SFRotation::fromAxisAndAngle(x, y, z, a*180/3.1415926f);
 }
 
 inline SFColor Vrml2Parser::parseSFColor()
@@ -224,6 +224,13 @@ SFNode Vrml2Parser::parseSFNode(GroupingNode *parent)
 {
     QString nodeName;
     QString token = takeNextWord();
+
+    if (token == "]")
+    {
+        CurrentWordParsed = false;
+        return 0L;
+    }
+
     if (token == "DEF")
     {
         nodeName = takeNextWord();

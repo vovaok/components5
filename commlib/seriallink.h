@@ -162,7 +162,7 @@ private:
     bool Ready;
     bool FEchoTestPassed;
     unsigned short UartLinkVersion;
-    unsigned long FProductID;
+    uint32_t FProductID;
     QString FProductName;
     unsigned short FProductVersion;
     QString FCompilationDate;
@@ -200,7 +200,7 @@ public:
 
     bool isReady() {return Ready;}
     bool echoTestPassed() {return FEchoTestPassed;}
-    unsigned long productID() {return FProductID;}
+    uint32_t productID() {return FProductID;}
     QString productName() {return FProductName;}
     unsigned short productVersion() {return FProductVersion;}
     unsigned char productMajorVersion() {return FProductVersion>>8;}
