@@ -53,16 +53,16 @@ void Mesh::translate(QVector3D p)
 void Mesh::rotate(float angle, QVector3D axis)
 {
     QQuaternion rot = QQuaternion::fromAxisAndAngle(axis, angle);
-    for (auto& shape : Shapes)
+    for (MeshShape *shape: Shapes)
     {
-        for (auto& point : shape->points)
-            point = rot * point;
-        for (auto& n : shape->normals)
-            n = rot * n;
-        for (auto& vertex : shape->vertices)
+        for (QVector3D &point: shape->points)
+            point = rot.rotatedVector(point);//rot * point;
+        for (QVector3D &n: shape->normals)
+            n = rot.rotatedVector(n);//rot * n;
+        for (MeshShape::Vertex &vertex: shape->vertices)
         {
-            vertex.point = rot * vertex.point;
-            vertex.normal = rot * vertex.normal;
+            vertex.point = rot.rotatedVector(vertex.point);//rot * vertex.point;
+            vertex.normal = rot.rotatedVector(vertex.normal);//rot * vertex.normal;
         }
     }
 }
