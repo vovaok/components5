@@ -184,7 +184,7 @@ MeshShape *Mesh::loadShape(Shape *node)
             {
                 qDebug() << "empty normals";
             }
-            norm = mCurTransform * norm;
+            norm = mCurTransform.mapVector(norm);
             shape->normals << GLfloat3(norm.x(), norm.y(), norm.z());
 
             if (mesh->texCoord()) // assuming texCoord per vertex
