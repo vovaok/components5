@@ -8,7 +8,7 @@
 namespace Objnet
 {
 
-class SerialOnbInterface : public ObjnetInterface
+class SerialOnbInterface : public QObject, public ObjnetInterface
 {
     Q_OBJECT
 

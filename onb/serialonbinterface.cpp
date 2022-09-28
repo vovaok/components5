@@ -33,7 +33,7 @@ bool SerialOnbInterface::read(CommonMessage &msg)
 
 void SerialOnbInterface::flush()
 {
-
+    mRxQueue.clear();
 }
 
 int SerialOnbInterface::availableWriteCount()

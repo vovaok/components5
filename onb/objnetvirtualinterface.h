@@ -9,7 +9,7 @@
 namespace Objnet
 {
 
-class ObjnetVirtualInterface : public ObjnetInterface
+class ObjnetVirtualInterface : public QObject, public ObjnetInterface
 {
     Q_OBJECT
 

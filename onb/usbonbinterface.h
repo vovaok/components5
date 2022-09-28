@@ -65,7 +65,7 @@ public:
     }
 };
 
-class UsbHidOnbInterface : public ObjnetInterface
+class UsbHidOnbInterface : public QObject, public ObjnetInterface
 {
     Q_OBJECT
 

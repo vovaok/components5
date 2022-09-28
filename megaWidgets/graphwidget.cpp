@@ -9,8 +9,11 @@ GraphWidget::GraphWidget(QWidget *parent) :
     mPointCount(0),
     xMin(0), xMax(1),
     yMin(0), yMax(1),
+    xMin0(0), xMax0(0),
+    yMin0(0), yMax0(0),
     mAutoZoom(true),
-    mInitialized(false)
+    mInitialized(false),
+    m_pointsVisible(false)
 {
 }
 
@@ -41,16 +44,21 @@ void GraphWidget::addGraph(QString name, QColor color, float lineWidth)
 
 void GraphWidget::addPoint(QString name, float x, float y)
 {
+    if (xMin0 > x)
+        xMin0 = x;
+    if (xMax0 < x)
+        xMax0 = x;
+    if (yMin0 > y)
+        yMin0 = y;
+    if (yMax0 < y)
+        yMax0 = y;
+
     if (mAutoZoom)
     {
-        if (xMin > x)
-            xMin = x;
-        if (xMax < x)
-            xMax = x;
-        if (yMin > y)
-            yMin = y;
-        if (yMax < y)
-            yMax = y;
+        xMin = xMin0;
+        xMax = xMax0;
+        yMin = yMin0;
+        yMax = yMax0;
     }
 
     if (!mGraphNames.contains(name))
@@ -71,6 +79,8 @@ void GraphWidget::setBounds(float xmin, float ymin, float xmax, float ymax)
     yMin = ymin;
     xMax = xmax;
     yMax = ymax;
+
+    xMin0 = xMax0 = yMin0 = yMax0 = 0;
 }
 
 void GraphWidget::clear()
@@ -90,13 +100,24 @@ void GraphWidget::setXlabel(QString label)
     mXlabel = label;
 }
 
+void GraphWidget::setGraphType(QString name, GraphType type)
+{
+    if (mGraphs.contains(name))
+        mGraphs[name].appearance = type;
+}
+
+void GraphWidget::setPointSize(QString name, float size)
+{
+    if (mGraphs.contains(name))
+        mGraphs[name].pointSize = size;
+}
+
 void GraphWidget::initializeGL()
 {
     initializeOpenGLFunctions();
 
-//    glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
     glEnable(GL_MULTISAMPLE);
-
+    glEnable(GL_PROGRAM_POINT_SIZE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 //    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
@@ -107,50 +128,24 @@ void GraphWidget::initializeGL()
         "uniform mediump mat4 matrix;\n"
         "uniform mediump vec4 lineColor;\n"
         "varying mediump vec4 color;\n"
+        "uniform mediump float pointSize;\n"
         "void main(void)\n"
         "{\n"
         "    color = lineColor;\n"    //vec4(lineColor, 1.0);\n"
 //        "    color = clamp(color, 0.0, 1.0);\n"
         "    gl_Position = matrix * vertex;\n"
+        "    gl_PointSize = pointSize;\n"
         "}\n";
     m_vshader->compileSourceCode(vsrc1);
 
     m_fshader = new QOpenGLShader(QOpenGLShader::Fragment);
     const char *fsrc1 =
         "varying mediump vec4 color;\n"
-//        "uniform mediump vec4 color;\n"
         "void main(void)\n"
         "{\n"
         "    gl_FragColor = color;\n"
         "}\n";
     m_fshader->compileSourceCode(fsrc1);
-
-//    m_vshader = new QOpenGLShader(QOpenGLShader::Vertex);
-//    const char *vsrc1 =
-//        "attribute highp vec4 vertex;\n"
-//        "attribute mediump vec3 normal;\n"
-//        "uniform mediump mat4 matrix;\n"
-//        "varying mediump vec4 color;\n"
-//        "void main(void)\n"
-//        "{\n"
-//        "    vec3 toLight = normalize(vec3(0.0, 0.3, 1.0));\n"
-//        "    float angle = max(dot(normal, toLight), 0.0);\n"
-//        "    vec3 col = vec3(1.0, 0.5, 0.0);\n"
-//        "    color = vec4(col, 1.0);// * 0.2 + col * 0.8 * angle, 1.0);\n"
-//        "    color = clamp(color, 0.0, 1.0);\n"
-//        "    gl_Position = matrix * vertex;\n"
-//        "}\n";
-//    m_vshader->compileSourceCode(vsrc1);
-
-//    m_fshader = new QOpenGLShader(QOpenGLShader::Fragment);
-//    const char *fsrc1 =
-//        "varying mediump vec4 color;\n"
-////        "uniform mediump vec4 color;\n"
-//        "void main(void)\n"
-//        "{\n"
-//        "    gl_FragColor = color;\n"
-//        "}\n";
-//    m_fshader->compileSourceCode(fsrc1);
 
     m_program = new QOpenGLShaderProgram;
     m_program->addShader(m_vshader);
@@ -160,6 +155,7 @@ void GraphWidget::initializeGL()
     m_vertexAttr = m_program->attributeLocation("vertex");
     m_matrixUniform = m_program->uniformLocation("matrix");
     m_lineColorUniform = m_program->uniformLocation("lineColor");
+    m_pointSizeUniform = m_program->uniformLocation("pointSize");
 
     //qDebug() << "create grid";
     m_grid_vbo.create();
@@ -212,6 +208,56 @@ void GraphWidget::initializeGL()
     }
 }
 
+void GraphWidget::mousePressEvent(QMouseEvent *event)
+{
+    m_mousePos = event->pos();
+    event->accept();
+}
+
+void GraphWidget::mouseMoveEvent(QMouseEvent *event)
+{
+    if (event->buttons() & Qt::LeftButton)
+    {
+        QPoint dpos = event->pos() - m_mousePos;
+        m_mousePos = event->pos();
+        float dx = (xMin - xMax) * dpos.x() / width();
+        float dy = (yMax - yMin) * dpos.y() / height();
+        dx = qMax(dx, xMin0 - xMin);
+        dx = qMin(dx, xMax0 - xMax);
+        xMin += dx;
+        xMax += dx;
+        dy = qMax(dy, yMin0 - yMin);
+        dy = qMin(dy, yMax0 - yMax);
+        yMin += dy;
+        yMax += dy;
+
+        event->accept();
+        update();
+    }
+}
+
+void GraphWidget::wheelEvent(QWheelEvent *event)
+{
+    float delta = -event->angleDelta().y() / 120.0;
+    float k = delta * 0.1;
+    m_mousePos = event->pos();
+    float xpos = xMin + (xMax - xMin) * event->x() / (float)width();
+    float ypos = yMax - (yMax - yMin) * event->y() / (float)height();
+    if (!(event->modifiers() & Qt::ShiftModifier))
+    {
+        xMin = qMax(xMin0, xMin - (xpos - xMin) * k);
+        xMax = qMin(xMax0, xMax + (xMax - xpos) * k);
+    }
+    if ((event->modifiers() & Qt::ShiftModifier) || (event->modifiers() & Qt::ControlModifier))
+    {
+        yMin = qMax(yMin0, yMin - (ypos - yMin) * k);
+        yMax = qMin(yMax0, yMax + (yMax - ypos) * k);
+    }
+
+    event->accept();
+    update();
+}
+
 void GraphWidget::paintGL()
 {
     QPainter painter;
@@ -220,7 +266,7 @@ void GraphWidget::paintGL()
     painter.setFont(mFont);
     QFontMetrics fm(mFont);
     int fh = fm.height();
-    int fwmax = fm.width("9999");
+    int fwmax = fm.width("99999");
 
     painter.beginNativePainting();
 
@@ -305,18 +351,24 @@ void GraphWidget::paintGL()
             continue;
         m_program->setUniformValue(m_lineColorUniform, g.color);//.redF(), g.color.greenF(), g.color.blueF(), g.color.alphaF());
         glLineWidth(g.lineWidth);
+        m_program->setUniformValue(m_pointSizeUniform, g.pointSize);
         g.vbo.bind();
         g.writeBuf();
         m_program->setAttributeBuffer(m_vertexAttr, GL_FLOAT, 0, 2, 2 * sizeof(GLfloat));
+        GLenum mode = GL_LINE_STRIP;
+        if (g.appearance == Line)
+            mode = GL_LINE_STRIP;
+        else if (g.appearance == Points)
+            mode = GL_POINTS;
         if (!mPointCount)
         {
             //glDrawArrays(GL_LINE_STRIP, g.pointCount, g.vboSize - g.pointCount);
-            glDrawArrays(GL_LINE_STRIP, 0, g.pointCount); // vertices count
+            glDrawArrays(mode, 0, g.pointCount); // vertices count
         }
         else
         {
             int cnt = qMin(g.pointCount, mPointCount);
-            glDrawArrays(GL_LINE_STRIP, g.pointCount - cnt, cnt); // vertices count
+            glDrawArrays(mode, g.pointCount - cnt, cnt); // vertices count
         }
         g.vbo.release();
     }
@@ -405,7 +457,8 @@ void GraphWidget::paintGL()
 GraphWidget::Graph::Graph() :
     vboSize(16384),
     pointCount(0),
-    lineWidth(0),
+    lineWidth(1.0f),
+    pointSize(3.0f),
     _initialized(false),
     visible(true)
 {
