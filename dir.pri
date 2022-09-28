@@ -73,8 +73,8 @@ for(DIR, DIRS) {
 }
 
 createDirs.commands = $(MKDIR) $$mkcommands
-first.depends += createDirs
-QMAKE_EXTRA_TARGETS += createDirs
+first.depends *= createDirs
+QMAKE_EXTRA_TARGETS *= createDirs
 
 QMAKE_TARGET_COMPANY = "Neurobotics"
 QMAKE_TARGET_COPYRIGHT = "Copyright (C) 2008-2018 Neurobotics, Ltd <info@neurobotics.ru>"

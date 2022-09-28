@@ -40,13 +40,12 @@ void Mesh3D::loadModel(QString filename, ColorPolicy colorPolicy)
     clearMesh();
     Mesh3DCache *cache = Mesh3DCache::instance();
     pmesh = cache->loadMesh(mFilename);
-    if (!pmesh->shapes().isEmpty())
-    {
-        listNo = cache->listId(mFilename);
-        mColorPolicy = colorPolicy;
-        if (!pmesh->shapes()[0]->texture.isNull())
-            mTex = new StaticTexture(scene(), pmesh->shapes()[0]->texture);
-    }
+    listNo = cache->listId(mFilename);
+    mColorPolicy = colorPolicy;
+    if (pmesh->shapes().isEmpty())
+        qDebug() << filename << "is empty";
+    else if (!pmesh->shapes()[0]->texture.isNull())
+        mTex = new StaticTexture(scene(), pmesh->shapes()[0]->texture);
 
     setSettingsChanged(); // implements:    emit changed();
 }
@@ -113,7 +112,7 @@ void Mesh3D::drawMesh()
             if (mTex)
                 mTex->bind();
             glVertexPointer(3, GL_FLOAT, 0, shape->points.data());
-            glNormalPointer(GL_FLOAT, 12, shape->normals.data());
+            glNormalPointer(GL_FLOAT, 0, shape->normals.data());
             if (mTex)
                 glTexCoordPointer(2, GL_FLOAT, 0, shape->texCoord.data());
 //            glColorPointer(3, GL_UNSIGNED_BYTE, 4, colors.data());
@@ -133,6 +132,27 @@ void Mesh3D::drawMesh()
         }
 //        glPopMatrix();
 
+//        // draw mesh triangle by triangle
+//        glBegin(GL_TRIANGLES);
+//        for (int j=0; j<shape->points.count(); j++)
+//        {
+//            glNormal3fv((GLfloat*)&(shape->normals[j]));
+//            glVertex3fv((GLfloat*)&(shape->points[j]));
+//        }
+//        glEnd();
+//
+//        // show normals (for debug):
+//        glBegin(GL_LINES);
+//        for (int j=0; j<shape->points.count(); j++)
+//        {
+//            QVector3D p = shape->points[j];
+//            QVector3D n = p + shape->normals[j];
+//            glVertex3fv((GLfloat*)&p);
+//            glVertex3fv((GLfloat*)&n);
+//        }
+//        glEnd();
+
+//        // something ancient... maybe remove this?
 //        for (int j=0; j<shape->faces.count(); j++)
 //        {
 //            MeshFace *face = shape->faces[j];

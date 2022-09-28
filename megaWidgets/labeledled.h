@@ -4,13 +4,15 @@
 #include <QtGui>
 #include "led.h"
 
-class LabeledLed : public QHBoxLayout
+class LabeledLed : public QWidget
 {
     Q_OBJECT
 
 private:
     Led *mLed;
     QLabel *mLabel;
+
+    void init();
 
 public:
     explicit LabeledLed(QWidget *parent = 0);
