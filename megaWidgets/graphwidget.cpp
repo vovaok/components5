@@ -11,10 +11,13 @@ GraphWidget::GraphWidget(QWidget *parent) :
     yMin(0), yMax(1),
     xMin0(0), xMax0(0),
     yMin0(0), yMax0(0),
+    xWindow(0),
     mAutoZoom(true),
     mInitialized(false),
+    m_innocent(true),
     m_pointsVisible(false)
 {
+    resetBounds();
 }
 
 GraphWidget::~GraphWidget()
@@ -42,8 +45,27 @@ void GraphWidget::addGraph(QString name, QColor color, float lineWidth)
     g.lineWidth = lineWidth;
 }
 
+void GraphWidget::removeGraph(QString name)
+{
+    if (mGraphs.contains(name))
+    {
+        makeCurrent(); // na vsyakiy
+        mGraphs[name].vbo.destroy();
+        doneCurrent();
+        mGraphNames.removeOne(name);
+        mGraphs.remove(name);
+    }
+}
+
 void GraphWidget::addPoint(QString name, float x, float y)
 {
+    if (m_innocent)
+    {
+        m_innocent = false;
+        xMin0 = xMax0 = x;
+        yMin0 = yMax0 = y;
+    }
+
     if (xMin0 > x)
         xMin0 = x;
     if (xMax0 < x)
@@ -73,6 +95,14 @@ void GraphWidget::setGraphVisible(QString name, bool visible)
         mGraphs[name].visible = visible;
 }
 
+void GraphWidget::resetBounds()
+{
+    xMin = yMin = 0;
+    xMax = yMax = 1;
+    xMin0 = xMax0 = yMin0 = yMax0 = 0;
+    m_innocent = true;
+}
+
 void GraphWidget::setBounds(float xmin, float ymin, float xmax, float ymax)
 {
     xMin = xmin;
@@ -87,6 +117,7 @@ void GraphWidget::clear()
 {
     foreach (QString s, mGraphs.keys())
         mGraphs[s].clear();
+    m_innocent = true;
 }
 
 void GraphWidget::clear(QString name)
@@ -129,10 +160,15 @@ void GraphWidget::initializeGL()
         "uniform mediump vec4 lineColor;\n"
         "varying mediump vec4 color;\n"
         "uniform mediump float pointSize;\n"
+        "uniform mediump float xmin;\n"
+        "uniform mediump float xmax;\n"
         "void main(void)\n"
         "{\n"
-        "    color = lineColor;\n"    //vec4(lineColor, 1.0);\n"
-//        "    color = clamp(color, 0.0, 1.0);\n"
+//        "   if (vertex.x < xmin)"
+//        "       discard;"
+//        "   if (vertex.x > xmax)"
+//        "       discard;"
+        "    color = lineColor;\n"
         "    gl_Position = matrix * vertex;\n"
         "    gl_PointSize = pointSize;\n"
         "}\n";
@@ -156,6 +192,8 @@ void GraphWidget::initializeGL()
     m_matrixUniform = m_program->uniformLocation("matrix");
     m_lineColorUniform = m_program->uniformLocation("lineColor");
     m_pointSizeUniform = m_program->uniformLocation("pointSize");
+    m_xminUniform = m_program->uniformLocation("xmin");
+    m_xmaxUniform = m_program->uniformLocation("xmax");
 
     //qDebug() << "create grid";
     m_grid_vbo.create();
@@ -285,6 +323,8 @@ void GraphWidget::paintGL()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 //    glBlendFunc(GL_SRC_ALPHA, GL_SRC_ALPHA_SATURATE);
 
+    if (mAutoZoom && xWindow > 0 && xMin < xMax - xWindow)
+        xMin = (xMax - xWindow);
 
     // draw grid
     int Nx = 20, Ny = 20;
@@ -341,6 +381,8 @@ void GraphWidget::paintGL()
 
     m_program->bind();
     m_program->setUniformValue(m_matrixUniform, modelview);
+    m_program->setUniformValue(m_xminUniform, xMin);
+    m_program->setUniformValue(m_xmaxUniform, xMax);
 
     m_program->enableAttributeArray(m_vertexAttr);
 
@@ -355,15 +397,15 @@ void GraphWidget::paintGL()
         g.vbo.bind();
         g.writeBuf();
         m_program->setAttributeBuffer(m_vertexAttr, GL_FLOAT, 0, 2, 2 * sizeof(GLfloat));
-        GLenum mode = GL_LINE_STRIP;
+        GLenum mode = GL_LINE_LOOP;
         if (g.appearance == Line)
-            mode = GL_LINE_STRIP;
+            mode = GL_LINE_LOOP;
         else if (g.appearance == Points)
             mode = GL_POINTS;
         if (!mPointCount)
         {
             //glDrawArrays(GL_LINE_STRIP, g.pointCount, g.vboSize - g.pointCount);
-            glDrawArrays(mode, 0, g.pointCount); // vertices count
+            glDrawArrays(mode, 0, qMin(g.pointCount, g.vboSize)); // vertices count
         }
         else
         {
@@ -456,6 +498,7 @@ void GraphWidget::paintGL()
 
 GraphWidget::Graph::Graph() :
     vboSize(16384),
+    curIdx(0),
     pointCount(0),
     lineWidth(1.0f),
     pointSize(3.0f),
@@ -475,22 +518,24 @@ void GraphWidget::Graph::initialize(int maxPointCount)
     vbo.setUsagePattern(QOpenGLBuffer::DynamicDraw);
     vbo.bind();
     vbo.allocate(vboSize * 2 * sizeof(GLfloat));
+    GLfloat *buf = reinterpret_cast<GLfloat*>(vbo.mapRange(0, vboSize * 2 * sizeof(GLfloat), QOpenGLBuffer::RangeWrite));
+    for (int i=0; i<vboSize * 2; i++)
+        buf[i] = NAN;
+    vbo.unmap();
     vbo.release();
     _initialized = true;
 }
 
 void GraphWidget::Graph::addPoint(float x, float y)
 {
-    //if (pointBuffer.size() < vboSize)
-    {
-        pointBuffer << x << y;
-    }
+    pointBuffer << x << y;
 }
 
 void GraphWidget::Graph::clear()
 {
     pointBuffer.clear();
-    pointCount = 0;
+    pointCount = 1;
+    curIdx = 1;
 }
 
 void GraphWidget::Graph::writeBuf()
@@ -514,19 +559,32 @@ void GraphWidget::Graph::writeBuf()
 //        vbo = tempvbo;
 //    }
 
+    if (pointBuffer.size())
+    {
+        pointBuffer << NAN << NAN;
+        if (curIdx > 0)
+            --curIdx;
+        else
+            curIdx = vboSize - 1;
+
+        if (pointCount)
+            --pointCount;
+    }
+
     while (pointBuffer.size())
     {
-        int size = qMin(pointBuffer.size(), (vboSize - pointCount) * 2);
+        int size = qMin(pointBuffer.size(), (vboSize - curIdx) * 2);
 
 //        vbo.write(pointCount*2*sizeof(GLfloat), pointBuffer.data(), size*sizeof(GLfloat));
         // tipa tak faster than write:
-        GLfloat *buf = reinterpret_cast<GLfloat*>(vbo.mapRange(pointCount*2*sizeof(GLfloat), size*sizeof(GLfloat), QOpenGLBuffer::RangeWrite));
+        GLfloat *buf = reinterpret_cast<GLfloat*>(vbo.mapRange(curIdx*2*sizeof(GLfloat), size*sizeof(GLfloat), QOpenGLBuffer::RangeWrite));
         memcpy(buf, pointBuffer.data(), size*sizeof(GLfloat));
         vbo.unmap();
 
+        curIdx += size / 2;
         pointCount += size / 2;
-        if (pointCount >= vboSize)
-            pointCount = 0;
+        if (curIdx >= vboSize)
+            curIdx = 0;
         pointBuffer.remove(0, size);
     }
 }

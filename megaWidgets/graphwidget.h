@@ -25,6 +25,7 @@ private:
         QOpenGLBuffer vbo;
         QVector<GLfloat> pointBuffer;
         int vboSize;
+        int curIdx;
         int pointCount;
         QColor color;
         float lineWidth;
@@ -50,13 +51,14 @@ private:
     int m_matrixUniform;
     int m_lineColorUniform;
     int m_pointSizeUniform;
+    int m_xminUniform, m_xmaxUniform;
 
     QColor mBackColor = Qt::white;
     QFont mFont;
 
     QVector<GLfloat> gridBuf;
 
-    QVector<QString> mGraphNames;
+    QStringList mGraphNames;
     QMap<QString, Graph> mGraphs;
 
     QString mXlabel;
@@ -70,8 +72,12 @@ private:
     float xMin0, xMax0;
     float yMin0, yMax0;
 
+    float xWindow;
+
     bool mAutoZoom;
     bool mInitialized;
+
+    bool m_innocent; // no data yet
 
     bool m_pointsVisible;
 
@@ -90,10 +96,13 @@ public:
     ~GraphWidget();
 
     void addGraph(QString name, QColor color = Qt::black, float lineWidth = 1.0f);
+    void removeGraph(QString name);
+
     void addPoint(QString name, float x, float y);
 
     void setGraphVisible(QString name, bool visible);
 
+    void resetBounds();
     void setBounds(float xmin, float ymin, float xmax, float ymax);
     float minX() const {return xMin;}
     void setXmin(float xmin) {xMin = xmin;}
@@ -119,9 +128,12 @@ public:
     void setXlabel(QString label);
 
     void setAutoBoundsEnabled(bool enabled) {mAutoZoom = enabled;}
+    void setXwindow(float value) {xWindow = value;}
 
     void setGraphType(QString name, GraphType type);
     void setPointSize(QString name, float size);
+
+    const QStringList &graphNames() const {return mGraphNames;}
 };
 
 #endif // GRAPHWIDGET_H

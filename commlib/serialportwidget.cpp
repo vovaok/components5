@@ -75,7 +75,8 @@ void SerialPortWidget::onDeviceConnected(QString port)
 
     if (!mAutoDesc.isEmpty())
     {
-        if (info.description().contains(mAutoDesc) && !info.isBusy() && !mCom->isOpen())
+        if ((info.description().contains(mAutoDesc) || info.serialNumber().contains(mAutoDesc))
+            && !info.isBusy() && !mCom->isOpen())
         {
             mPorts->setCurrentText(port);
             onPortChanged(port);
