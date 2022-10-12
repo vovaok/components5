@@ -23,9 +23,10 @@ void Primitive3D::draw()
     {
         glNormal3f(0, 0, 1);
         glBegin(GL_POLYGON);
-        foreach (QPointF p, mPoints)
+        for (Vertex &v: mVertices)
         {
-            glVertex3f(p.x(), p.y(), 0);
+            glTexCoord2f(v.t.x(), v.t.y());
+            glVertex3f(v.p.x(), v.p.y(), 0);
         }
         glEnd();
     }
@@ -205,11 +206,51 @@ void Primitive3D::setCone(qreal baseRadius, qreal topRadius, qreal height)
     emit changed();
 }
 
-void Primitive3D::setPolygon(QVector<QPointF> points)
+void Primitive3D::setPolygon(QPolygonF poly)
 {
     ptype = polygon;
-    mPoints.clear();
-    mPoints << points;
+    mVertices.clear();
+
+    QRectF r = poly.boundingRect();
+
+    for (QPointF p: poly)
+    {
+        Vertex v;
+        v.p = p;
+        v.t = QPointF(p.x() / r.width() + r.left(), p.y() / r.height() + r.bottom());
+        mVertices << v;
+    }
+    emit changed();
+}
+
+void Primitive3D::setRoundedRect(float width, float height, float radius)
+{
+    ptype = polygon;
+    mVertices.clear();
+    const float &w = width;
+    const float &h = height;
+    const float &r = radius;
+    int N = 10;
+    float x = -w/2 + r;
+    float y = -h/2;
+    float phi = 0;
+    float vv[4] = {w-2*r, h-2*r};
+    for (int j=0; j<4; j++)
+    {
+        float v = vv[j&1];
+        for (int i=0; i<N; i++)
+        {
+            x += v * cosf(phi);
+            y += v * sinf(phi);
+
+            Vertex vtx;
+            vtx.p = QPointF(x, y);
+            vtx.t = QPointF(x / w +.5f, y / h + .5f);
+            mVertices << vtx;
+            v = r * M_PI_2 / N;
+            phi += M_PI_2 / N;
+        }
+    }
     emit changed();
 }
 //----------------------------------------------------------

@@ -20,9 +20,15 @@ public:
     } Type;
 
 private:
+    struct Vertex
+    {
+        QPointF p;
+        QPointF t;
+    };
+
     Type ptype;
     qreal data[6];
-    QVector<QPointF> mPoints;
+    QVector<Vertex> mVertices;
     int pstacks;
     int pslices;
 
@@ -40,7 +46,8 @@ public:
     void setSphere(qreal radius);
     void setCylinder(qreal radius, qreal height);
     void setCone(qreal baseRadius, qreal topRadius, qreal height);
-    void setPolygon(QVector<QPointF> points);
+    void setPolygon(QPolygonF poly);
+    void setRoundedRect(float width, float height, float radius);
 
     void setDetalization(int stacks, int slices);
 
