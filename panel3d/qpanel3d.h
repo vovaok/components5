@@ -17,7 +17,7 @@ class QPanel3D : public QGLWidget
     Q_OBJECT
 
 public:
-    typedef enum {fly, object} EViewType;
+    typedef enum {ViewFly, ViewObject, ViewPlane} EViewType;
 
 private:
     bool FAutoUpdate;
@@ -36,6 +36,7 @@ private:
     QVector3D mMousePoint;
     QVector3D mMouseVector;
     float mMouseZplane;
+    float m_mouseSensitivity;
 
     QVector3D cursorToPoint(int x, int y);
     void cursorToRootPoint(int x, int y);
@@ -98,6 +99,9 @@ public:
     bool isRenderingToBuffer() {return mRenderingToBuffer;}
 
     void setMousePlane(QVector3D pointOnPlane);
+
+    void setMouseSensitivity(float value) {if (value > 0) m_mouseSensitivity = value;}
+    float mouseSensitivity() const {return m_mouseSensitivity;}
 
 signals:
     void onUpdate();

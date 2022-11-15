@@ -11,7 +11,8 @@ Object3D::Object3D(QObject *parent) :
     mFullDrawTime(0),
     mTexture(nullptr),
     mPickable(true),
-    mWireframe(false)
+    mWireframe(false),
+    m_depthTestDisabled(false)
 {
     for (int i=0; i<4; i++)
         for (int j=0; j<4; j++)
@@ -203,16 +204,25 @@ void Object3D::drawObject()
                       float(mDiffuseColor.blueF()));
         }
 
-        if (mTexture) mTexture->bind();
+        if (mTexture)
+            mTexture->bind();
 
-        if (mWireframe) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        if (mWireframe)
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+        if (m_depthTestDisabled)
+            glDisable(GL_DEPTH_TEST);
 
         draw();
 
-        if (mWireframe) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        if (m_depthTestDisabled)
+            glEnable(GL_DEPTH_TEST);
 
+        if (mWireframe)
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-        if (mTexture) mTexture->disable();
+        if (mTexture)
+            mTexture->disable();
     }
 
     if (!scene()->mPicking || mPickable)

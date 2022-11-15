@@ -16,7 +16,7 @@ QPanel3D::QPanel3D(QWidget *parent) :
     mWorld->setVisible(true);
     mRoot = new Object3D(this);
     mRoot->setVisible(true);
-    mViewType = object;
+    mViewType = ViewObject;
     mBackColor = Qt::black;
 
     setAutoFillBackground(false);
@@ -138,9 +138,9 @@ void QPanel3D::setAutoUpdate(bool on)
 void QPanel3D::setViewType(EViewType type)
 {
     mViewType = type;
-    if (mViewType == fly)
+    if (mViewType == ViewFly)
         mCamera->setFollowing(false);
-    else if (mViewType == object)
+    else if (mViewType == ViewObject)
         mCamera->setFollowing(true);
 }
 
@@ -433,10 +433,11 @@ void QPanel3D::mouseMoveEvent(QMouseEvent *event)
             }
             else if (event->buttons() & Qt::RightButton)
             {
-                if (mViewType == object)
+                if (mViewType == ViewObject)
                 {
 
                     QVector3D vv = vx*dx + vy*dy;
+                    vv *= mouseSensitivity();
                     qreal angle = vv.length() * 0.5;
                     vv = QVector3D::normal(dir, vv);
                     GLfloat *mat = mRoot->transformMatrix();
@@ -447,27 +448,34 @@ void QPanel3D::mouseMoveEvent(QMouseEvent *event)
 
                     mRoot->rotate(angle, vm.x(), vm.y(), vm.z());
                 }
-                else if (mViewType == fly)
+                else if (mViewType == ViewFly && !mCamera->isFollowing())
                 {
-                    mCamera->setTopDir(vy);
-                    vx = vx * (dx/360.0);
-                    vy = vy * (dy/360.0);
+//                    mCamera->setTopDir(vy);
+                    vx = vx * (dx/360.0) * m_mouseSensitivity;
+                    vy = vy * (dy/360.0) * m_mouseSensitivity;
+                    mCamera->setDirection(mCamera->direction() + vy + vx);
+                }
+                else if (mViewType == ViewPlane && !mCamera->isFollowing())
+                {
+//                    mCamera->setTopDir(top);
+                    vx = vx * (dx/360.0) * m_mouseSensitivity;
+                    vy = vy * (dy/360.0) * m_mouseSensitivity;
                     mCamera->setDirection(mCamera->direction() + vy + vx);
                 }
             }
             else if (event->buttons() & Qt::MidButton)
             {
-                if (mViewType == object)
+                if (mViewType == ViewObject)
                 {
                     qreal d = (mCamera->position() - mRoot->pos()).length();
-                    vx = vx * (dx/10.0) * d * 0.015;
-                    vy = vy * (dy/10.0) * d * 0.015;
+                    vx = vx * (dx/10.0) * d * 0.015 * m_mouseSensitivity;
+                    vy = vy * (dy/10.0) * d * 0.015 * m_mouseSensitivity;
                     mCamera->setPosition(mCamera->position() + vx + vy);
                 }
-                else if (mViewType == fly)
+                else if (mViewType == ViewFly)
                 {
-                    vx = vx * (dx/10.0) * mCamera->distanceLimit()/250.0;
-                    vy = vy * (dy/10.0) * mCamera->distanceLimit()/250.0;
+                    vx = vx * (dx/10.0) * mCamera->distanceLimit()/250.0 * m_mouseSensitivity;
+                    vy = vy * (dy/10.0) * mCamera->distanceLimit()/250.0 * m_mouseSensitivity;
                     mCamera->setPosition(mCamera->position() + vx + vy);
                 }
             }
@@ -486,14 +494,14 @@ void QPanel3D::wheelEvent(QWheelEvent *event)
         }
         else
         {
-            if (mViewType == object)
+            if (mViewType == ViewObject)
             {
                 qreal d = mCamera->position().length();
                 QVector3D dir = (p1 - mCamera->position()).normalized();
                 QVector3D v = dir * (event->delta()/100.0) * d * 0.01;
                 mCamera->setPosition(mCamera->position() + v);
             }
-            else if (mViewType == fly)
+            else if (mViewType == ViewFly)
             {
                 QVector3D v = mCamera->direction() * (event->delta()/100.0 * mCamera->distanceLimit()/250.0);
                 mCamera->setPosition(mCamera->position() + v);

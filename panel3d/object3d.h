@@ -76,6 +76,7 @@ protected:
 
     bool mPickable;
     bool mWireframe;
+    bool m_depthTestDisabled;
 
     void assignDefColor(GLfloat *a, GLfloat *d, GLfloat *e, GLfloat *s, int sh);
 
@@ -152,6 +153,8 @@ public:
 
     void setTexture(Texture3D *texture) {mTexture = texture; emit changed();}
     void setTexture(const QImage &image);
+
+    void setDepthTestDisabled(bool disabled) {m_depthTestDisabled = disabled;}
 
     float fullDrawTime() const {return mFullDrawTime;}
 
