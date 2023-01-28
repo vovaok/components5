@@ -2,7 +2,8 @@
 
 Camera3D::Camera3D(QObject *parent) :
     Object3D(parent),
-    mAspectWidth(1.0)
+    mAspectWidth(1.0),
+    m_lockDirection(false)
 {
     FPosition = QVector3D(100, 100, 100);
     FTarget = QVector3D();
@@ -39,6 +40,8 @@ void Camera3D::setTarget(QVector3D target)
 
 void Camera3D::setDirection(QVector3D dir)
 {
+    if (m_lockDirection)
+        return;
     FDirection = dir.normalized();
     FTarget = FPosition + FDirection;
 //    FFollowTarget = false;
@@ -47,6 +50,8 @@ void Camera3D::setDirection(QVector3D dir)
 
 void Camera3D::setTopDir(QVector3D topDir)
 {
+    if (m_lockDirection)
+        return;
     FTopDir = topDir;
     setSettingsChanged();
 }

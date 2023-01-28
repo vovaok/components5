@@ -24,6 +24,7 @@ private:
     QSizeF FFixedViewportSize;
     bool FFixedViewport;
     bool FFollowTarget;
+    bool m_lockDirection;
 
 public:
     explicit Camera3D(QObject *parent);
@@ -58,6 +59,9 @@ public:
     void setFixedViewport(bool value);
     void setFollowing(bool follow);
     void setTransform(GLfloat *matrix);
+
+    void lockDirection() {m_lockDirection = true;}
+    void unlockDirection() {m_lockDirection = false;}
 
     //Camera3D& operator =(const Camera3D& camera);
 
