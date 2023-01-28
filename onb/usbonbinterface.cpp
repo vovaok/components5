@@ -17,7 +17,7 @@ UsbHidOnbInterface::~UsbHidOnbInterface()
 }
 //---------------------------------------------------------
 
-bool UsbHidOnbInterface::write(Objnet::CommonMessage &msg)
+bool UsbHidOnbInterface::send(const CommonMessage &msg)
 {
     if (!usb->isReady()) //isOpen())
         return false;
@@ -55,23 +55,21 @@ bool UsbHidOnbInterface::read(Objnet::CommonMessage &msg)
             unsigned char sz = static_cast<unsigned char>(ba[4]);
             msg.setData(QByteArray(ba.data() + 5, sz));
 
+            receive(msg);
+
             emit message("usbonb", msg); // for debug purposes
         }
     }
 //    else
 //        qDebug() << "ne success(";
-    return success;
+//    return success;
+    return ObjnetInterface::read(msg);
 }
 
-int UsbHidOnbInterface::availableWriteCount()
-{
-    return 256;
-}
-
-void UsbHidOnbInterface::flush()
-{
-    qDebug() << "[UsbHidOnbInterface]: flush is not implemented";
-}
+//void UsbHidOnbInterface::flush()
+//{
+//    qDebug() << "[UsbHidOnbInterface]: flush is not implemented";
+//}
 
 int UsbHidOnbInterface::addFilter(uint32_t id, uint32_t mask)
 {

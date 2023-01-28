@@ -14,23 +14,18 @@ class SerialOnbInterface : public QObject, public ObjnetInterface
 
 private:
     SerialFrame *mSerial;
-    static const int mRxQueueMaxSize = 64;
-    QQueue<CommonMessage> mRxQueue;
+    QTimer m_timeoutTimer;
 
 public:
     explicit SerialOnbInterface(QIODevice *device);
 
-    bool write(CommonMessage &msg);
-    bool read(CommonMessage &msg);
-    void flush();
-
-    int availableWriteCount();
+    virtual bool send(const CommonMessage &msg) override;
 
     int addFilter(uint32_t id, uint32_t mask=0xFFFFFFFF);
     void removeFilter(int number);
 
 signals:
-    void message(QString, CommonMessage&);
+    void message(QString, const CommonMessage&);
 
 private slots:
     void onDataReceived(const QByteArray &ba);

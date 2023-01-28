@@ -82,9 +82,9 @@ public:
     explicit UsbHidOnbInterface(UsbOnbThread *usbhid);
     virtual ~UsbHidOnbInterface();
 
-    bool write(CommonMessage &msg);
-    bool read(CommonMessage &msg);
-    void flush();
+    virtual bool send(const CommonMessage &msg) override;
+    bool read(CommonMessage &msg) override;
+//    void flush() override;
 
     int availableWriteCount();
 
@@ -92,7 +92,7 @@ public:
     void removeFilter(int number);
 
 signals:
-    void message(QString, CommonMessage&);
+    void message(QString, const CommonMessage&);
 };
 
 }

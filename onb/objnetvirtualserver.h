@@ -35,7 +35,7 @@ public:
 
 signals:
     void message(QString);
-    void message(QString, CommonMessage&);
+    void message(QString, const CommonMessage&);
 
 private slots:
     void clientConnected();

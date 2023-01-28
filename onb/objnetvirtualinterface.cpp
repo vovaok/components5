@@ -17,7 +17,7 @@ ObjnetVirtualInterface::ObjnetVirtualInterface(QString netname, QString serverIp
 }
 //---------------------------------------------------------
 
-bool ObjnetVirtualInterface::write(Objnet::CommonMessage &msg)
+bool ObjnetVirtualInterface::send(const CommonMessage &msg)
 {
     QByteArray ba;
     uint32_t id = msg.rawId();
@@ -31,22 +31,10 @@ bool ObjnetVirtualInterface::write(Objnet::CommonMessage &msg)
     return true;
 }
 
-bool ObjnetVirtualInterface::read(Objnet::CommonMessage &msg)
-{
-    if (mRxQueue.isEmpty())
-        return false;
-    msg = mRxQueue.dequeue();
-    return true;
-}
-
 void ObjnetVirtualInterface::flush()
 {
+    ObjnetInterface::flush();
     mSocket->flush();
-}
-
-int ObjnetVirtualInterface::availableWriteCount()
-{
-    return 256;
 }
 
 int ObjnetVirtualInterface::addFilter(uint32_t id, uint32_t mask)
@@ -126,6 +114,6 @@ void ObjnetVirtualInterface::msgReceived(const QByteArray &ba)
         CommonMessage msg;
         msg.setId(id);
         msg.setData(QByteArray(ba.data()+4, ba.size()-4));
-        mRxQueue << msg;
+        receive(msg);
     }
 }

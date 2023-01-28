@@ -13,7 +13,7 @@ UdpOnbInterface::UdpOnbInterface(QObject *parent) :
     m_socket->connectToHost(QHostAddress("192.168.0.10"), 51967);
 }
 
-bool UdpOnbInterface::write(CommonMessage &msg)
+bool UdpOnbInterface::send(const CommonMessage &msg)
 {
     QByteArray ba;
     uint32_t id = msg.rawId();
@@ -25,17 +25,6 @@ bool UdpOnbInterface::write(CommonMessage &msg)
 
 bool UdpOnbInterface::read(CommonMessage &msg)
 {
-//    QByteArray data = m_socket->readAll();
-
-//    if (data.size() >= 4)
-//    {
-//        uint32_t id = *reinterpret_cast<uint32_t *>(data.data());
-//        QByteArray ba = data.mid(4);
-//        msg.setId(id);
-//        msg.setData(ba);
-//        return true;
-//    }
-
     if (m_socket->hasPendingDatagrams())
     {
         QNetworkDatagram datagram = m_socket->receiveDatagram();
@@ -45,20 +34,18 @@ bool UdpOnbInterface::read(CommonMessage &msg)
             QByteArray ba = datagram.data().mid(4);
             msg.setId(id);
             msg.setData(ba);
-            return true;
+            receive(msg);
+            //return true;
         }
     }
-    return false;
+    return ObjnetInterface::read(msg);
+//    return false;
 }
 
 void UdpOnbInterface::flush()
 {
+    ObjnetInterface::flush();
     m_socket->flush();
-}
-
-int UdpOnbInterface::availableWriteCount()
-{
-    return 1;
 }
 //---------------------------------------------------------
 

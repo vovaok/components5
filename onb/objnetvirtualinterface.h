@@ -33,11 +33,8 @@ private slots:
 public:
     ObjnetVirtualInterface(QString netname, QString serverIp="127.0.0.1");
 
-    bool write(CommonMessage &msg);
-    bool read(CommonMessage &msg);
-    void flush();
-
-    int availableWriteCount();
+    virtual bool send(const CommonMessage &msg) override;
+    void flush() override;
 
     int addFilter(uint32_t id, uint32_t mask=0xFFFFFFFF);
     void removeFilter(int number);

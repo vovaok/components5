@@ -15,11 +15,9 @@ public:
     UdpOnbInterface(QObject *parent=nullptr);
 
 protected:
-    bool write(CommonMessage &msg) override;
+    virtual bool send(const CommonMessage &msg) override;
     bool read(CommonMessage &msg) override;
-    void flush() override;
-
-    int availableWriteCount() override;
+    virtual void flush() override;
 
     int addFilter(uint32_t id, uint32_t mask=0xFFFFFFFF) override;
     void removeFilter(int number) override;
