@@ -15,6 +15,7 @@ UdpOnbInterface::UdpOnbInterface(QObject *parent) :
 
 bool UdpOnbInterface::send(const CommonMessage &msg)
 {
+    emit message("serial", msg); // for debug purposes
     QByteArray ba;
     uint32_t id = msg.rawId();
     ba.append(reinterpret_cast<const char*>(&id), 4);
@@ -35,6 +36,7 @@ bool UdpOnbInterface::read(CommonMessage &msg)
             msg.setId(id);
             msg.setData(ba);
             receive(msg);
+            emit message("serial", msg); // for debug purposes
             //return true;
         }
     }

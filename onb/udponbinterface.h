@@ -14,6 +14,9 @@ class UdpOnbInterface : public QObject, public ObjnetInterface
 public:
     UdpOnbInterface(QObject *parent=nullptr);
 
+signals:
+    void message(QString, const CommonMessage&); // for debug purposes
+
 protected:
     virtual bool send(const CommonMessage &msg) override;
     bool read(CommonMessage &msg) override;
