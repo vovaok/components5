@@ -37,7 +37,8 @@ GraphWidget::~GraphWidget()
 void GraphWidget::addGraph(QString name, QColor color, float lineWidth)
 {
     makeCurrent();
-    mGraphNames << name;
+    if (!mGraphNames.contains(name))
+        mGraphNames << name;
     Graph &g = mGraphs[name];
     if (mInitialized)
         g.initialize(mMaxPointCount);
@@ -57,8 +58,13 @@ void GraphWidget::removeGraph(QString name)
     }
 }
 
-void GraphWidget::addPoint(QString name, float x, float y)
+Graph *GraphWidget::graph(QString name)
 {
+    return mGraphs.contains(name)? &(mGraphs[name]): nullptr;
+}
+
+void GraphWidget::addPoint(QString name, float x, float y)
+{    
     if (m_innocent)
     {
         m_innocent = false;
@@ -111,6 +117,7 @@ void GraphWidget::setBounds(float xmin, float ymin, float xmax, float ymax)
     yMax = ymax;
 
     xMin0 = xMax0 = yMin0 = yMax0 = 0;
+    m_innocent = true;
 }
 
 void GraphWidget::clear()
@@ -131,7 +138,7 @@ void GraphWidget::setXlabel(QString label)
     mXlabel = label;
 }
 
-void GraphWidget::setGraphType(QString name, GraphType type)
+void GraphWidget::setGraphType(QString name, Graph::Type type)
 {
     if (mGraphs.contains(name))
         mGraphs[name].appearance = type;
@@ -159,26 +166,31 @@ void GraphWidget::initializeGL()
         "uniform mediump mat4 matrix;\n"
         "uniform mediump vec4 lineColor;\n"
         "varying mediump vec4 color;\n"
+        "varying mediump vec3 pos;\n"
         "uniform mediump float pointSize;\n"
-        "uniform mediump float xmin;\n"
-        "uniform mediump float xmax;\n"
         "void main(void)\n"
         "{\n"
-//        "   if (vertex.x < xmin)"
-//        "       discard;"
-//        "   if (vertex.x > xmax)"
-//        "       discard;"
         "    color = lineColor;\n"
         "    gl_Position = matrix * vertex;\n"
         "    gl_PointSize = pointSize;\n"
+        "    pos = vertex.xyz;\n"
         "}\n";
     m_vshader->compileSourceCode(vsrc1);
 
     m_fshader = new QOpenGLShader(QOpenGLShader::Fragment);
     const char *fsrc1 =
         "varying mediump vec4 color;\n"
+        "varying mediump vec3 pos;\n"
+        "uniform mediump float xmin;\n"
+        "uniform mediump float xmax;\n"
+        "uniform mediump float ymin;\n"
+        "uniform mediump float ymax;\n"
         "void main(void)\n"
         "{\n"
+        "   if (pos.x < xmin || pos.x > xmax)"
+        "       discard;"
+        "   if (pos.y < ymin || pos.y > ymax)"
+        "       discard;"
         "    gl_FragColor = color;\n"
         "}\n";
     m_fshader->compileSourceCode(fsrc1);
@@ -194,6 +206,8 @@ void GraphWidget::initializeGL()
     m_pointSizeUniform = m_program->uniformLocation("pointSize");
     m_xminUniform = m_program->uniformLocation("xmin");
     m_xmaxUniform = m_program->uniformLocation("xmax");
+    m_yminUniform = m_program->uniformLocation("ymin");
+    m_ymaxUniform = m_program->uniformLocation("ymax");
 
     //qDebug() << "create grid";
     m_grid_vbo.create();
@@ -258,18 +272,22 @@ void GraphWidget::mouseMoveEvent(QMouseEvent *event)
     {
         QPoint dpos = event->pos() - m_mousePos;
         m_mousePos = event->pos();
-        float dx = (xMin - xMax) * dpos.x() / width();
-        float dy = (yMax - yMin) * dpos.y() / height();
-        dx = qMax(dx, xMin0 - xMin);
-        dx = qMin(dx, xMax0 - xMax);
+        float dx = (xMinW - xMaxW) * dpos.x() / width();
+        float dy = (yMaxW - yMinW) * dpos.y() / height();
+        if (!m_innocent)
+        {
+            dx = qMax(dx, xMin0 - xMin);
+            dx = qMin(dx, xMax0 - xMax);
+            dy = qMax(dy, yMin0 - yMin);
+            dy = qMin(dy, yMax0 - yMax);
+        }
         xMin += dx;
         xMax += dx;
-        dy = qMax(dy, yMin0 - yMin);
-        dy = qMin(dy, yMax0 - yMax);
         yMin += dy;
         yMax += dy;
 
         event->accept();
+        emit boundsChanged();
         update();
     }
 }
@@ -279,21 +297,47 @@ void GraphWidget::wheelEvent(QWheelEvent *event)
     float delta = -event->angleDelta().y() / 120.0;
     float k = delta * 0.1;
     m_mousePos = event->pos();
-    float xpos = xMin + (xMax - xMin) * event->x() / (float)width();
-    float ypos = yMax - (yMax - yMin) * event->y() / (float)height();
+    float xpos = xMinW + (xMaxW - xMinW) * event->x() / (float)width();
+    float ypos = yMaxW - (yMaxW - yMinW) * event->y() / (float)height();
     if (!(event->modifiers() & Qt::ShiftModifier))
     {
-        xMin = qMax(xMin0, xMin - (xpos - xMin) * k);
-        xMax = qMin(xMax0, xMax + (xMax - xpos) * k);
+        xMin -= (xpos - xMin) * k;
+        xMax += (xMax - xpos) * k;
     }
     if ((event->modifiers() & Qt::ShiftModifier) || (event->modifiers() & Qt::ControlModifier))
     {
-        yMin = qMax(yMin0, yMin - (ypos - yMin) * k);
-        yMax = qMin(yMax0, yMax + (yMax - ypos) * k);
+        yMin -= (ypos - yMin) * k;
+        yMax += (yMax - ypos) * k;
+    }
+
+    if (!m_innocent)
+    {
+        xMin = qMax(xMin0, xMin);
+        xMax = qMin(xMax0, xMax);
+        yMin = qMax(yMin0, yMin);
+        yMax = qMin(yMax0, yMax);
     }
 
     event->accept();
+    emit boundsChanged();
     update();
+}
+
+QString super(int n)
+{
+    const static QString d("⁰¹²³⁴⁵⁶⁷⁸⁹");
+    QString s;
+    char buf[16];
+    sprintf(buf, "%d", n);
+    char *p = buf;
+    for (; *p; p++)
+    {
+        if (*p == '-')
+            s.append(L'⁻');
+        else
+            s.append(d[*p - '0']);
+    }
+    return s;
 }
 
 void GraphWidget::paintGL()
@@ -304,7 +348,7 @@ void GraphWidget::paintGL()
     painter.setFont(mFont);
     QFontMetrics fm(mFont);
     int fh = fm.height();
-    int fwmax = fm.width("99999");
+    int fwmax = fm.width("999999");
 
     painter.beginNativePainting();
 
@@ -372,7 +416,11 @@ void GraphWidget::paintGL()
     QMatrix4x4 modelview;
     float xAdd = (xMax - xMin) * fwmax / width();
     float yAdd = (yMax - yMin) * (fh + 2) / height();
-    modelview.ortho(xMin-xAdd, xMax+xAdd, yMin-yAdd, yMax+yAdd, 0, 1);
+    xMinW = xMin - xAdd;
+    xMaxW = xMax + xAdd;
+    yMinW = yMin - yAdd;
+    yMaxW = yMax + yAdd;
+    modelview.ortho(xMinW, xMaxW, yMinW, yMaxW, 0, 1);
 //    modelview.rotate(m_fAngle, 0.0f, 1.0f, 0.0f);
 //    modelview.rotate(m_fAngle, 1.0f, 0.0f, 0.0f);
 //    modelview.rotate(m_fAngle, 0.0f, 0.0f, 1.0f);
@@ -383,6 +431,8 @@ void GraphWidget::paintGL()
     m_program->setUniformValue(m_matrixUniform, modelview);
     m_program->setUniformValue(m_xminUniform, xMin);
     m_program->setUniformValue(m_xmaxUniform, xMax);
+    m_program->setUniformValue(m_yminUniform, yMin);
+    m_program->setUniformValue(m_ymaxUniform, yMax);
 
     m_program->enableAttributeArray(m_vertexAttr);
 
@@ -398,9 +448,9 @@ void GraphWidget::paintGL()
         g.writeBuf();
         m_program->setAttributeBuffer(m_vertexAttr, GL_FLOAT, 0, 2, 2 * sizeof(GLfloat));
         GLenum mode = GL_LINE_LOOP;
-        if (g.appearance == Line)
+        if (g.appearance == Graph::Line)
             mode = GL_LINE_LOOP;
-        else if (g.appearance == Points)
+        else if (g.appearance == Graph::Points)
             mode = GL_POINTS;
         if (!mPointCount)
         {
@@ -451,29 +501,63 @@ void GraphWidget::paintGL()
     QMatrix4x4 devm;
     devm.ortho(0, width(), height(), 0, 0, 1);
     QMatrix4x4 comb = devm.inverted() * modelview;
+    m_viewTransform = comb;
 
     P = comb.map(P);
 
 //    painter.drawLine(QPointF(0, 0), P);
 //    painter.drawText(P, "0");
 
+    static QStringList pre({"п", "н", "мк", "м", "", "к", "М", "Г", "Т"});
+
+//    float xavg = qMax(fabs(xMax), fabs(xMin)) / 20;
+//    if (qFuzzyIsNull(xavg))
+//        xavg = 1;
+
+    int ex = floorf(log10f(dx));
+    int exi = qBound(-4, ex / 3, 4) * 3;
+    float zex = powf(10.f, -exi);
+    ex -= exi;
+    int epx = qMax(0, -ex);
+    QString prex = pre[exi/3 + 4];
+
+    int ey = floorf(log10f(dy));
+    int eyi = qBound(-4, ey / 3, 4) * 3;
+    float zey = powf(10.f, -eyi);
+    ey -= eyi;
+    int epy = qMax(0, -ey);
+    QString prey = pre[eyi/3 + 4];
+
+
+
     for (float yy=by; yy<=yMax+0.0001; yy+=dy)
     {
+        float y1 = yy * zey;
         QPointF P = comb.map(QPointF(xMin, yy));
-        QString s = QString::number(yy, 'g', 3).replace('.',',');
+        QString s = QString::number(y1, 'f', epy).replace('.',',') + prey;
+        if (qFuzzyIsNull(y1))
+            s = "0";
         int fw = fm.width(s);
         painter.drawText(P + QPointF(-fw-4, fh/2-2), s);
     }
     for (float xx=bx; xx<=xMax+0.0001; xx+=dx)
     {
+        float x1 = xx * zex;
         QPointF P = comb.map(QPointF(xx, yMin));
-        QString s = QString::number(xx, 'g', 3).replace('.',',');
+        QString s = QString::number(x1, 'f', epx).replace('.',',');// + prex; // in label
+        if (qFuzzyIsNull(x1))
+            s = "0";
         int fw = fm.width(s);
         painter.drawText(P + QPointF(-fw/2, fh-3), s);
     }
 
     QPointF Ps = comb.map(QPointF(xMax, yMin)) + QPointF(2, 0);
-    painter.drawText(Ps, mXlabel);
+    QString xlab;
+    if (mXlabel.isEmpty())
+        xlab = QString("∙10") + super(exi);
+    else
+        xlab = prex + mXlabel;
+    painter.drawText(Ps, xlab);
 
     Ps = comb.map(QPointF(xMin, yMax)) + QPointF(0, -4);
     foreach (QString s, mGraphNames)
@@ -496,8 +580,8 @@ void GraphWidget::paintGL()
 //---------------------------------------------------------------------------
 
 
-GraphWidget::Graph::Graph() :
-    vboSize(16384),
+Graph::Graph() :
+    vboSize(0),
     curIdx(0),
     pointCount(0),
     lineWidth(1.0f),
@@ -508,12 +592,14 @@ GraphWidget::Graph::Graph() :
 
 }
 
-void GraphWidget::Graph::initialize(int maxPointCount)
+void Graph::initialize(int maxPointCount)
 {
     if (_initialized)
         return;
     if (maxPointCount)
         vboSize = maxPointCount;
+    else
+        vboSize = 16384;
     vbo.create();
     vbo.setUsagePattern(QOpenGLBuffer::DynamicDraw);
     vbo.bind();
@@ -526,19 +612,28 @@ void GraphWidget::Graph::initialize(int maxPointCount)
     _initialized = true;
 }
 
-void GraphWidget::Graph::addPoint(float x, float y)
+void Graph::addPoint(float x, float y)
 {
+    if (bounds.left() > x)
+        bounds.setLeft(x);
+    if (bounds.right() < x)
+        bounds.setRight(x);
+    if (bounds.top() > y)
+        bounds.setTop(y);
+    if (bounds.bottom() < y)
+        bounds.setBottom(y);
     pointBuffer << x << y;
 }
 
-void GraphWidget::Graph::clear()
+void Graph::clear()
 {
     pointBuffer.clear();
     pointCount = 1;
     curIdx = 1;
+    bounds = QRectF();
 }
 
-void GraphWidget::Graph::writeBuf()
+void Graph::writeBuf()
 {
     // vbo should have been bound to current context
 
