@@ -12,6 +12,6 @@ COMPONENT_NAME = "onb"
 OBJNET_DIR = $$PWD/../../../iar/components/stm32++/src/objnet
 
 INCLUDEPATH += $$OBJNET_DIR
-INCLUDEPATH += $$OBJNET_DIR/../core
+INCLUDEPATH += $$OBJNET_DIR/..
 
 include(../component.pri)

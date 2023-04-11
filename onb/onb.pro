@@ -26,7 +26,7 @@ win32 {
 OBJNET_DIR = $$PWD/../../../iar/components/stm32++/src/objnet
 
 INCLUDEPATH += $$OBJNET_DIR
-INCLUDEPATH += $$OBJNET_DIR/../core
+INCLUDEPATH += $$OBJNET_DIR/..
 
 SOURCES += \
     objnetvirtualinterface.cpp \
@@ -38,9 +38,11 @@ SOURCES += \
     $$OBJNET_DIR/objnetnode.cpp \
     $$OBJNET_DIR/objectinfo.cpp \
     $$OBJNET_DIR/onbupgrader.cpp \
-    $$OBJNET_DIR/objnetmsg.cpp
+    $$OBJNET_DIR/objnetmsg.cpp \
+    udponbinterface.cpp
 
 HEADERS += \
+    ../../../iar/components/stm32++/src/core/ringbuffer.h \
     objnetvirtualinterface.h \
     objnetvirtualserver.h \
     $$OBJNET_DIR/objnetCommonNode.h \
@@ -53,7 +55,8 @@ HEADERS += \
     $$OBJNET_DIR/onbupgrader.h \
     $$OBJNET_DIR/objectinfo.h \
     $$OBJNET_DIR/../core/closure.h \
-    $$OBJNET_DIR/../core/closure_impl.h
+    $$OBJNET_DIR/../core/closure_impl.h \
+    udponbinterface.h
 
 !android {
 SOURCES += usbonbinterface.cpp \
