@@ -16,6 +16,9 @@ class Graph
 {
 public:
     Graph();
+
+    enum Type {Line, Points};
+
     void addPoint(float x, float y);
     void clear();
 
@@ -36,7 +39,6 @@ private:
     float pointSize;
     bool _initialized;
     bool visible;
-    enum Type {Line, Points};
     Type appearance = Line;
 };
 
@@ -63,6 +65,7 @@ private:
     int m_yminUniform, m_ymaxUniform;
 
     QColor mBackColor = Qt::white;
+    QColor mGridColor = QColor(0, 0, 0, 128);
     QFont mFont;
 
     QVector<GLfloat> gridBuf;
@@ -144,6 +147,7 @@ public:
     void clear(QString name);
 
     void setBackColor(QColor col) {mBackColor = col; update();}
+    void setGridColor(QColor col) {mGridColor = col; update();}
     QFont font() const {return mFont;}
     void setFont(const QFont &font) {mFont = font;}
 

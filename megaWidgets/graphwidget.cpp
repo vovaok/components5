@@ -475,7 +475,7 @@ void GraphWidget::paintGL()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glLineWidth(1.0f);
-    m_program->setUniformValue(m_lineColorUniform, 0.0, 0.0, 0.0, 0.5);
+    m_program->setUniformValue(m_lineColorUniform, mGridColor);
     m_grid_vbo.bind();
     m_grid_vbo.write(0, gridBuf.constData(), gridBuf.count() * sizeof(GLfloat));
     m_program->setAttributeBuffer(m_vertexAttr, GL_FLOAT, 0, 2, 2 * sizeof(GLfloat));
