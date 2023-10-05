@@ -36,7 +36,7 @@ private:
     QVector3D mMousePoint;
     QVector3D mMouseVector;
     float mMouseZplane;
-    float m_mouseSensitivity;
+    float m_mouseSensitivity = 1.f;
 
     QVector3D cursorToPoint(int x, int y);
     void cursorToRootPoint(int x, int y);

@@ -171,6 +171,8 @@ void GraphWidget::initializeGL()
         "void main(void)\n"
         "{\n"
         "    color = lineColor;\n"
+//        "    float logx = 0.4342944819 * log(vertex.x);\n"
+//        "    vec4 v = vec4(logx, vertex.yzw);\n"
         "    gl_Position = matrix * vertex;\n"
         "    gl_PointSize = pointSize;\n"
         "    pos = vertex.xyz;\n"
@@ -188,9 +190,9 @@ void GraphWidget::initializeGL()
         "void main(void)\n"
         "{\n"
         "   if (pos.x < xmin || pos.x > xmax)"
-        "       discard;"
+        "       discard;\n"
         "   if (pos.y < ymin || pos.y > ymax)"
-        "       discard;"
+        "       discard;\n"
         "    gl_FragColor = color;\n"
         "}\n";
     m_fshader->compileSourceCode(fsrc1);

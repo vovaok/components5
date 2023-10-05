@@ -2,10 +2,13 @@
 
 using namespace Objnet;
 
-SerialOnbInterface::SerialOnbInterface(QIODevice *device)
+SerialOnbInterface::SerialOnbInterface(QIODevice *device, bool half_duplex)
 {
     mMaxFrameSize = 64;
-    mBusType = BusSwonb;
+    if (half_duplex)
+        mBusType = BusSwonb;
+    else
+        mBusType = BusWifi;
     mSerial = new SerialFrame(device);
     disconnect(device, SIGNAL(readyRead()));
     connect(mSerial, &SerialFrame::dataReceived, this, &SerialOnbInterface::onDataReceived);

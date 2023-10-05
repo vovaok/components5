@@ -42,7 +42,7 @@ SOURCES += \
     udponbinterface.cpp
 
 HEADERS += \
-    ../../../iar/components/stm32++/src/core/ringbuffer.h \
+    $$OBJNET_DIR/../core/ringbuffer.h \
     objnetvirtualinterface.h \
     objnetvirtualserver.h \
     $$OBJNET_DIR/objnetCommonNode.h \

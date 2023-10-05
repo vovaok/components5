@@ -17,7 +17,7 @@ private:
     QTimer m_timeoutTimer;
 
 public:
-    explicit SerialOnbInterface(QIODevice *device);
+    explicit SerialOnbInterface(QIODevice *device, bool half_duplex=false);
 
     virtual bool send(const CommonMessage &msg) override;
 

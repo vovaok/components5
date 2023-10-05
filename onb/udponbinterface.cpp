@@ -11,6 +11,11 @@ UdpOnbInterface::UdpOnbInterface(QObject *parent) :
     m_socket->setSocketOption(QUdpSocket::LowDelayOption, true);
     m_socket->bind(QHostAddress::Any, 51967);
     m_socket->connectToHost(QHostAddress("192.168.0.10"), 51967);
+    connect(m_socket, &QUdpSocket::readyRead, [=]()
+    {
+        if (onReceive)
+            onReceive();
+    });
 }
 
 bool UdpOnbInterface::send(const CommonMessage &msg)
