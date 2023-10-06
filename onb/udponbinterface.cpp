@@ -6,22 +6,41 @@ UdpOnbInterface::UdpOnbInterface(QObject *parent) :
     mMaxFrameSize = 1024;
     mBusType = BusEthernet;
 
-    m_socket = new QUdpSocket();
+    m_socket = new QUdpSocket(this);
 //    m_socket->moveToThread(this);
     m_socket->setSocketOption(QUdpSocket::LowDelayOption, true);
     m_socket->bind(QHostAddress::Any, 51967);
-    m_socket->connectToHost(QHostAddress("192.168.0.10"), 51967);
     connect(m_socket, &QUdpSocket::readyRead, [=]()
     {
-        if (onReceive)
+        if (m_socket->state() != QUdpSocket::ConnectedState)
+        {
+            QNetworkDatagram datagram = m_socket->receiveDatagram();
+            if (datagram.data() == "ONB1")
+            {
+                m_socket->connectToHost(datagram.senderAddress(), datagram.senderPort());
+            }
+        }
+        else if (onReceive)
             onReceive();
     });
+
+//    m_socket->open(QIODevice::ReadWrite);
+//    advertiseTimer = new QTimer(this);
+//    connect(advertiseTimer, &QTimer::timeout, [=]()
+//    {
+//        qDebug() << "broadcast";
+//        m_socket->writeDatagram("preved", 7, QHostAddress("239.255.0.1"), 51967);
+//    });
+//    advertiseTimer->start(1000);
 }
 
 bool UdpOnbInterface::send(const CommonMessage &msg)
 {
+    if (m_socket->state() != QUdpSocket::ConnectedState)
+        return false;
     emit message("serial", msg); // for debug purposes
     QByteArray ba;
+    ba.append("ONB1");
     uint32_t id = msg.rawId();
     ba.append(reinterpret_cast<const char*>(&id), 4);
     ba.append(msg.data());
@@ -31,22 +50,26 @@ bool UdpOnbInterface::send(const CommonMessage &msg)
 
 bool UdpOnbInterface::read(CommonMessage &msg)
 {
+    if (m_socket->state() != QUdpSocket::ConnectedState)
+        return false;
     if (m_socket->hasPendingDatagrams())
     {
         QNetworkDatagram datagram = m_socket->receiveDatagram();
-        if (datagram.data().size() >= 4)
+        QByteArray ba = datagram.data();
+        if (ba.startsWith("ONB1"))
         {
-            uint32_t id = *reinterpret_cast<uint32_t *>(datagram.data().data());
-            QByteArray ba = datagram.data().mid(4);
-            msg.setId(id);
-            msg.setData(ba);
-            receive(msg);
-            emit message("serial", msg); // for debug purposes
-            //return true;
+            if (datagram.data().size() >= 8)
+            {
+                uint32_t id = *reinterpret_cast<uint32_t *>(datagram.data().data() + 4);
+                QByteArray ba = datagram.data().mid(8);
+                msg.setId(id);
+                msg.setData(ba);
+                receive(msg);
+                emit message("udp", msg); // for debug purposes
+            }
         }
     }
     return ObjnetInterface::read(msg);
-//    return false;
 }
 
 void UdpOnbInterface::flush()

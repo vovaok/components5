@@ -58,7 +58,7 @@ HEADERS += \
     $$OBJNET_DIR/../core/closure_impl.h \
     udponbinterface.h
 
-!android {
+win32 {
 SOURCES += usbonbinterface.cpp \
     serialonbinterface.cpp
 

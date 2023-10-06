@@ -28,6 +28,7 @@ protected:
 private:
     QUdpSocket *m_socket;
     QElapsedTimer etimer;
+    QTimer *advertiseTimer;
 };
 
 #endif // UDPTHREAD_H
