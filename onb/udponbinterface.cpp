@@ -23,22 +23,13 @@ UdpOnbInterface::UdpOnbInterface(QObject *parent) :
         else if (onReceive)
             onReceive();
     });
-
-//    m_socket->open(QIODevice::ReadWrite);
-//    advertiseTimer = new QTimer(this);
-//    connect(advertiseTimer, &QTimer::timeout, [=]()
-//    {
-//        qDebug() << "broadcast";
-//        m_socket->writeDatagram("preved", 7, QHostAddress("239.255.0.1"), 51967);
-//    });
-//    advertiseTimer->start(1000);
 }
 
 bool UdpOnbInterface::send(const CommonMessage &msg)
 {
     if (m_socket->state() != QUdpSocket::ConnectedState)
         return false;
-    emit message("serial", msg); // for debug purposes
+    emit message("udp", msg); // for debug purposes
     QByteArray ba;
     ba.append("ONB1");
     uint32_t id = msg.rawId();
@@ -89,4 +80,9 @@ int UdpOnbInterface::addFilter(uint32_t id, uint32_t mask)
 void UdpOnbInterface::removeFilter(int number)
 {
     Q_UNUSED(number);
+}
+
+void UdpOnbInterface::reconnect()
+{
+    m_socket->disconnectFromHost();
 }
