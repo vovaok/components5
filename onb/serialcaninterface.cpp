@@ -29,7 +29,7 @@ void SerialCanInterface::receiveHandler(ulong id, QByteArray &data)
 
     CommonMessage msg;
     msg.setId(id);
-    msg.setData(data);
+    msg.copyData(data);
     mRxQueue << msg;
 }
 

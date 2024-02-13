@@ -12,6 +12,7 @@ UdpOnbInterface::UdpOnbInterface(QObject *parent) :
     m_socket->bind(QHostAddress::Any, 51967);
     connect(m_socket, &QUdpSocket::readyRead, [=]()
     {
+                qDebug() << "readbl0t";
         if (m_socket->state() != QUdpSocket::ConnectedState)
         {
             QNetworkDatagram datagram = m_socket->receiveDatagram();
@@ -54,8 +55,8 @@ bool UdpOnbInterface::read(CommonMessage &msg)
                 uint32_t id = *reinterpret_cast<uint32_t *>(datagram.data().data() + 4);
                 QByteArray ba = datagram.data().mid(8);
                 msg.setId(id);
-                msg.setData(ba);
-                receive(msg);
+                msg.setData(std::move(ba));
+                receive(std::move(msg));
                 emit message("udp", msg); // for debug purposes
             }
         }

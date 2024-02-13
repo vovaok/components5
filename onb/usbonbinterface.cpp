@@ -55,7 +55,7 @@ bool UsbHidOnbInterface::read(Objnet::CommonMessage &msg)
             unsigned char sz = static_cast<unsigned char>(ba[4]);
             msg.setData(QByteArray(ba.data() + 5, sz));
 
-            receive(msg);
+            receive(std::move(msg));
 
             emit message("usbonb", msg); // for debug purposes
         }

@@ -114,6 +114,6 @@ void ObjnetVirtualInterface::msgReceived(const QByteArray &ba)
         CommonMessage msg;
         msg.setId(id);
         msg.setData(QByteArray(ba.data()+4, ba.size()-4));
-        receive(msg);
+        receive(std::move(msg));
     }
 }
