@@ -679,9 +679,9 @@ void Graph::writeBuf()
         vbo.unmap();
 
         curIdx += size / 2;
-        pointCount += size / 2;
         if (curIdx >= vboSize)
             curIdx = 0;
+        pointCount = qMin(vboSize, pointCount + size / 2);
         pointBuffer.remove(0, size);
     }
 }

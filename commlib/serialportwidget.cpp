@@ -23,7 +23,7 @@ SerialPortWidget::SerialPortWidget(QSerialPort *device, QWidget *parent) :
     mPorts->setMinimumWidth(100);
     mPorts->addItem("- Выберите порт -");
     connect(mPorts, &QComboBox::textActivated, this, &SerialPortWidget::onPortChanged);
-    connect(mPorts, &QComboBox::textActivated, this, &SerialPortWidget::portChanged);
+//    connect(mPorts, &QComboBox::textActivated, this, &SerialPortWidget::portChanged);
 
     mEnum = DeviceEnumerator::instance();
     connect(mEnum, &DeviceEnumerator::deviceConnected, this, &SerialPortWidget::onDeviceConnected);
@@ -104,13 +104,19 @@ void SerialPortWidget::onDeviceConnected(QString port)
 //        text += " (ошибка)";
     mPorts->addItem(text);
 
-    if (mCom && !mAutoDesc.isEmpty())
+    if (!mAutoDesc.isEmpty())
     {
-        if ((info.description().contains(mAutoDesc) || info.serialNumber().contains(mAutoDesc))
-            && !info.isBusy() && !mCom->isOpen())
+        if ((info.description().contains(mAutoDesc) || info.serialNumber().contains(mAutoDesc)) && !info.isBusy())
         {
-            mPorts->setCurrentText(port);
-            onPortChanged(port);
+            if (mCom && mCom->isOpen())
+            {
+                // do nothing
+            }
+            else
+            {
+                mPorts->setCurrentText(port);
+                onPortChanged(port);
+            }
         }
     }
 }
@@ -152,5 +158,7 @@ void SerialPortWidget::onPortChanged(QString portname)
             }
         }
     }
+
+    emit portChanged(portname);
 }
 //---------------------------------------------------------
