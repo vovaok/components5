@@ -16,13 +16,18 @@ UdpOnbInterface::UdpOnbInterface(QObject *parent) :
         if (m_socket->state() != QUdpSocket::ConnectedState)
         {
             QNetworkDatagram datagram = m_socket->receiveDatagram();
+            qDebug() << datagram.data();
             if (datagram.data() == "ONB1")
             {
                 m_socket->connectToHost(datagram.senderAddress(), datagram.senderPort());
             }
         }
-        else if (onReceive)
-            onReceive();
+        else
+        {
+            receiveMsg();
+        }
+//        else if (onReceive)
+//            onReceive();
     });
 }
 
@@ -44,23 +49,9 @@ bool UdpOnbInterface::read(CommonMessage &msg)
 {
     if (m_socket->state() != QUdpSocket::ConnectedState)
         return false;
-    if (m_socket->hasPendingDatagrams())
-    {
-        QNetworkDatagram datagram = m_socket->receiveDatagram();
-        QByteArray ba = datagram.data();
-        if (ba.startsWith("ONB1"))
-        {
-            if (datagram.data().size() >= 8)
-            {
-                uint32_t id = *reinterpret_cast<uint32_t *>(datagram.data().data() + 4);
-                QByteArray ba = datagram.data().mid(8);
-                msg.setId(id);
-                msg.setData(std::move(ba));
-                receive(std::move(msg));
-                emit message("udp", msg); // for debug purposes
-            }
-        }
-    }
+
+    receiveMsg();
+
     return ObjnetInterface::read(msg);
 }
 
@@ -86,4 +77,26 @@ void UdpOnbInterface::removeFilter(int number)
 void UdpOnbInterface::reconnect()
 {
     m_socket->disconnectFromHost();
+}
+
+void UdpOnbInterface::receiveMsg()
+{
+    if (m_socket->hasPendingDatagrams())
+    {
+        QNetworkDatagram datagram = m_socket->receiveDatagram();
+        QByteArray ba = datagram.data();
+        if (ba.startsWith("ONB1"))
+        {
+            if (datagram.data().size() >= 8)
+            {
+                uint32_t id = *reinterpret_cast<uint32_t *>(datagram.data().data() + 4);
+                QByteArray ba = datagram.data().mid(8);
+                CommonMessage msg;
+                msg.setId(id);
+                msg.setData(std::move(ba));
+                receive(std::move(msg));
+                emit message("udp", msg); // for debug purposes
+            }
+        }
+    }
 }

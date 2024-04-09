@@ -36,6 +36,8 @@ private:
     QUdpSocket *m_socket;
     QElapsedTimer etimer;
     QTimer *advertiseTimer;
+
+    void receiveMsg();
 };
 
 #endif // UDPTHREAD_H
