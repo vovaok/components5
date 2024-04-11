@@ -40,6 +40,7 @@ private:
     bool _initialized;
     bool visible;
     Type appearance = Line;
+    QString unit;
 };
 
 class GraphWidget : public QOpenGLWidget, protected QOpenGLFunctions
@@ -117,6 +118,7 @@ public:
 
     Graph *addGraph(QString name, QColor color = Qt::black, float lineWidth = 1.0f);
     void removeGraph(QString name);
+    void removeAll();
     Graph *graph(QString name);
 
     void addPoint(QString name, float x, float y);
@@ -158,6 +160,8 @@ public:
 
     void setGraphType(QString name, Graph::Type type);
     void setPointSize(QString name, float size);
+
+    void setUnit(QString name, QString unit);
 
     const QStringList &graphNames() const {return mGraphNames;}
 };
