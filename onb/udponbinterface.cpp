@@ -12,7 +12,6 @@ UdpOnbInterface::UdpOnbInterface(QObject *parent) :
     m_socket->bind(QHostAddress::Any, 51967);
     connect(m_socket, &QUdpSocket::readyRead, [=]()
     {
-                qDebug() << "readbl0t";
         if (m_socket->state() != QUdpSocket::ConnectedState)
         {
             QNetworkDatagram datagram = m_socket->receiveDatagram();

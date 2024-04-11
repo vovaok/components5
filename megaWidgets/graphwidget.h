@@ -115,7 +115,7 @@ public:
     GraphWidget(QWidget *parent = nullptr);
     ~GraphWidget();
 
-    void addGraph(QString name, QColor color = Qt::black, float lineWidth = 1.0f);
+    Graph *addGraph(QString name, QColor color = Qt::black, float lineWidth = 1.0f);
     void removeGraph(QString name);
     Graph *graph(QString name);
 

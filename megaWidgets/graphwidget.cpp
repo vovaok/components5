@@ -34,7 +34,7 @@ GraphWidget::~GraphWidget()
     doneCurrent();
 }
 
-void GraphWidget::addGraph(QString name, QColor color, float lineWidth)
+Graph *GraphWidget::addGraph(QString name, QColor color, float lineWidth)
 {
     makeCurrent();
     if (!mGraphNames.contains(name))
@@ -44,6 +44,7 @@ void GraphWidget::addGraph(QString name, QColor color, float lineWidth)
         g.initialize(mMaxPointCount);
     g.color = color;
     g.lineWidth = lineWidth;
+    return &g;
 }
 
 void GraphWidget::removeGraph(QString name)
@@ -68,18 +69,27 @@ void GraphWidget::addPoint(QString name, float x, float y)
     if (m_innocent)
     {
         m_innocent = false;
-        xMin0 = xMax0 = x;
-        yMin0 = yMax0 = y;
+        if (!isnan(x) && !isinf(x))
+            xMin0 = xMax0 = x;
+        if (!isnan(y) && !isinf(y))
+            yMin0 = yMax0 = y;
     }
 
-    if (xMin0 > x)
-        xMin0 = x;
-    if (xMax0 < x)
-        xMax0 = x;
-    if (yMin0 > y)
-        yMin0 = y;
-    if (yMax0 < y)
-        yMax0 = y;
+
+    if (!isinf(x))
+    {
+        if (xMin0 > x)
+            xMin0 = x;
+        if (xMax0 < x)
+            xMax0 = x;
+    }
+    if (!isinf(y))
+    {
+        if (yMin0 > y)
+            yMin0 = y;
+        if (yMax0 < y)
+            yMax0 = y;
+    }
 
     if (mAutoZoom)
     {
