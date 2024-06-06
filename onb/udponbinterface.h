@@ -16,7 +16,8 @@ public:
 
     virtual bool isBusPresent() const override
     {
-        return m_socket->state() == QUdpSocket::ConnectedState;
+        return !m_networkAddr.isNull();
+//        return m_socket->state() == QUdpSocket::ConnectedState;
     }
 
 signals:
@@ -36,6 +37,8 @@ private:
     QUdpSocket *m_socket;
     QElapsedTimer etimer;
     QTimer *advertiseTimer;
+    QHostAddress m_networkAddr; // broadcast address for global msgs
+    QMap<uint8_t, QHostAddress> m_addrMap;
 
     void receiveMsg();
 };

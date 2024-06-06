@@ -1,4 +1,5 @@
 #include "udponbinterface.h"
+#include <QNetworkInterface>
 
 UdpOnbInterface::UdpOnbInterface(QObject *parent) :
     QObject(parent)
@@ -9,16 +10,18 @@ UdpOnbInterface::UdpOnbInterface(QObject *parent) :
     m_socket = new QUdpSocket(this);
 //    m_socket->moveToThread(this);
     m_socket->setSocketOption(QUdpSocket::LowDelayOption, true);
-    m_socket->bind(QHostAddress::Any, 51967);
+    m_socket->bind(QHostAddress::AnyIPv4, 51967);
+
     connect(m_socket, &QUdpSocket::readyRead, [=]()
     {
-        if (m_socket->state() != QUdpSocket::ConnectedState)
+        if (m_networkAddr.isNull())
         {
             QNetworkDatagram datagram = m_socket->receiveDatagram();
-            qDebug() << datagram.data();
             if (datagram.data() == "ONB1")
             {
-                m_socket->connectToHost(datagram.senderAddress(), datagram.senderPort());
+                QNetworkInterface iface = QNetworkInterface::interfaceFromIndex(datagram.interfaceIndex());
+                m_networkAddr = iface.addressEntries().first().broadcast();
+                qDebug() << "[UdpOnbInterface] network address:" << m_networkAddr.toString();
             }
         }
         else
@@ -32,7 +35,7 @@ UdpOnbInterface::UdpOnbInterface(QObject *parent) :
 
 bool UdpOnbInterface::send(const CommonMessage &msg)
 {
-    if (m_socket->state() != QUdpSocket::ConnectedState)
+    if (!isBusPresent())
         return false;
     emit message("udp", msg); // for debug purposes
     QByteArray ba;
@@ -40,7 +43,14 @@ bool UdpOnbInterface::send(const CommonMessage &msg)
     uint32_t id = msg.rawId();
     ba.append(reinterpret_cast<const char*>(&id), 4);
     ba.append(msg.data());
-    int written = m_socket->write(ba);
+    int written = 0;
+    if (msg.isGlobal())
+        written = m_socket->writeDatagram(ba, m_networkAddr, 51967);
+    else
+    {
+        uint8_t mac = msg.localId().mac;
+        written = m_socket->writeDatagram(ba, m_addrMap[mac], 51967);
+    }
     return (written == ba.size());
 }
 
@@ -93,6 +103,17 @@ void UdpOnbInterface::receiveMsg()
                 CommonMessage msg;
                 msg.setId(id);
                 msg.setData(std::move(ba));
+                if (msg.isLocal())
+                {
+                    if (msg.localId().svc)
+                    {
+                        if (msg.localId().oid == svcHello && msg.data().size() == 1)
+                        {
+                            uint8_t mac = msg.data()[0];
+                            m_addrMap[mac] = datagram.senderAddress();
+                        }
+                    }
+                }
                 receive(std::move(msg));
                 emit message("udp", msg); // for debug purposes
             }
