@@ -1,4 +1,5 @@
 #include "sbutton.h"
+#include <QPainter>
 
 SButton::SButton(QWidget *parent) :
     QAbstractButton(parent),
