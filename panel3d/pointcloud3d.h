@@ -3,12 +3,18 @@
 
 #include "object3d.h"
 
-typedef struct
+struct xyz
 {
     GLfloat x;
     GLfloat y;
     GLfloat z;
-} xyz;
+} __attribute__((packed, aligned(4)));
+
+struct RgbPoint
+{
+    float x, y, z;
+    uint32_t color;
+} __attribute__((packed, aligned(4)));
 
 class PointCloud3D : public Object3D
 {

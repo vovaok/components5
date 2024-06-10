@@ -41,7 +41,7 @@ private slots:
     void onDataReady();
 
 public slots:
-    void sendData(QByteArray &data);
+    void sendData(const QByteArray &data);
 };
 
 #endif // SERIALFRAME_H

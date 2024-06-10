@@ -6,7 +6,7 @@ SerialFrame::SerialFrame(QIODevice *device) :
 {
     cmd_acc = false;
     mFramesSent = 0;
-    connect(mDev, SIGNAL(readyRead()), this, SLOT(onDataReady()));
+    connect(mDev, QIODevice::readyRead, this, SerialFrame::onDataReady);
 }
 
 void SerialFrame::setActive(bool active)
@@ -68,7 +68,7 @@ void SerialFrame::onDataReady()
     }
 }
 
-void SerialFrame::sendData(QByteArray &data)
+void SerialFrame::sendData(const QByteArray &data)
 {
     if (!mDev->isOpen())
         return;

@@ -29,6 +29,14 @@ ScalerIndicator::ScalerIndicator(QWidget *parent) :
     mArrow2 << QPointF(0.95, 0.05);
     mArrow2 << QPointF(0.98, 0.05);
 }
+
+void ScalerIndicator::renderBack(QPainter &p)
+{
+    p.setRenderHint(QPainter::Antialiasing);
+    p.rotate(mOrient);
+    p.drawImage(0, 0, back);
+    p.drawImage(0, 0, front);
+}
 //---------------------------------------------------------------------------
 
 void ScalerIndicator::prepareBack()

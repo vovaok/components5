@@ -25,13 +25,23 @@ void PointCloud3D::draw()
     glScalef(100, 100, 100);
     glNormal3f(0, 0, -100);
 
+    GLboolean cullface;
+    glGetBooleanv(GL_CULL_FACE, &cullface);
+    glDisable(GL_CULL_FACE);
+
+    GLboolean colormaterial;
+    glGetBooleanv(GL_COLOR_MATERIAL, &colormaterial);
+    glEnable(GL_COLOR_MATERIAL);
+
     if (drawBuffer)
     {
         glVertexPointer(3, GL_FLOAT, pStride, pPointBuffer);
         glColorPointer(3, GL_UNSIGNED_BYTE, pStride, pColorBuffer);
         glEnableClientState(GL_VERTEX_ARRAY);
         glEnableClientState(GL_COLOR_ARRAY);
+        glEnable(GL_COLOR_ARRAY);
         glDrawArrays(GL_POINTS, 0, pCount);
+        glDisable(GL_COLOR_ARRAY);
         glDisableClientState(GL_COLOR_ARRAY);
         glDisableClientState(GL_VERTEX_ARRAY);
     }
@@ -55,6 +65,7 @@ void PointCloud3D::draw()
             glEnableClientState(GL_VERTEX_ARRAY);
             glEnableClientState(GL_NORMAL_ARRAY);
             glEnableClientState(GL_COLOR_ARRAY);
+            glEnable(GL_COLOR_ARRAY);
             if (pMeshVisible)
             {
                 GLint polygonMode[2];
@@ -75,6 +86,7 @@ void PointCloud3D::draw()
             {
                 glDrawArrays(GL_POINTS, 0, vertices.count());
             }
+            glDisable(GL_COLOR_ARRAY);
             glDisableClientState(GL_COLOR_ARRAY);
             glDisableClientState(GL_NORMAL_ARRAY);
             glDisableClientState(GL_VERTEX_ARRAY);
@@ -85,6 +97,14 @@ void PointCloud3D::draw()
         glEnable(GL_LIGHTING);
     else
         glDisable(GL_LIGHTING);
+
+    if (cullface)
+        glEnable(GL_CULL_FACE);
+
+    if (colormaterial)
+        glEnable(GL_COLOR_MATERIAL);
+    else
+        glDisable(GL_COLOR_MATERIAL);
 }
 //---------------------------------------------------------------------------
 
@@ -92,6 +112,7 @@ void PointCloud3D::clear()
 {
     vertices.clear();
     colors.clear();
+    normals.clear();
 }
 
 

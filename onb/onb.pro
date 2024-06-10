@@ -42,7 +42,7 @@ SOURCES += \
     udponbinterface.cpp
 
 HEADERS += \
-    ../../../iar/components/stm32++/src/core/ringbuffer.h \
+    $$OBJNET_DIR/../core/ringbuffer.h \
     objnetvirtualinterface.h \
     objnetvirtualserver.h \
     $$OBJNET_DIR/objnetCommonNode.h \
@@ -58,7 +58,7 @@ HEADERS += \
     $$OBJNET_DIR/../core/closure_impl.h \
     udponbinterface.h
 
-!android {
+win32 {
 SOURCES += usbonbinterface.cpp \
     serialonbinterface.cpp
 

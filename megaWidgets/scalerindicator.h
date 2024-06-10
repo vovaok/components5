@@ -58,6 +58,8 @@ public:
     void setUnit(QString unit) {mUnit = unit; repaint();}
     void setPrecision(int digits) {mPrecision = digits; /*calcPrec();*/}
     void setOrient(float angle_deg) {mOrient = angle_deg; repaint();}
+
+    void renderBack(QPainter &p);
     
 signals:
     
