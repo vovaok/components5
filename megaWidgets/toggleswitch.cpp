@@ -3,8 +3,8 @@
 ToggleSwitch::ToggleSwitch(QWidget *parent) :
     QWidget(parent),
     mState(false),
-    mOffText("Œ“ À"),
-    mOnText("¬ À"),
+    mOffText("–û–¢–ö–õ"),
+    mOnText("–í–ö–õ"),
     mR(0)
 {
     setMinimumSize(16, 16);

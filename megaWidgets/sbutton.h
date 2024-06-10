@@ -1,10 +1,10 @@
 #ifndef SBUTTON_H
 #define SBUTTON_H
 
-#include <QWidget>
-#include <QtGui>
+#include <QAbstractButton>
+//#include <QtGui>
 
-class SButton : public QWidget
+class SButton : public QAbstractButton
 {
     Q_OBJECT
 
