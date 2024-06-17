@@ -17,11 +17,22 @@ UdpOnbInterface::UdpOnbInterface(QObject *parent) :
         if (m_networkAddr.isNull())
         {
             QNetworkDatagram datagram = m_socket->receiveDatagram();
-            if (datagram.data() == "ONB1")
+            if (datagram.data().startsWith("ONB"))
             {
                 QNetworkInterface iface = QNetworkInterface::interfaceFromIndex(datagram.interfaceIndex());
-                m_networkAddr = iface.addressEntries().first().broadcast();
-                qDebug() << "[UdpOnbInterface] network address:" << m_networkAddr.toString();
+//                qDebug() << datagram.destinationAddress();
+                for (QNetworkAddressEntry e: iface.addressEntries())
+                {
+                    m_networkAddr = e.broadcast();
+                    if (!m_networkAddr.isNull())
+                    {
+                        m_socket->disconnectFromHost();
+                        m_socket->bind(e.ip(), 51967);
+                        break;
+                    }
+                }
+                qDebug() << "[UdpOnbInterface] network address:" << m_socket->localAddress().toString();
+                qDebug() << "[UdpOnbInterface] broadcast address:" << m_networkAddr.toString();
             }
         }
         else
@@ -44,13 +55,16 @@ bool UdpOnbInterface::send(const CommonMessage &msg)
     ba.append(reinterpret_cast<const char*>(&id), 4);
     ba.append(msg.data());
     int written = 0;
+    QNetworkDatagram dgram;
+    dgram.setData(ba);
     if (msg.isGlobal())
-        written = m_socket->writeDatagram(ba, m_networkAddr, 51967);
+        dgram.setDestination(m_networkAddr, 51967);
     else
     {
         uint8_t mac = msg.localId().mac;
-        written = m_socket->writeDatagram(ba, m_addrMap[mac], 51967);
+        dgram.setDestination(m_addrMap[mac], 51967);
     }
+    written = m_socket->writeDatagram(dgram);
     return (written == ba.size());
 }
 
@@ -90,7 +104,7 @@ void UdpOnbInterface::reconnect()
 
 void UdpOnbInterface::receiveMsg()
 {
-    if (m_socket->hasPendingDatagrams())
+    while (m_socket->hasPendingDatagrams())
     {
         QNetworkDatagram datagram = m_socket->receiveDatagram();
         QByteArray ba = datagram.data();
