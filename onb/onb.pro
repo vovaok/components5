@@ -17,9 +17,10 @@ include(../build.pri)
 #}
 #}
 
+COMPONENTS = ../
+include($$COMPONENTS/commlib/commlib.pri)
+
 win32 {
-    COMPONENTS = ../
-    include($$COMPONENTS/commlib/commlib.pri)
     include($$COMPONENTS/usbhid/usbhid.pri)
 }
 
@@ -39,7 +40,8 @@ SOURCES += \
     $$OBJNET_DIR/objectinfo.cpp \
     $$OBJNET_DIR/onbupgrader.cpp \
     $$OBJNET_DIR/objnetmsg.cpp \
-    udponbinterface.cpp
+    udponbinterface.cpp \
+    serialonbinterface.cpp
 
 HEADERS += \
     $$OBJNET_DIR/../core/ringbuffer.h \
@@ -56,21 +58,17 @@ HEADERS += \
     $$OBJNET_DIR/objectinfo.h \
     $$OBJNET_DIR/../core/closure.h \
     $$OBJNET_DIR/../core/closure_impl.h \
-    udponbinterface.h
+    udponbinterface.h \
+    serialonbinterface.h
 
 win32 {
-SOURCES += usbonbinterface.cpp \
-    serialonbinterface.cpp
-
-HEADERS += usbonbinterface.h \
-    serialonbinterface.h
+SOURCES += usbonbinterface.cpp
+HEADERS += usbonbinterface.h
 }
 
 win32 {
-SOURCES += \
-    serialcaninterface.cpp
-HEADERS += \
-    serialcaninterface.h
+SOURCES += serialcaninterface.cpp
+HEADERS += serialcaninterface.h
 }
 
 unix {

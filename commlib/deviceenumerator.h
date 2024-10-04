@@ -4,8 +4,6 @@
 #include <QObject>
 #include <QCoreApplication>
 #include <QAbstractNativeEventFilter>
-#include <windows.h>
-#include <dbt.h>
 #include <QDebug>
 #include <QTimer>
 #include <QSerialPortInfo>

@@ -10,7 +10,7 @@ SerialOnbInterface::SerialOnbInterface(QIODevice *device, bool half_duplex)
     else
         mBusType = BusWifi;
     mSerial = new SerialFrame(device);
-    disconnect(device, SIGNAL(readyRead()));
+//    disconnect(device, SIGNAL(readyRead()));
     connect(mSerial, &SerialFrame::dataReceived, this, &SerialOnbInterface::onDataReceived);
 
     m_timeoutTimer.setSingleShot(true);

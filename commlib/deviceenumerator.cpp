@@ -1,5 +1,9 @@
 #include "deviceenumerator.h"
 #include <QSerialPort>
+#if defined(Q_OS_WIN)
+#include <windows.h>
+#include <dbt.h>
+#endif
 
 DeviceEnumerator *DeviceEnumerator::mSelf = nullptr;
 
@@ -55,6 +59,7 @@ bool DeviceEnumerator::DevEventFilter::nativeEventFilter(const QByteArray &event
 {
     Q_UNUSED(eventType);
     Q_UNUSED(result);
+#if defined(Q_OS_WIN)
     auto pWindowsMessage = static_cast<MSG*>(message);
     auto uMsg = pWindowsMessage->message;
 
@@ -63,5 +68,6 @@ bool DeviceEnumerator::DevEventFilter::nativeEventFilter(const QByteArray &event
     {
         mEnumObj->enumerate();
     }
+#endif
     return false;
 }

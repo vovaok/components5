@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QGLWidget>
-#include <gl/GLU.h>
+#include <GL/glu.h>
 #include <QMatrix4x4>
 #include <math.h>
 #include "texture.h"

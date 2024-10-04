@@ -2,9 +2,10 @@ INCLUDEPATH += $$PWD
 
 QT += network
 
+include($$PWD/../commlib/commlib.pri)
+
 win32 {
     include($$PWD/../usbhid/usbhid.pri)
-    include($$PWD/../commlib/commlib.pri)
 }
 
 COMPONENT_NAME = "onb"
