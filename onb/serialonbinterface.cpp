@@ -57,6 +57,6 @@ void SerialOnbInterface::onDataReceived(const QByteArray &ba)
     uint32_t id = *reinterpret_cast<const uint32_t*>(ba.data());
     msg.setId(id);
     msg.setData(ba.mid(4));
-    receive(msg);
+    receive(std::move(msg));
     emit message("serial", msg); // for debug purposes
 }

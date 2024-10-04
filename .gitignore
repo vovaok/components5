@@ -48,4 +48,6 @@ Makefile*
 
 bin64/
 *.settings
+*.Debug
+*.Release
 binnn/

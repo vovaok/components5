@@ -34,7 +34,7 @@ GraphWidget::~GraphWidget()
     doneCurrent();
 }
 
-void GraphWidget::addGraph(QString name, QColor color, float lineWidth)
+Graph *GraphWidget::addGraph(QString name, QColor color, float lineWidth)
 {
     makeCurrent();
     if (!mGraphNames.contains(name))
@@ -44,6 +44,7 @@ void GraphWidget::addGraph(QString name, QColor color, float lineWidth)
         g.initialize(mMaxPointCount);
     g.color = color;
     g.lineWidth = lineWidth;
+    return &g;
 }
 
 void GraphWidget::removeGraph(QString name)
@@ -58,6 +59,12 @@ void GraphWidget::removeGraph(QString name)
     }
 }
 
+void GraphWidget::removeAll()
+{
+    for (QString name: mGraphs.keys())
+        removeGraph(name);
+}
+
 Graph *GraphWidget::graph(QString name)
 {
     return mGraphs.contains(name)? &(mGraphs[name]): nullptr;
@@ -68,18 +75,27 @@ void GraphWidget::addPoint(QString name, float x, float y)
     if (m_innocent)
     {
         m_innocent = false;
-        xMin0 = xMax0 = x;
-        yMin0 = yMax0 = y;
+        if (!isnan(x) && !isinf(x))
+            xMin0 = xMax0 = x;
+        if (!isnan(y) && !isinf(y))
+            yMin0 = yMax0 = y;
     }
 
-    if (xMin0 > x)
-        xMin0 = x;
-    if (xMax0 < x)
-        xMax0 = x;
-    if (yMin0 > y)
-        yMin0 = y;
-    if (yMax0 < y)
-        yMax0 = y;
+
+    if (!isinf(x))
+    {
+        if (xMin0 > x)
+            xMin0 = x;
+        if (xMax0 < x)
+            xMax0 = x;
+    }
+    if (!isinf(y))
+    {
+        if (yMin0 > y)
+            yMin0 = y;
+        if (yMax0 < y)
+            yMax0 = y;
+    }
 
     if (mAutoZoom)
     {
@@ -148,6 +164,12 @@ void GraphWidget::setPointSize(QString name, float size)
 {
     if (mGraphs.contains(name))
         mGraphs[name].pointSize = size;
+}
+
+void GraphWidget::setUnit(QString name, QString unit)
+{
+    if (mGraphs.contains(name))
+        mGraphs[name].unit = unit;
 }
 
 void GraphWidget::initializeGL()
@@ -232,7 +254,7 @@ void GraphWidget::initializeGL()
         gridBuf.append(-1.0 + 2 * i / (float)yCnt);
     }
 
-    m_grid_vbo.allocate(gridBuf.constData(), gridBuf.count() * sizeof(GLfloat));
+    m_grid_vbo.allocate(gridBuf.constData(), gridBuf.count() * sizeof(GLfloat) * 2);
     m_grid_vbo.release();
 
 //    glEnable(GL_DEPTH_TEST);
@@ -276,13 +298,13 @@ void GraphWidget::mouseMoveEvent(QMouseEvent *event)
         m_mousePos = event->pos();
         float dx = (xMinW - xMaxW) * dpos.x() / width();
         float dy = (yMaxW - yMinW) * dpos.y() / height();
-        if (!m_innocent)
-        {
-            dx = qMax(dx, xMin0 - xMin);
-            dx = qMin(dx, xMax0 - xMax);
-            dy = qMax(dy, yMin0 - yMin);
-            dy = qMin(dy, yMax0 - yMax);
-        }
+//        if (!m_innocent)
+//        {
+//            dx = qMax(dx, xMin0 - xMin);
+//            dx = qMin(dx, xMax0 - xMax);
+//            dy = qMax(dy, yMin0 - yMin);
+//            dy = qMin(dy, yMax0 - yMax);
+//        }
         xMin += dx;
         xMax += dx;
         yMin += dy;
@@ -312,13 +334,13 @@ void GraphWidget::wheelEvent(QWheelEvent *event)
         yMax += (yMax - ypos) * k;
     }
 
-    if (!m_innocent)
-    {
-        xMin = qMax(xMin0, xMin);
-        xMax = qMin(xMax0, xMax);
-        yMin = qMax(yMin0, yMin);
-        yMax = qMin(yMax0, yMax);
-    }
+//    if (!m_innocent)
+//    {
+//        xMin = qMax(xMin0, xMin);
+//        xMax = qMin(xMax0, xMax);
+//        yMin = qMax(yMin0, yMin);
+//        yMax = qMin(yMax0, yMax);
+//    }
 
     event->accept();
     emit boundsChanged();
@@ -348,9 +370,11 @@ void GraphWidget::paintGL()
     painter.begin(this);
 
     painter.setFont(mFont);
+    mFont.pixelSize();
     QFontMetrics fm(mFont);
-    int fh = fm.height();
-    int fwmax = fm.width("999999");
+    QRect fontrect = fm.boundingRect("999999");
+    int fh = fontrect.height();
+    int fwmax = fontrect.width();
 
     painter.beginNativePainting();
 
@@ -416,8 +440,8 @@ void GraphWidget::paintGL()
     }
 
     QMatrix4x4 modelview;
-    float xAdd = (xMax - xMin) * fwmax / width();
-    float yAdd = (yMax - yMin) * (fh + 2) / height();
+    float xAdd = (xMax - xMin) * (fwmax) / width();
+    float yAdd = (yMax - yMin) * (fh + 4) / height();
     xMinW = xMin - xAdd;
     xMaxW = xMax + xAdd;
     yMinW = yMin - yAdd;
@@ -539,18 +563,22 @@ void GraphWidget::paintGL()
         QString s = QString::number(y1, 'f', epy).replace('.',',') + prey;
         if (qFuzzyIsNull(y1))
             s = "0";
-        int fw = fm.width(s);
+        QRect fr = fm.tightBoundingRect(s);
+        int fw = fr.width();
+        int fh = fr.height();
         painter.drawText(P + QPointF(-fw-4, fh/2-2), s);
+//        painter.drawText(QRectF(0, P.y()-fh/2-2, fwmax+2, fh+2), Qt::AlignRight | Qt::AlignVCenter, s);
     }
-    for (float xx=bx; xx<=xMax+0.0001; xx+=dx)
+    for (float xx=bx; xx<xMax/*=xMax+0.0001*/; xx+=dx)
     {
         float x1 = xx * zex;
         QPointF P = comb.map(QPointF(xx, yMin));
         QString s = QString::number(x1, 'f', epx).replace('.',',');// + prex; // in label
         if (qFuzzyIsNull(x1))
             s = "0";
-        int fw = fm.width(s);
-        painter.drawText(P + QPointF(-fw/2, fh-3), s);
+        int fw = fm.boundingRect(s).width();
+        int fa = fm.ascent();
+        painter.drawText(P + QPointF(-fw/2, fa), s);
     }
 
     QPointF Ps = comb.map(QPointF(xMax, yMin)) + QPointF(2, 0);
@@ -564,10 +592,13 @@ void GraphWidget::paintGL()
     Ps = comb.map(QPointF(xMin, yMax)) + QPointF(0, -4);
     foreach (QString s, mGraphNames)
     {
-        if (!mGraphs[s].visible)
+        Graph &g = mGraphs[s];
+        if (!g.visible)
             continue;
-        int fw = fm.width(s);
-        painter.setPen(mGraphs[s].color);
+        painter.setPen(g.color);
+        if (!g.unit.isEmpty())
+            s = s + ", " + g.unit;
+        int fw = fm.horizontalAdvance(s);
         painter.drawText(Ps, s);
         Ps += QPointF(fw + 16, 0);
     }
@@ -679,9 +710,9 @@ void Graph::writeBuf()
         vbo.unmap();
 
         curIdx += size / 2;
-        pointCount += size / 2;
         if (curIdx >= vboSize)
             curIdx = 0;
+        pointCount = qMin(vboSize, pointCount + size / 2);
         pointBuffer.remove(0, size);
     }
 }

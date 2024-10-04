@@ -1,7 +1,8 @@
 #include "sbutton.h"
+#include <QPainter>
 
 SButton::SButton(QWidget *parent) :
-    QWidget(parent),
+    QAbstractButton(parent),
     mState(false),
     mColor(QColor(192, 64, 64))
 {
