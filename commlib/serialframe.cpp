@@ -6,7 +6,7 @@ SerialFrame::SerialFrame(QIODevice *device) :
 {
     cmd_acc = false;
     mFramesSent = 0;
-    connect(mDev, QIODevice::readyRead, this, SerialFrame::onDataReady);
+    connect(mDev, &QIODevice::readyRead, this, &SerialFrame::onDataReady);
 }
 
 void SerialFrame::setActive(bool active)
