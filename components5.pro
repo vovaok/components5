@@ -5,7 +5,7 @@ SUBDIRS += \
     megaWidgets\
     onb\
     panel3d\
-    usbhid\
+#    usbhid\
     simplenet
 
 DISTFILES += build.pri \
