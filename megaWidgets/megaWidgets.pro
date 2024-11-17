@@ -19,6 +19,7 @@ include(../build.pri)
 #}
 
 SOURCES += led.cpp \
+    canvaswidget.cpp \
     graphwidget.cpp \
     labeledled.cpp \
     toggleswitch.cpp \
@@ -33,6 +34,7 @@ SOURCES += led.cpp \
     button.cpp
 
 HEADERS += led.h \
+    canvaswidget.h \
     graphwidget.h \
     labeledled.h \
     toggleswitch.h \
