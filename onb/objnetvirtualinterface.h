@@ -36,8 +36,8 @@ public:
     virtual bool send(const CommonMessage &msg) override;
     void flush() override;
 
-    int addFilter(uint32_t id, uint32_t mask=0xFFFFFFFF);
-    void removeFilter(int number);
+    int addFilter(uint32_t id, uint32_t mask=0xFFFFFFFF) override;
+    void removeFilter(int number) override;
 
     bool isActive() const {return mActive;}
 

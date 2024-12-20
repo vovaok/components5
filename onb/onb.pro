@@ -1,5 +1,5 @@
-QT       += network concurrent
-QT       -= gui
+QT       += network widgets concurrent
+#QT       -= gui
 
 TEMPLATE = lib
 CONFIG += staticlib c++11
@@ -41,7 +41,8 @@ SOURCES += \
     $$OBJNET_DIR/onbupgrader.cpp \
     $$OBJNET_DIR/objnetmsg.cpp \
     udponbinterface.cpp \
-    serialonbinterface.cpp
+    serialonbinterface.cpp \
+    upgradewidget.cpp
 
 HEADERS += \
     $$OBJNET_DIR/../core/ringbuffer.h \
@@ -59,7 +60,8 @@ HEADERS += \
     $$OBJNET_DIR/../core/closure.h \
     $$OBJNET_DIR/../core/closure_impl.h \
     udponbinterface.h \
-    serialonbinterface.h
+    serialonbinterface.h \
+    upgradewidget.h
 
 win32 {
 SOURCES += usbonbinterface.cpp
