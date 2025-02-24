@@ -14,16 +14,14 @@ class UdpOnbInterface : public QObject, public ObjnetInterface
 public:
     UdpOnbInterface(QObject *parent=nullptr);
 
-    virtual bool isBusPresent() const override
-    {
-        return !m_networkAddr.isNull();
-//        return m_socket->state() == QUdpSocket::ConnectedState;
-    }
+    virtual bool isBusPresent() const override {return m_connected;}
 
 signals:
     void message(QString, const CommonMessage&); // for debug purposes
 
 protected:
+    virtual void setMasterMode(bool mode) override;
+
     virtual bool send(const CommonMessage &msg) override;
     bool read(CommonMessage &msg) override;
     virtual void flush() override;
@@ -36,11 +34,14 @@ protected:
 private:
     QUdpSocket *m_socket;
     QElapsedTimer etimer;
-    QTimer *advertiseTimer;
+    QTimer *m_advertiseTimer = nullptr;
     QHostAddress m_networkAddr; // broadcast address for global msgs
-    QMap<uint8_t, QHostAddress> m_addrMap;
+    QMap<uint8_t, QPair<QHostAddress, uint16_t>> m_peerMap;
+    QVector<QPair<QHostAddress, uint16_t>> m_peers;
+    bool m_connected = false;
 
     void receiveMsg();
+    void advertise();
 };
 
 #endif // UDPTHREAD_H

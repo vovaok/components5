@@ -8,40 +8,77 @@ UdpOnbInterface::UdpOnbInterface(QObject *parent) :
     mBusType = BusEthernet;
 
     m_socket = new QUdpSocket(this);
-//    m_socket->moveToThread(this);
     m_socket->setSocketOption(QUdpSocket::LowDelayOption, true);
-    m_socket->bind(QHostAddress::AnyIPv4, 51967);
+//    m_socket->bind(QHostAddress::AnyIPv4, 51967, QAbstractSocket::ReuseAddressHint);
+}
 
-    connect(m_socket, &QUdpSocket::readyRead, [=]()
+void UdpOnbInterface::setMasterMode(bool mode)
+{
+    ObjnetInterface::setMasterMode(mode);
+
+    if (isMaster)
     {
-        if (m_networkAddr.isNull())
+        m_socket->bind(QHostAddress::AnyIPv4, 51967);
+
+        connect(m_socket, &QUdpSocket::readyRead, [=]()
         {
-            QNetworkDatagram datagram = m_socket->receiveDatagram();
-            if (datagram.data().startsWith("ONB"))
+            if (m_networkAddr.isNull())
             {
-                QNetworkInterface iface = QNetworkInterface::interfaceFromIndex(datagram.interfaceIndex());
-//                qDebug() << datagram.destinationAddress();
-                for (QNetworkAddressEntry e: iface.addressEntries())
+                QNetworkDatagram datagram = m_socket->receiveDatagram();
+                if (datagram.data().startsWith("ONB"))
                 {
-                    m_networkAddr = e.broadcast();
-                    if (!m_networkAddr.isNull())
+                    m_peers << QPair<QHostAddress, uint16_t>{datagram.senderAddress(), datagram.senderPort()};
+                    QNetworkInterface iface = QNetworkInterface::interfaceFromIndex(datagram.interfaceIndex());
+//                    qDebug() << datagram.destinationAddress();
+                    for (QNetworkAddressEntry e: iface.addressEntries())
                     {
-                        m_socket->disconnectFromHost();
-                        m_socket->bind(e.ip(), 51967);
-                        break;
+                        m_networkAddr = e.broadcast();
+                        if (!m_networkAddr.isNull())
+                        {
+                            m_socket->disconnectFromHost();
+                            m_socket->bind(e.ip(), 51967);
+                            m_connected = true;
+                            break;
+                        }
                     }
+                    qDebug() << "[UdpOnbInterface] network address:" << m_socket->localAddress().toString();
+                    qDebug() << "[UdpOnbInterface] broadcast address:" << m_networkAddr.toString();
                 }
-                qDebug() << "[UdpOnbInterface] network address:" << m_socket->localAddress().toString();
-                qDebug() << "[UdpOnbInterface] broadcast address:" << m_networkAddr.toString();
             }
-        }
-        else
+            else
+            {
+                receiveMsg();
+            }
+//            else if (onReceive)
+//                onReceive();
+        });
+    }
+    else
+    {
+        m_socket->bind(); // node mode (not master)
+        m_advertiseTimer = new QTimer(this);
+        connect(m_advertiseTimer, &QTimer::timeout, this, &UdpOnbInterface::advertise);
+        m_advertiseTimer->start(1000);
+
+        connect(m_socket, &QUdpSocket::readyRead, [=]()
         {
-            receiveMsg();
-        }
-//        else if (onReceive)
-//            onReceive();
-    });
+            if (!m_connected)
+            {
+                QNetworkDatagram datagram = m_socket->receiveDatagram();
+                if (datagram.data().startsWith("ONB1"))
+                {
+                    m_peerMap[0] = QPair<QHostAddress, uint16_t>{datagram.senderAddress(), datagram.senderPort()};
+//                    m_socket->connectToHost(datagram.senderAddress(), datagram.senderPort());
+                    m_advertiseTimer->stop();
+                    m_connected = true;
+                }
+            }
+            else
+            {
+                receiveMsg();
+            }
+        });
+    }
 }
 
 bool UdpOnbInterface::send(const CommonMessage &msg)
@@ -58,13 +95,25 @@ bool UdpOnbInterface::send(const CommonMessage &msg)
     QNetworkDatagram dgram;
     dgram.setData(ba);
     if (msg.isGlobal())
+    {
         dgram.setDestination(m_networkAddr, 51967);
+        written = m_socket->writeDatagram(dgram);
+        for (QPair<QHostAddress, uint16_t> &peer: m_peers)
+        {
+            if (peer.second != 51967)
+            {
+                dgram.setDestination(peer.first, peer.second);
+                written = m_socket->writeDatagram(dgram);
+            }
+        }
+    }
     else
     {
         uint8_t mac = msg.localId().mac;
-        dgram.setDestination(m_addrMap[mac], 51967);
+        QPair<QHostAddress, uint16_t> peer = m_peerMap[mac];
+        dgram.setDestination(peer.first, peer.second);
+        written = m_socket->writeDatagram(dgram);
     }
-    written = m_socket->writeDatagram(dgram);
     return (written == ba.size());
 }
 
@@ -100,6 +149,9 @@ void UdpOnbInterface::removeFilter(int number)
 void UdpOnbInterface::reconnect()
 {
     m_socket->disconnectFromHost();
+    m_connected = false;
+    if (m_advertiseTimer && !m_advertiseTimer->isActive())
+        m_advertiseTimer->start();
 }
 
 void UdpOnbInterface::receiveMsg()
@@ -107,24 +159,24 @@ void UdpOnbInterface::receiveMsg()
     while (m_socket->hasPendingDatagrams())
     {
         QNetworkDatagram datagram = m_socket->receiveDatagram();
-        QByteArray ba = datagram.data();
-        if (ba.startsWith("ONB1"))
+        QByteArray ddata = datagram.data();
+        if (ddata.startsWith("ONB1"))
         {
-            if (datagram.data().size() >= 8)
+            if (ddata.size() >= 8)
             {
-                uint32_t id = *reinterpret_cast<uint32_t *>(datagram.data().data() + 4);
-                QByteArray ba = datagram.data().mid(8);
+                uint32_t id = *reinterpret_cast<uint32_t *>(ddata.data() + 4);
+                QByteArray ba = ddata.mid(8);
                 CommonMessage msg;
                 msg.setId(id);
                 msg.setData(std::move(ba));
-                if (msg.isLocal())
+                if (isMaster && msg.isLocal())
                 {
                     if (msg.localId().svc)
                     {
                         if (msg.localId().oid == svcHello && msg.data().size() == 1)
                         {
                             uint8_t mac = msg.data()[0];
-                            m_addrMap[mac] = datagram.senderAddress();
+                            m_peerMap[mac] = QPair<QHostAddress, uint16_t>{datagram.senderAddress(), datagram.senderPort()};
                         }
                     }
                 }
@@ -132,5 +184,14 @@ void UdpOnbInterface::receiveMsg()
                 emit message("udp", msg); // for debug purposes
             }
         }
+    }
+}
+
+void UdpOnbInterface::advertise()
+{
+    if (!m_connected)
+    {
+        QHostAddress broadcast = QHostAddress::Broadcast;
+        m_socket->writeDatagram("ONB1", 4, broadcast, 51967);
     }
 }

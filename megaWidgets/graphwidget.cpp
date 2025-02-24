@@ -176,8 +176,9 @@ void GraphWidget::initializeGL()
 {
     initializeOpenGLFunctions();
 
-    glEnable(GL_MULTISAMPLE);
-    glEnable(GL_PROGRAM_POINT_SIZE);
+    // these don't work in Android:
+//    glEnable(GL_MULTISAMPLE);
+//    glEnable(GL_PROGRAM_POINT_SIZE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 //    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
@@ -370,7 +371,7 @@ void GraphWidget::paintGL()
     painter.begin(this);
 
     painter.setFont(mFont);
-    mFont.pixelSize();
+//    mFont.pixelSize();
     QFontMetrics fm(mFont);
     QRect fontrect = fm.boundingRect("999999");
     int fh = fontrect.height();
@@ -378,7 +379,8 @@ void GraphWidget::paintGL()
 
     painter.beginNativePainting();
 
-    glEnable(GL_MULTISAMPLE);
+    // this don't work in Android:
+//    glEnable(GL_MULTISAMPLE);
 
     glClearColor(mBackColor.redF(), mBackColor.greenF(), mBackColor.blueF(), mBackColor.alphaF());
     //glClearColor(1.0, 1.0, 1.0, 1.0);
@@ -567,7 +569,6 @@ void GraphWidget::paintGL()
         int fw = fr.width();
         int fh = fr.height();
         painter.drawText(P + QPointF(-fw-4, fh/2-2), s);
-//        painter.drawText(QRectF(0, P.y()-fh/2-2, fwmax+2, fh+2), Qt::AlignRight | Qt::AlignVCenter, s);
     }
     for (float xx=bx; xx<xMax/*=xMax+0.0001*/; xx+=dx)
     {
