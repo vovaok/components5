@@ -36,8 +36,10 @@ private:
     QElapsedTimer etimer;
     QTimer *m_advertiseTimer = nullptr;
     QHostAddress m_networkAddr; // broadcast address for global msgs
-    QMap<uint8_t, QPair<QHostAddress, uint16_t>> m_peerMap;
-    QVector<QPair<QHostAddress, uint16_t>> m_peers;
+
+    typedef QPair<QHostAddress, int> Peer;
+    QMap<uint8_t, Peer> m_peerMap;
+    QVector<Peer> m_peers;
     bool m_connected = false;
 
     void receiveMsg();
