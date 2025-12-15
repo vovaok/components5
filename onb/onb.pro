@@ -24,7 +24,7 @@ win32 {
     include($$COMPONENTS/usbhid/usbhid.pri)
 }
 
-OBJNET_DIR = $$PWD/../../../iar/components/stm32++/src/objnet
+OBJNET_DIR = $$(OBJNET_DIR)
 
 INCLUDEPATH += $$OBJNET_DIR
 INCLUDEPATH += $$OBJNET_DIR/..
