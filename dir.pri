@@ -52,6 +52,11 @@ android {
     LIBDIR = "$$PWD/bin-android"
 }
 
+contains(QT_CONFIG, static) {
+    message("=== static build $${COMPONENT_NAME} ===")
+    LIBDIR = $$LIBDIR/static
+}
+
 ROOTBIN = $$LIBDIR
 LIBDIR = $$join(LIBDIR,,,/$${COMPONENT_NAME})
 
@@ -75,9 +80,5 @@ for(DIR, DIRS) {
 createDirs.commands = $(MKDIR) $$mkcommands
 first.depends *= createDirs
 QMAKE_EXTRA_TARGETS *= createDirs
-
-QMAKE_TARGET_COMPANY = "Neurobotics"
-QMAKE_TARGET_COPYRIGHT = "Copyright (C) 2008-2018 Neurobotics, Ltd <info@neurobotics.ru>"
-
 
 #message(LD $$LIBDIR)
