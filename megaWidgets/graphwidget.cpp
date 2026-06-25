@@ -11,7 +11,7 @@ GraphWidget::GraphWidget(QWidget *parent) :
     yMin(0), yMax(1),
     xMin0(0), xMax0(0),
     yMin0(0), yMax0(0),
-    xWindow(0),
+    m_xWindow(0),
     mAutoZoom(true),
     mInitialized(false),
     m_innocent(true),
@@ -394,9 +394,9 @@ void GraphWidget::paintGL()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 //    glBlendFunc(GL_SRC_ALPHA, GL_SRC_ALPHA_SATURATE);
-
-    if (mAutoZoom && xWindow > 0 && xMin < xMax - xWindow)
-        xMin = (xMax - xWindow);
+    
+    if (mAutoZoom && m_xWindow > 0 && xMin < xMax - m_xWindow)
+        xMin = (xMax - m_xWindow);
 
     // draw grid
     int Nx = 20, Ny = 20;
