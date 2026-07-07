@@ -161,7 +161,7 @@ void UdpOnbInterface::receiveMsg()
         QNetworkDatagram datagram = m_socket->receiveDatagram();
 
         // discard own broadcast message
-        if (datagram.senderAddress() == m_socket->localAddress())
+        if (datagram.senderPort() == m_socket->localPort() && datagram.senderAddress() == m_socket->localAddress())
             continue;
 
         QByteArray ddata = datagram.data();
