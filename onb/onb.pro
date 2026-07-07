@@ -40,6 +40,7 @@ SOURCES += \
     $$OBJNET_DIR/objectinfo.cpp \
     $$OBJNET_DIR/onbupgrader.cpp \
     $$OBJNET_DIR/objnetmsg.cpp \
+    $$OBJNET_DIR/onbvirtualinterface.cpp \
     udponbinterface.cpp \
     serialonbinterface.cpp \
     upgradewidget.cpp
@@ -57,6 +58,7 @@ HEADERS += \
     $$OBJNET_DIR/objnetnode.h \
     $$OBJNET_DIR/onbupgrader.h \
     $$OBJNET_DIR/objectinfo.h \
+    $$OBJNET_DIR/onbvirtualinterface.h \
     $$OBJNET_DIR/../core/closure.h \
     $$OBJNET_DIR/../core/closure_impl.h \
     udponbinterface.h \

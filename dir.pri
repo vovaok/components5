@@ -52,6 +52,11 @@ android {
     LIBDIR = "$$PWD/bin-android"
 }
 
+contains(QT_CONFIG, static) {
+    message("=== static build $${COMPONENT_NAME} ===")
+    LIBDIR = $$LIBDIR/static
+}
+
 ROOTBIN = $$LIBDIR
 LIBDIR = $$join(LIBDIR,,,/$${COMPONENT_NAME})
 
