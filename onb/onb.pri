@@ -10,7 +10,7 @@ win32 {
 
 COMPONENT_NAME = "onb"
 
-OBJNET_DIR = $$PWD/../../../iar/components/stm32++/src/objnet
+OBJNET_DIR = $$(OBJNET_DIR)
 
 INCLUDEPATH += $$OBJNET_DIR
 INCLUDEPATH += $$OBJNET_DIR/..
