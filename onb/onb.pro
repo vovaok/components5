@@ -2,7 +2,7 @@ QT       += network widgets concurrent
 #QT       -= gui
 
 TEMPLATE = lib
-CONFIG += staticlib c++14
+CONFIG += staticlib c++17
 TARGET = onb
 
 include(../build.pri)
