@@ -6,7 +6,7 @@ win32-msvc*:contains(QMAKE_TARGET.arch, x86_64): {
 }
 
 unix {
-    PLATFORM = $$QMAKE_HOST.arch
+    PLATFORM = $$QT_ARCH
 }
 
 CONFIG += skip_target_version_ext
@@ -36,7 +36,7 @@ win32: {
 else { COMPILER = $$QMAKE_CXX }
 
 
-LIBDIR = "$$PWD/bin"
+LIBDIR = "$$PWD/bin-$$PLATFORM"
 
 #message($$QMAKE_TARGET.arch)
 

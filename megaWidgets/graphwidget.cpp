@@ -321,9 +321,10 @@ void GraphWidget::wheelEvent(QWheelEvent *event)
 {
     float delta = -event->angleDelta().y() / 120.0;
     float k = delta * 0.1;
-    m_mousePos = event->pos();
-    float xpos = xMinW + (xMaxW - xMinW) * event->x() / (float)width();
-    float ypos = yMaxW - (yMaxW - yMinW) * event->y() / (float)height();
+    QPoint p = event->position().toPoint();
+    m_mousePos = p;
+    float xpos = xMinW + (xMaxW - xMinW) * p.x() / (float)width();
+    float ypos = yMaxW - (yMaxW - yMinW) * p.y() / (float)height();
     if (!(event->modifiers() & Qt::ShiftModifier))
     {
         xMin -= (xpos - xMin) * k;
