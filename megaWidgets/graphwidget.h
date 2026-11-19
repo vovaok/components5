@@ -90,7 +90,7 @@ private:
 
     QMatrix4x4 m_viewTransform;
 
-    float xWindow;
+    float m_xWindow;
 
     bool mAutoZoom;
     bool mInitialized;
@@ -156,7 +156,8 @@ public:
     void setXlabel(QString label);
 
     void setAutoBoundsEnabled(bool enabled) {mAutoZoom = enabled;}
-    void setXwindow(float value) {xWindow = value;}
+    void setXwindow(float value) {m_xWindow = value;}
+    float xWindow() const {return m_xWindow;}
 
     void setGraphType(QString name, Graph::Type type);
     void setPointSize(QString name, float size);

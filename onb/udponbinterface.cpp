@@ -161,7 +161,7 @@ void UdpOnbInterface::receiveMsg()
         QNetworkDatagram datagram = m_socket->receiveDatagram();
 
         // discard own broadcast message
-        if (datagram.senderAddress() == m_socket->localAddress())
+        if (datagram.senderPort() == m_socket->localPort() && datagram.senderAddress() == m_socket->localAddress())
             continue;
 
         QByteArray ddata = datagram.data();
@@ -171,9 +171,11 @@ void UdpOnbInterface::receiveMsg()
             {
                 uint32_t id = *reinterpret_cast<uint32_t *>(ddata.data() + 4);
                 QByteArray ba = ddata.mid(8);
+                //qDebug() << "udp_r" << QString().sprintf("%08X", id) << ba.toHex(' ');
                 CommonMessage msg;
                 msg.setId(id);
                 msg.setData(std::move(ba));
+                emit message("udp_r", msg); // for debug purposes
                 if (isMaster && msg.isLocal())
                 {
                     if (msg.localId().svc)
@@ -186,7 +188,6 @@ void UdpOnbInterface::receiveMsg()
                     }
                 }
                 receive(std::move(msg));
-                emit message("udp_r", msg); // for debug purposes
             }
         }
     }

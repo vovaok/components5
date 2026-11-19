@@ -5,8 +5,12 @@ SUBDIRS += \
     megaWidgets\
     onb\
     panel3d\
-#    usbhid\
+    usbhid\
     simplenet
+
+win32 {
+    SUBDIRS += usbhid
+}
 
 DISTFILES += build.pri \
              component.pri \
